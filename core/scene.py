@@ -10,6 +10,9 @@ class SceneFight:
     def __init__(self, game, p1_class, p2_class, p1_name, p2_name):
         self.game = game
 
+        if hasattr(self.game, "audio"):
+            self.game.audio.play_fight()
+
         t0 = time.time()
         print("SceneFight init start")
 

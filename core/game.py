@@ -1,6 +1,7 @@
 import pygame
 
 from ui.menu import SceneMenu
+from core.audio import AudioManager
 
 
 class Game:
@@ -14,6 +15,9 @@ class Game:
         pygame.display.set_caption("BVN Python")
 
         self.clock = pygame.time.Clock()
+
+        self.audio = AudioManager()
+        self.audio.play_beginning()
 
         self.scene = SceneMenu(self)
 
