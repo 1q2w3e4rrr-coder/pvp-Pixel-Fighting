@@ -25,6 +25,9 @@ class SceneMenu:
 
             if event.key == pygame.K_RETURN:
 
+                if hasattr(self.game, "audio"):
+                    self.game.audio.play_click()
+
                 self.game.change_scene(
                     SceneSelect(self.game)
                 )

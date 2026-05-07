@@ -93,6 +93,10 @@ class SceneSelect:
         # 防止从菜单按 Enter 进入后，立刻把 Pain 默认选掉
         self.enter_lock_frames = 8
 
+    def play_click(self):
+        if hasattr(self.game, "audio"):
+            self.game.audio.play_click()
+
     def is_enabled(self, i):
         return self.enabled.get(self.names[i], False)
 
@@ -126,34 +130,56 @@ class SceneSelect:
 
         if self.turn == 1:
             if event.key in (pygame.K_w, pygame.K_UP):
+                self.play_click()
                 self.p1_cursor = self.move_cursor(self.p1_cursor, "up")
+
             elif event.key in (pygame.K_s, pygame.K_DOWN):
+                self.play_click()
                 self.p1_cursor = self.move_cursor(self.p1_cursor, "down")
+
             elif event.key in (pygame.K_a, pygame.K_LEFT):
+                self.play_click()
                 self.p1_cursor = self.move_cursor(self.p1_cursor, "left")
+
             elif event.key in (pygame.K_d, pygame.K_RIGHT):
+                self.play_click()
                 self.p1_cursor = self.move_cursor(self.p1_cursor, "right")
+
             elif event.key == pygame.K_RETURN:
                 if not self.is_enabled(self.p1_cursor):
                     return
+
+                self.play_click()
+
                 self.p1_index = self.p1_cursor
                 self.turn = 2
                 self.p2_cursor = 5
+
                 if not self.is_enabled(self.p2_cursor):
                     self.p2_cursor = self.move_cursor(self.p2_cursor, "down")
 
         elif self.turn == 2:
             if event.key == pygame.K_UP:
+                self.play_click()
                 self.p2_cursor = self.move_cursor(self.p2_cursor, "up")
+
             elif event.key == pygame.K_DOWN:
+                self.play_click()
                 self.p2_cursor = self.move_cursor(self.p2_cursor, "down")
+
             elif event.key == pygame.K_LEFT:
+                self.play_click()
                 self.p2_cursor = self.move_cursor(self.p2_cursor, "left")
+
             elif event.key == pygame.K_RIGHT:
+                self.play_click()
                 self.p2_cursor = self.move_cursor(self.p2_cursor, "right")
+
             elif event.key == pygame.K_RETURN:
                 if not self.is_enabled(self.p2_cursor):
                     return
+
+                self.play_click()
 
                 self.p2_index = self.p2_cursor
 
@@ -209,6 +235,7 @@ class SceneSelect:
         if self.turn == 1:
             x, y = self.positions[self.p1_cursor]
             pygame.draw.rect(screen, (255, 0, 0), (x - 5, y - 5, 90, 90), 3)
+
         elif self.turn == 2:
             x, y = self.positions[self.p2_cursor]
             pygame.draw.rect(screen, (0, 255, 255), (x - 5, y - 5, 90, 90), 3)
