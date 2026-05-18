@@ -1,0 +1,41 @@
+{
+  "blackbox": {
+    "found": true,
+    "source_folder": "D:\\学习文件\\大三下\\软件工程实践\\导出\\aizen_ffdec\\sprites\\DefineSprite_619_aizen_fla.blackBox_39",
+    "frame_count": 93
+  },
+  "leihoupao": {
+    "found": true,
+    "source_folder": "D:\\学习文件\\大三下\\软件工程实践\\导出\\aizen_ffdec\\sprites\\DefineSprite_479_aizen_fla.雷吼炮_33",
+    "frame_count": 60
+  },
+  "liuzhang": {
+    "found": true,
+    "source_folder": "D:\\学习文件\\大三下\\软件工程实践\\导出\\aizen_ffdec\\sprites\\DefineSprite_291_aizen_fla.六杖光牢_15",
+    "frame_count": 38
+  },
+  "dankon": {
+    "found": true,
+    "source_folder": "D:\\学习文件\\大三下\\软件工程实践\\导出\\aizen_ffdec\\sprites\\DefineSprite_335_aizen_fla.dankon_gif_22",
+    "frame_count": 44
+  },
+  "ub0": {
+    "found": true,
+    "source_folder": "D:\\学习文件\\大三下\\软件工程实践\\导出\\aizen_ffdec\\sprites\\DefineSprite_248_aizen_fla.UB0_12",
+    "frame_count": 40
+  },
+  "aizen_1": {
+    "found": false,
+    "keywords": [
+      "Aizen_1",
+      "aizen_1"
+    ]
+  },
+  "aizen_2": {
+    "found": false,
+    "keywords": [
+      "Aizen_2",
+      "aizen_2"
+    ]
+  }
+}

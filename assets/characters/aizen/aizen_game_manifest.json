@@ -1,0 +1,5882 @@
+{
+  "character": "aizen",
+  "fps": 30,
+  "actions": {
+    "idle": {
+      "label": "站立",
+      "loop": true,
+      "fps": 30,
+      "frames": [
+        "actions_game/idle/0000.png",
+        "actions_game/idle/0001.png",
+        "actions_game/idle/0002.png",
+        "actions_game/idle/0003.png",
+        "actions_game/idle/0004.png",
+        "actions_game/idle/0005.png",
+        "actions_game/idle/0006.png",
+        "actions_game/idle/0007.png",
+        "actions_game/idle/0008.png"
+      ],
+      "events": []
+    },
+    "walk": {
+      "label": "走",
+      "loop": true,
+      "fps": 30,
+      "frames": [
+        "actions_game/walk/0000.png",
+        "actions_game/walk/0001.png",
+        "actions_game/walk/0002.png",
+        "actions_game/walk/0003.png",
+        "actions_game/walk/0004.png",
+        "actions_game/walk/0005.png",
+        "actions_game/walk/0006.png",
+        "actions_game/walk/0007.png",
+        "actions_game/walk/0008.png",
+        "actions_game/walk/0009.png",
+        "actions_game/walk/0010.png",
+        "actions_game/walk/0011.png",
+        "actions_game/walk/0012.png",
+        "actions_game/walk/0013.png",
+        "actions_game/walk/0014.png",
+        "actions_game/walk/0015.png",
+        "actions_game/walk/0016.png",
+        "actions_game/walk/0017.png"
+      ],
+      "events": [
+        {
+          "layer": "控制",
+          "global_frame": 26,
+          "duration": 2,
+          "scripts": [
+            "parent.$mc_ctrler.loop(\"走\");"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "loop",
+              "args_raw": "\"走\"",
+              "source": "parent.$mc_ctrler.loop(\"走\");",
+              "args": [
+                "走"
+              ],
+              "semantic": {
+                "type": "loop_action",
+                "target_label": "走"
+              }
+            }
+          ],
+          "relative_frame": 17
+        },
+        {
+          "layer": "效果",
+          "global_frame": 11,
+          "duration": 8,
+          "scripts": [
+            "parent.$effect_ctrler.walk();"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "walk",
+              "args_raw": "",
+              "source": "parent.$effect_ctrler.walk();",
+              "args": [],
+              "semantic": {
+                "type": "effect",
+                "effect_method": "walk"
+              }
+            }
+          ],
+          "relative_frame": 2
+        },
+        {
+          "layer": "效果",
+          "global_frame": 19,
+          "duration": 9,
+          "scripts": [
+            "parent.$effect_ctrler.walk();"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "walk",
+              "args_raw": "",
+              "source": "parent.$effect_ctrler.walk();",
+              "args": [],
+              "semantic": {
+                "type": "effect",
+                "effect_method": "walk"
+              }
+            }
+          ],
+          "relative_frame": 10
+        }
+      ]
+    },
+    "dash": {
+      "label": "瞬步",
+      "loop": false,
+      "fps": 30,
+      "frames": [
+        "actions_game/dash/0000.png",
+        "actions_game/dash/0001.png",
+        "actions_game/dash/0002.png",
+        "actions_game/dash/0003.png",
+        "actions_game/dash/0004.png",
+        "actions_game/dash/0005.png",
+        "actions_game/dash/0006.png",
+        "actions_game/dash/0007.png",
+        "actions_game/dash/0008.png",
+        "actions_game/dash/0009.png",
+        "actions_game/dash/0010.png",
+        "actions_game/dash/0011.png",
+        "actions_game/dash/0012.png",
+        "actions_game/dash/0013.png"
+      ],
+      "events": [
+        {
+          "layer": "控制",
+          "global_frame": 28,
+          "duration": 8,
+          "scripts": [
+            "parent.$mc_ctrler.setBisha();\nparent.$mc_ctrler.setBishaUP();\nparent.$mc_ctrler.setBishaSUPER();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "setBisha",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.setBisha();",
+              "args": [],
+              "semantic": {
+                "type": "enable_super",
+                "method": "setBisha"
+              }
+            },
+            {
+              "object": "mc_ctrler",
+              "method": "setBishaUP",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.setBishaUP();",
+              "args": [],
+              "semantic": {
+                "type": "enable_super",
+                "method": "setBishaUP"
+              }
+            },
+            {
+              "object": "mc_ctrler",
+              "method": "setBishaSUPER",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.setBishaSUPER();",
+              "args": [],
+              "semantic": {
+                "type": "enable_super",
+                "method": "setBishaSUPER"
+              }
+            }
+          ],
+          "relative_frame": 1
+        },
+        {
+          "layer": "控制",
+          "global_frame": 36,
+          "duration": 30,
+          "scripts": [
+            "parent.$mc_ctrler.idle();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "idle",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.idle();",
+              "args": [],
+              "semantic": {
+                "type": "return_idle"
+              }
+            }
+          ],
+          "relative_frame": 9
+        },
+        {
+          "layer": "移动",
+          "global_frame": 28,
+          "duration": 5,
+          "scripts": [
+            "parent.$mc_ctrler.dash(4);"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "dash",
+              "args_raw": "4",
+              "source": "parent.$mc_ctrler.dash(4);",
+              "args": [
+                4
+              ],
+              "semantic": {
+                "type": "dash_or_stop",
+                "method": "dash",
+                "args": [
+                  4
+                ]
+              }
+            }
+          ],
+          "relative_frame": 1
+        },
+        {
+          "layer": "移动",
+          "global_frame": 33,
+          "duration": 48,
+          "scripts": [
+            "parent.$mc_ctrler.dashStop();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "dashStop",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.dashStop();",
+              "args": [],
+              "semantic": {
+                "type": "dash_or_stop",
+                "method": "dashStop",
+                "args": []
+              }
+            }
+          ],
+          "relative_frame": 6
+        },
+        {
+          "layer": "效果",
+          "global_frame": 28,
+          "duration": 89,
+          "scripts": [
+            "parent.$effect_ctrler.dash();"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "dash",
+              "args_raw": "",
+              "source": "parent.$effect_ctrler.dash();",
+              "args": [],
+              "semantic": {
+                "type": "effect",
+                "effect_method": "dash"
+              }
+            }
+          ],
+          "relative_frame": 1
+        }
+      ]
+    },
+    "jump_start": {
+      "label": "起跳",
+      "loop": false,
+      "fps": 30,
+      "frames": [
+        "actions_game/jump_start/0000.png",
+        "actions_game/jump_start/0001.png",
+        "actions_game/jump_start/0002.png",
+        "actions_game/jump_start/0003.png",
+        "actions_game/jump_start/0004.png"
+      ],
+      "events": []
+    },
+    "jump": {
+      "label": "跳",
+      "loop": true,
+      "fps": 30,
+      "frames": [
+        "actions_game/jump/0000.png",
+        "actions_game/jump/0001.png",
+        "actions_game/jump/0002.png",
+        "actions_game/jump/0003.png",
+        "actions_game/jump/0004.png"
+      ],
+      "events": []
+    },
+    "jump_mid": {
+      "label": "跳中",
+      "loop": true,
+      "fps": 30,
+      "frames": [
+        "actions_game/jump_mid/0000.png",
+        "actions_game/jump_mid/0001.png",
+        "actions_game/jump_mid/0002.png",
+        "actions_game/jump_mid/0003.png",
+        "actions_game/jump_mid/0004.png"
+      ],
+      "events": []
+    },
+    "fall": {
+      "label": "落",
+      "loop": false,
+      "fps": 30,
+      "frames": [
+        "actions_game/fall/0000.png",
+        "actions_game/fall/0001.png",
+        "actions_game/fall/0002.png",
+        "actions_game/fall/0003.png",
+        "actions_game/fall/0004.png"
+      ],
+      "events": []
+    },
+    "land": {
+      "label": "落地",
+      "loop": false,
+      "fps": 30,
+      "frames": [
+        "actions_game/land/0000.png",
+        "actions_game/land/0001.png",
+        "actions_game/land/0002.png",
+        "actions_game/land/0003.png",
+        "actions_game/land/0004.png",
+        "actions_game/land/0005.png",
+        "actions_game/land/0006.png",
+        "actions_game/land/0007.png",
+        "actions_game/land/0008.png",
+        "actions_game/land/0009.png",
+        "actions_game/land/0010.png",
+        "actions_game/land/0011.png",
+        "actions_game/land/0012.png",
+        "actions_game/land/0013.png",
+        "actions_game/land/0014.png",
+        "actions_game/land/0015.png",
+        "actions_game/land/0016.png"
+      ],
+      "events": [
+        {
+          "layer": "控制",
+          "global_frame": 66,
+          "duration": 12,
+          "scripts": [
+            "parent.$mc_ctrler.idle();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "idle",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.idle();",
+              "args": [],
+              "semantic": {
+                "type": "return_idle"
+              }
+            }
+          ],
+          "relative_frame": 5
+        }
+      ]
+    },
+    "jump_attack": {
+      "label": "跳砍",
+      "loop": false,
+      "fps": 30,
+      "frames": [
+        "actions_game/jump_attack/0000.png",
+        "actions_game/jump_attack/0001.png",
+        "actions_game/jump_attack/0002.png",
+        "actions_game/jump_attack/0003.png",
+        "actions_game/jump_attack/0004.png",
+        "actions_game/jump_attack/0005.png",
+        "actions_game/jump_attack/0006.png",
+        "actions_game/jump_attack/0007.png",
+        "actions_game/jump_attack/0008.png",
+        "actions_game/jump_attack/0009.png",
+        "actions_game/jump_attack/0010.png",
+        "actions_game/jump_attack/0011.png",
+        "actions_game/jump_attack/0012.png",
+        "actions_game/jump_attack/0013.png",
+        "actions_game/jump_attack/0014.png",
+        "actions_game/jump_attack/0015.png",
+        "actions_game/jump_attack/0016.png",
+        "actions_game/jump_attack/0017.png",
+        "actions_game/jump_attack/0018.png",
+        "actions_game/jump_attack/0019.png",
+        "actions_game/jump_attack/0020.png",
+        "actions_game/jump_attack/0021.png",
+        "actions_game/jump_attack/0022.png",
+        "actions_game/jump_attack/0023.png",
+        "actions_game/jump_attack/0024.png"
+      ],
+      "events": [
+        {
+          "layer": "控制",
+          "global_frame": 78,
+          "duration": 9,
+          "scripts": [
+            "parent.$mc_ctrler.setAirMove(true);"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "setAirMove",
+              "args_raw": "true",
+              "source": "parent.$mc_ctrler.setAirMove(true);",
+              "args": [
+                true
+              ],
+              "semantic": {
+                "type": "air_move",
+                "enabled": true
+              }
+            }
+          ],
+          "relative_frame": 0
+        },
+        {
+          "layer": "控制",
+          "global_frame": 87,
+          "duration": 6,
+          "scripts": [
+            "parent.$mc_ctrler.setBishaAIR();\nparent.$mc_ctrler.setSkillAIR();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "setBishaAIR",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.setBishaAIR();",
+              "args": [],
+              "semantic": {
+                "type": "enable_super",
+                "method": "setBishaAIR"
+              }
+            },
+            {
+              "object": "mc_ctrler",
+              "method": "setSkillAIR",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.setSkillAIR();",
+              "args": [],
+              "semantic": {
+                "type": "enable_skill",
+                "method": "setSkillAIR",
+                "target_label": null
+              }
+            }
+          ],
+          "relative_frame": 9
+        },
+        {
+          "layer": "控制",
+          "global_frame": 93,
+          "duration": 3,
+          "scripts": [
+            "parent.$mc_ctrler.endAct();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "endAct",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.endAct();",
+              "args": [],
+              "semantic": {
+                "type": "end_action"
+              }
+            }
+          ],
+          "relative_frame": 15
+        },
+        {
+          "layer": "控制",
+          "global_frame": 96,
+          "duration": 8,
+          "scripts": [
+            "parent.$mc_ctrler.idle();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "idle",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.idle();",
+              "args": [],
+              "semantic": {
+                "type": "return_idle"
+              }
+            }
+          ],
+          "relative_frame": 18
+        },
+        {
+          "layer": "移动",
+          "global_frame": 81,
+          "duration": 24,
+          "scripts": [
+            "//执行移动\nparent.$mc_ctrler.move(0,-5); //参数为X,Y\nparent.$mc_ctrler.damping(0,0.3); //移动阻尼，参数为X,Y\n\n//移动一次\n// parent.$fighter_ctrler.moveOnce(0,-5);"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "move",
+              "args_raw": "0,-5",
+              "source": "parent.$mc_ctrler.move(0,-5);",
+              "args": [
+                0,
+                -5
+              ],
+              "semantic": {
+                "type": "movement",
+                "method": "move",
+                "args": [
+                  0,
+                  -5
+                ]
+              }
+            },
+            {
+              "object": "mc_ctrler",
+              "method": "damping",
+              "args_raw": "0,0.3",
+              "source": "parent.$mc_ctrler.damping(0,0.3);",
+              "args": [
+                0,
+                0.3
+              ],
+              "semantic": {
+                "type": "movement",
+                "method": "damping",
+                "args": [
+                  0,
+                  0.3
+                ]
+              }
+            },
+            {
+              "object": "fighter_ctrler",
+              "method": "moveOnce",
+              "args_raw": "0,-5",
+              "source": "parent.$fighter_ctrler.moveOnce(0,-5);",
+              "args": [
+                0,
+                -5
+              ]
+            }
+          ],
+          "relative_frame": 3
+        }
+      ]
+    },
+    "air_skill": {
+      "label": "跳招",
+      "loop": false,
+      "fps": 30,
+      "frames": [
+        "actions_game/air_skill/0000.png",
+        "actions_game/air_skill/0001.png",
+        "actions_game/air_skill/0002.png",
+        "actions_game/air_skill/0003.png",
+        "actions_game/air_skill/0004.png",
+        "actions_game/air_skill/0005.png",
+        "actions_game/air_skill/0006.png",
+        "actions_game/air_skill/0007.png",
+        "actions_game/air_skill/0008.png",
+        "actions_game/air_skill/0009.png",
+        "actions_game/air_skill/0010.png",
+        "actions_game/air_skill/0011.png",
+        "actions_game/air_skill/0012.png",
+        "actions_game/air_skill/0013.png",
+        "actions_game/air_skill/0014.png",
+        "actions_game/air_skill/0015.png",
+        "actions_game/air_skill/0016.png",
+        "actions_game/air_skill/0017.png",
+        "actions_game/air_skill/0018.png",
+        "actions_game/air_skill/0019.png",
+        "actions_game/air_skill/0020.png",
+        "actions_game/air_skill/0021.png",
+        "actions_game/air_skill/0022.png",
+        "actions_game/air_skill/0023.png",
+        "actions_game/air_skill/0024.png",
+        "actions_game/air_skill/0025.png",
+        "actions_game/air_skill/0026.png",
+        "actions_game/air_skill/0027.png",
+        "actions_game/air_skill/0028.png",
+        "actions_game/air_skill/0029.png",
+        "actions_game/air_skill/0030.png",
+        "actions_game/air_skill/0031.png",
+        "actions_game/air_skill/0032.png",
+        "actions_game/air_skill/0033.png",
+        "actions_game/air_skill/0034.png",
+        "actions_game/air_skill/0035.png",
+        "actions_game/air_skill/0036.png",
+        "actions_game/air_skill/0037.png",
+        "actions_game/air_skill/0038.png",
+        "actions_game/air_skill/0039.png",
+        "actions_game/air_skill/0040.png",
+        "actions_game/air_skill/0041.png",
+        "actions_game/air_skill/0042.png",
+        "actions_game/air_skill/0043.png",
+        "actions_game/air_skill/0044.png",
+        "actions_game/air_skill/0045.png",
+        "actions_game/air_skill/0046.png",
+        "actions_game/air_skill/0047.png",
+        "actions_game/air_skill/0048.png",
+        "actions_game/air_skill/0049.png",
+        "actions_game/air_skill/0050.png",
+        "actions_game/air_skill/0051.png",
+        "actions_game/air_skill/0052.png",
+        "actions_game/air_skill/0053.png",
+        "actions_game/air_skill/0054.png",
+        "actions_game/air_skill/0055.png",
+        "actions_game/air_skill/0056.png",
+        "actions_game/air_skill/0057.png",
+        "actions_game/air_skill/0058.png",
+        "actions_game/air_skill/0059.png",
+        "actions_game/air_skill/0060.png",
+        "actions_game/air_skill/0061.png"
+      ],
+      "events": [
+        {
+          "layer": "控制",
+          "global_frame": 104,
+          "duration": 12,
+          "scripts": [
+            "parent.$mc_ctrler.addQi(5);"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "addQi",
+              "args_raw": "5",
+              "source": "parent.$mc_ctrler.addQi(5);",
+              "args": [
+                5
+              ],
+              "semantic": {
+                "type": "add_qi",
+                "value": 5
+              }
+            }
+          ],
+          "relative_frame": 1
+        },
+        {
+          "layer": "控制",
+          "global_frame": 116,
+          "duration": 12,
+          "scripts": [
+            "//瞬间移动[参数：X,Y,是否自动转向]\nparent.$fighter_ctrler.moveToTarget(0,0,false);"
+          ],
+          "calls": [
+            {
+              "object": "fighter_ctrler",
+              "method": "moveToTarget",
+              "args_raw": "0,0,false",
+              "source": "parent.$fighter_ctrler.moveToTarget(0,0,false);",
+              "args": [
+                0,
+                0,
+                false
+              ],
+              "semantic": {
+                "type": "teleport_or_move_to_target",
+                "x": 0,
+                "y": 0,
+                "auto_turn": false
+              }
+            }
+          ],
+          "relative_frame": 13
+        },
+        {
+          "layer": "控制",
+          "global_frame": 128,
+          "duration": 17,
+          "scripts": [
+            "parent.$mc_ctrler.endAct();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "endAct",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.endAct();",
+              "args": [],
+              "semantic": {
+                "type": "end_action"
+              }
+            }
+          ],
+          "relative_frame": 25
+        },
+        {
+          "layer": "控制",
+          "global_frame": 145,
+          "duration": 27,
+          "scripts": [
+            "parent.$mc_ctrler.idle();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "idle",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.idle();",
+              "args": [],
+              "semantic": {
+                "type": "return_idle"
+              }
+            }
+          ],
+          "relative_frame": 42
+        },
+        {
+          "layer": "移动",
+          "global_frame": 105,
+          "duration": 11,
+          "scripts": [
+            "//执行移动\nparent.$mc_ctrler.move(0,-1); //参数为X,Y"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "move",
+              "args_raw": "0,-1",
+              "source": "parent.$mc_ctrler.move(0,-1);",
+              "args": [
+                0,
+                -1
+              ],
+              "semantic": {
+                "type": "movement",
+                "method": "move",
+                "args": [
+                  0,
+                  -1
+                ]
+              }
+            }
+          ],
+          "relative_frame": 2
+        },
+        {
+          "layer": "移动",
+          "global_frame": 116,
+          "duration": 92,
+          "scripts": [
+            "//执行移动\nparent.$mc_ctrler.stopMove();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "stopMove",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.stopMove();",
+              "args": [],
+              "semantic": {
+                "type": "dash_or_stop",
+                "method": "stopMove",
+                "args": []
+              }
+            }
+          ],
+          "relative_frame": 13
+        },
+        {
+          "layer": "效果",
+          "global_frame": 117,
+          "duration": 91,
+          "scripts": [
+            "parent.$effect_ctrler.shine(0x9900FF);\nparent.$effect_ctrler.shake(0,3);"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "shine",
+              "args_raw": "0x9900FF",
+              "source": "parent.$effect_ctrler.shine(0x9900FF);",
+              "args": [
+                "0x9900FF"
+              ],
+              "semantic": {
+                "type": "effect",
+                "effect_method": "shine"
+              }
+            },
+            {
+              "object": "effect_ctrler",
+              "method": "shake",
+              "args_raw": "0,3",
+              "source": "parent.$effect_ctrler.shake(0,3);",
+              "args": [
+                0,
+                3
+              ]
+            }
+          ],
+          "relative_frame": 14
+        }
+      ]
+    },
+    "atk1": {
+      "label": "砍1",
+      "loop": false,
+      "fps": 30,
+      "frames": [
+        "actions_game/atk1/0000.png",
+        "actions_game/atk1/0001.png",
+        "actions_game/atk1/0002.png",
+        "actions_game/atk1/0003.png",
+        "actions_game/atk1/0004.png",
+        "actions_game/atk1/0005.png",
+        "actions_game/atk1/0006.png",
+        "actions_game/atk1/0007.png",
+        "actions_game/atk1/0008.png",
+        "actions_game/atk1/0009.png",
+        "actions_game/atk1/0010.png",
+        "actions_game/atk1/0011.png",
+        "actions_game/atk1/0012.png",
+        "actions_game/atk1/0013.png",
+        "actions_game/atk1/0014.png",
+        "actions_game/atk1/0015.png",
+        "actions_game/atk1/0016.png",
+        "actions_game/atk1/0017.png",
+        "actions_game/atk1/0018.png",
+        "actions_game/atk1/0019.png",
+        "actions_game/atk1/0020.png"
+      ],
+      "events": [
+        {
+          "layer": "控制",
+          "global_frame": 172,
+          "duration": 6,
+          "scripts": [
+            "parent.$mc_ctrler.setAttack(\"砍2\");\n//在结束时加上：parent.$mc_ctrler.endAct();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "setAttack",
+              "args_raw": "\"砍2\"",
+              "source": "parent.$mc_ctrler.setAttack(\"砍2\");",
+              "args": [
+                "砍2"
+              ],
+              "semantic": {
+                "type": "enable_next_attack",
+                "target_label": "砍2"
+              }
+            },
+            {
+              "object": "mc_ctrler",
+              "method": "endAct",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.endAct();",
+              "args": [],
+              "semantic": {
+                "type": "end_action"
+              }
+            }
+          ],
+          "relative_frame": 7
+        },
+        {
+          "layer": "控制",
+          "global_frame": 178,
+          "duration": 5,
+          "scripts": [
+            "parent.$mc_ctrler.endAct();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "endAct",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.endAct();",
+              "args": [],
+              "semantic": {
+                "type": "end_action"
+              }
+            }
+          ],
+          "relative_frame": 13
+        },
+        {
+          "layer": "控制",
+          "global_frame": 183,
+          "duration": 11,
+          "scripts": [
+            "parent.$mc_ctrler.idle();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "idle",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.idle();",
+              "args": [],
+              "semantic": {
+                "type": "return_idle"
+              }
+            }
+          ],
+          "relative_frame": 18
+        },
+        {
+          "layer": "声音",
+          "global_frame": 167,
+          "duration": 21,
+          "scripts": [
+            "parent.$effect_ctrler.playSoundHit1();"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "playSoundHit1",
+              "args_raw": "",
+              "source": "parent.$effect_ctrler.playSoundHit1();",
+              "args": []
+            }
+          ],
+          "relative_frame": 2
+        }
+      ]
+    },
+    "atk2": {
+      "label": "砍2",
+      "loop": false,
+      "fps": 30,
+      "frames": [
+        "actions_game/atk2/0000.png",
+        "actions_game/atk2/0001.png",
+        "actions_game/atk2/0002.png",
+        "actions_game/atk2/0003.png",
+        "actions_game/atk2/0004.png",
+        "actions_game/atk2/0005.png",
+        "actions_game/atk2/0006.png",
+        "actions_game/atk2/0007.png",
+        "actions_game/atk2/0008.png",
+        "actions_game/atk2/0009.png",
+        "actions_game/atk2/0010.png",
+        "actions_game/atk2/0011.png",
+        "actions_game/atk2/0012.png",
+        "actions_game/atk2/0013.png",
+        "actions_game/atk2/0014.png",
+        "actions_game/atk2/0015.png",
+        "actions_game/atk2/0016.png",
+        "actions_game/atk2/0017.png"
+      ],
+      "events": [
+        {
+          "layer": "控制",
+          "global_frame": 194,
+          "duration": 5,
+          "scripts": [
+            "parent.$mc_ctrler.setAttack(\"砍3\");\nparent.$mc_ctrler.setSkill2();\n//在结束时加上：parent.$mc_ctrler.endAct();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "setAttack",
+              "args_raw": "\"砍3\"",
+              "source": "parent.$mc_ctrler.setAttack(\"砍3\");",
+              "args": [
+                "砍3"
+              ],
+              "semantic": {
+                "type": "enable_next_attack",
+                "target_label": "砍3"
+              }
+            },
+            {
+              "object": "mc_ctrler",
+              "method": "setSkill2",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.setSkill2();",
+              "args": [],
+              "semantic": {
+                "type": "enable_skill",
+                "method": "setSkill2",
+                "target_label": null
+              }
+            },
+            {
+              "object": "mc_ctrler",
+              "method": "endAct",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.endAct();",
+              "args": [],
+              "semantic": {
+                "type": "end_action"
+              }
+            }
+          ],
+          "relative_frame": 8
+        },
+        {
+          "layer": "控制",
+          "global_frame": 199,
+          "duration": 3,
+          "scripts": [
+            "parent.$mc_ctrler.endAct();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "endAct",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.endAct();",
+              "args": [],
+              "semantic": {
+                "type": "end_action"
+              }
+            }
+          ],
+          "relative_frame": 13
+        },
+        {
+          "layer": "控制",
+          "global_frame": 202,
+          "duration": 6,
+          "scripts": [
+            "parent.$mc_ctrler.idle();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "idle",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.idle();",
+              "args": [],
+              "semantic": {
+                "type": "return_idle"
+              }
+            }
+          ],
+          "relative_frame": 16
+        },
+        {
+          "layer": "声音",
+          "global_frame": 188,
+          "duration": 21,
+          "scripts": [
+            "parent.$effect_ctrler.playSoundHit1();"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "playSoundHit1",
+              "args_raw": "",
+              "source": "parent.$effect_ctrler.playSoundHit1();",
+              "args": []
+            }
+          ],
+          "relative_frame": 2
+        }
+      ]
+    },
+    "atk3": {
+      "label": "砍3",
+      "loop": false,
+      "fps": 30,
+      "frames": [
+        "actions_game/atk3/0000.png",
+        "actions_game/atk3/0001.png",
+        "actions_game/atk3/0002.png",
+        "actions_game/atk3/0003.png",
+        "actions_game/atk3/0004.png",
+        "actions_game/atk3/0005.png",
+        "actions_game/atk3/0006.png",
+        "actions_game/atk3/0007.png",
+        "actions_game/atk3/0008.png",
+        "actions_game/atk3/0009.png",
+        "actions_game/atk3/0010.png",
+        "actions_game/atk3/0011.png",
+        "actions_game/atk3/0012.png",
+        "actions_game/atk3/0013.png",
+        "actions_game/atk3/0014.png",
+        "actions_game/atk3/0015.png",
+        "actions_game/atk3/0016.png",
+        "actions_game/atk3/0017.png",
+        "actions_game/atk3/0018.png",
+        "actions_game/atk3/0019.png",
+        "actions_game/atk3/0020.png",
+        "actions_game/atk3/0021.png",
+        "actions_game/atk3/0022.png",
+        "actions_game/atk3/0023.png",
+        "actions_game/atk3/0024.png",
+        "actions_game/atk3/0025.png",
+        "actions_game/atk3/0026.png",
+        "actions_game/atk3/0027.png",
+        "actions_game/atk3/0028.png",
+        "actions_game/atk3/0029.png",
+        "actions_game/atk3/0030.png",
+        "actions_game/atk3/0031.png"
+      ],
+      "events": [
+        {
+          "layer": "控制",
+          "global_frame": 208,
+          "duration": 5,
+          "scripts": [
+            "parent.$fighter_ctrler.setCross(true);"
+          ],
+          "calls": [
+            {
+              "object": "fighter_ctrler",
+              "method": "setCross",
+              "args_raw": "true",
+              "source": "parent.$fighter_ctrler.setCross(true);",
+              "args": [
+                true
+              ],
+              "semantic": {
+                "type": "set_cross",
+                "enabled": true
+              }
+            }
+          ],
+          "relative_frame": 4
+        },
+        {
+          "layer": "控制",
+          "global_frame": 213,
+          "duration": 2,
+          "scripts": [
+            "parent.$fighter_ctrler.setCross(false);"
+          ],
+          "calls": [
+            {
+              "object": "fighter_ctrler",
+              "method": "setCross",
+              "args_raw": "false",
+              "source": "parent.$fighter_ctrler.setCross(false);",
+              "args": [
+                false
+              ],
+              "semantic": {
+                "type": "set_cross",
+                "enabled": false
+              }
+            }
+          ],
+          "relative_frame": 9
+        },
+        {
+          "layer": "控制",
+          "global_frame": 215,
+          "duration": 6,
+          "scripts": [
+            "parent.$mc_ctrler.setBishaSUPER();\nparent.$mc_ctrler.setBishaUP();\nparent.$mc_ctrler.setBisha();\nparent.$mc_ctrler.setAttack(\"砍4\");\nparent.$mc_ctrler.setDash();\n//在结束时加上：parent.$mc_ctrler.endAct();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "setBishaSUPER",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.setBishaSUPER();",
+              "args": [],
+              "semantic": {
+                "type": "enable_super",
+                "method": "setBishaSUPER"
+              }
+            },
+            {
+              "object": "mc_ctrler",
+              "method": "setBishaUP",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.setBishaUP();",
+              "args": [],
+              "semantic": {
+                "type": "enable_super",
+                "method": "setBishaUP"
+              }
+            },
+            {
+              "object": "mc_ctrler",
+              "method": "setBisha",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.setBisha();",
+              "args": [],
+              "semantic": {
+                "type": "enable_super",
+                "method": "setBisha"
+              }
+            },
+            {
+              "object": "mc_ctrler",
+              "method": "setAttack",
+              "args_raw": "\"砍4\"",
+              "source": "parent.$mc_ctrler.setAttack(\"砍4\");",
+              "args": [
+                "砍4"
+              ],
+              "semantic": {
+                "type": "enable_next_attack",
+                "target_label": "砍4"
+              }
+            },
+            {
+              "object": "mc_ctrler",
+              "method": "setDash",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.setDash();",
+              "args": []
+            },
+            {
+              "object": "mc_ctrler",
+              "method": "endAct",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.endAct();",
+              "args": [],
+              "semantic": {
+                "type": "end_action"
+              }
+            }
+          ],
+          "relative_frame": 11
+        },
+        {
+          "layer": "控制",
+          "global_frame": 221,
+          "duration": 9,
+          "scripts": [
+            "parent.$mc_ctrler.endAct();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "endAct",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.endAct();",
+              "args": [],
+              "semantic": {
+                "type": "end_action"
+              }
+            }
+          ],
+          "relative_frame": 17
+        },
+        {
+          "layer": "控制",
+          "global_frame": 230,
+          "duration": 7,
+          "scripts": [
+            "parent.$mc_ctrler.idle();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "idle",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.idle();",
+              "args": [],
+              "semantic": {
+                "type": "return_idle"
+              }
+            }
+          ],
+          "relative_frame": 26
+        },
+        {
+          "layer": "移动",
+          "global_frame": 208,
+          "duration": 33,
+          "scripts": [
+            "//执行移动\nparent.$mc_ctrler.movePercent(2,0); //参数为X,Y\nparent.$mc_ctrler.dampingPercent(0.1,0); //移动阻尼，参数为X,Y"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "movePercent",
+              "args_raw": "2,0",
+              "source": "parent.$mc_ctrler.movePercent(2,0);",
+              "args": [
+                2,
+                0
+              ],
+              "semantic": {
+                "type": "movement",
+                "method": "movePercent",
+                "args": [
+                  2,
+                  0
+                ]
+              }
+            },
+            {
+              "object": "mc_ctrler",
+              "method": "dampingPercent",
+              "args_raw": "0.1,0",
+              "source": "parent.$mc_ctrler.dampingPercent(0.1,0);",
+              "args": [
+                0.1,
+                0
+              ],
+              "semantic": {
+                "type": "movement",
+                "method": "dampingPercent",
+                "args": [
+                  0.1,
+                  0
+                ]
+              }
+            }
+          ],
+          "relative_frame": 4
+        },
+        {
+          "layer": "效果",
+          "global_frame": 208,
+          "duration": 155,
+          "scripts": [
+            "parent.$effect_ctrler.dash();"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "dash",
+              "args_raw": "",
+              "source": "parent.$effect_ctrler.dash();",
+              "args": [],
+              "semantic": {
+                "type": "effect",
+                "effect_method": "dash"
+              }
+            }
+          ],
+          "relative_frame": 4
+        },
+        {
+          "layer": "声音",
+          "global_frame": 209,
+          "duration": 31,
+          "scripts": [
+            "parent.$effect_ctrler.playSoundHit2();"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "playSoundHit2",
+              "args_raw": "",
+              "source": "parent.$effect_ctrler.playSoundHit2();",
+              "args": []
+            }
+          ],
+          "relative_frame": 5
+        }
+      ]
+    },
+    "atk4": {
+      "label": "砍4",
+      "loop": false,
+      "fps": 30,
+      "frames": [
+        "actions_game/atk4/0000.png",
+        "actions_game/atk4/0001.png",
+        "actions_game/atk4/0002.png",
+        "actions_game/atk4/0003.png"
+      ],
+      "events": [
+        {
+          "layer": "控制",
+          "global_frame": 237,
+          "duration": 11,
+          "scripts": [
+            "parent.$fighter_ctrler.setDirectToTarget();"
+          ],
+          "calls": [
+            {
+              "object": "fighter_ctrler",
+              "method": "setDirectToTarget",
+              "args_raw": "",
+              "source": "parent.$fighter_ctrler.setDirectToTarget();",
+              "args": [],
+              "semantic": {
+                "type": "face_target"
+              }
+            }
+          ],
+          "relative_frame": 1
+        }
+      ]
+    },
+    "atk4_extra": {
+      "label": "砍4_QK",
+      "loop": false,
+      "fps": 30,
+      "frames": [
+        "actions_game/atk4_extra/0000.png",
+        "actions_game/atk4_extra/0001.png",
+        "actions_game/atk4_extra/0002.png",
+        "actions_game/atk4_extra/0003.png",
+        "actions_game/atk4_extra/0004.png",
+        "actions_game/atk4_extra/0005.png",
+        "actions_game/atk4_extra/0006.png",
+        "actions_game/atk4_extra/0007.png",
+        "actions_game/atk4_extra/0008.png",
+        "actions_game/atk4_extra/0009.png",
+        "actions_game/atk4_extra/0010.png",
+        "actions_game/atk4_extra/0011.png",
+        "actions_game/atk4_extra/0012.png",
+        "actions_game/atk4_extra/0013.png",
+        "actions_game/atk4_extra/0014.png",
+        "actions_game/atk4_extra/0015.png",
+        "actions_game/atk4_extra/0016.png",
+        "actions_game/atk4_extra/0017.png",
+        "actions_game/atk4_extra/0018.png",
+        "actions_game/atk4_extra/0019.png",
+        "actions_game/atk4_extra/0020.png",
+        "actions_game/atk4_extra/0021.png",
+        "actions_game/atk4_extra/0022.png",
+        "actions_game/atk4_extra/0023.png"
+      ],
+      "events": [
+        {
+          "layer": "控制",
+          "global_frame": 248,
+          "duration": 6,
+          "scripts": [
+            "parent.$mc_ctrler.setZhao1();\nparent.$mc_ctrler.setAttack(\"砍5\");\n//在结束时加上：parent.$mc_ctrler.endAct();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "setZhao1",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.setZhao1();",
+              "args": [],
+              "semantic": {
+                "type": "enable_zhao",
+                "method": "setZhao1"
+              }
+            },
+            {
+              "object": "mc_ctrler",
+              "method": "setAttack",
+              "args_raw": "\"砍5\"",
+              "source": "parent.$mc_ctrler.setAttack(\"砍5\");",
+              "args": [
+                "砍5"
+              ],
+              "semantic": {
+                "type": "enable_next_attack",
+                "target_label": "砍5"
+              }
+            },
+            {
+              "object": "mc_ctrler",
+              "method": "endAct",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.endAct();",
+              "args": [],
+              "semantic": {
+                "type": "end_action"
+              }
+            }
+          ],
+          "relative_frame": 8
+        },
+        {
+          "layer": "控制",
+          "global_frame": 254,
+          "duration": 5,
+          "scripts": [
+            "parent.$mc_ctrler.endAct();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "endAct",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.endAct();",
+              "args": [],
+              "semantic": {
+                "type": "end_action"
+              }
+            }
+          ],
+          "relative_frame": 14
+        },
+        {
+          "layer": "控制",
+          "global_frame": 259,
+          "duration": 19,
+          "scripts": [
+            "parent.$mc_ctrler.idle();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "idle",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.idle();",
+              "args": [],
+              "semantic": {
+                "type": "return_idle"
+              }
+            }
+          ],
+          "relative_frame": 19
+        },
+        {
+          "layer": "移动",
+          "global_frame": 241,
+          "duration": 23,
+          "scripts": [
+            "//执行移动\nparent.$mc_ctrler.movePercent(0.5,0); //参数为X,Y\nparent.$mc_ctrler.dampingPercent(0.05,0); //移动阻尼，参数为X,Y"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "movePercent",
+              "args_raw": "0.5,0",
+              "source": "parent.$mc_ctrler.movePercent(0.5,0);",
+              "args": [
+                0.5,
+                0
+              ],
+              "semantic": {
+                "type": "movement",
+                "method": "movePercent",
+                "args": [
+                  0.5,
+                  0
+                ]
+              }
+            },
+            {
+              "object": "mc_ctrler",
+              "method": "dampingPercent",
+              "args_raw": "0.05,0",
+              "source": "parent.$mc_ctrler.dampingPercent(0.05,0);",
+              "args": [
+                0.05,
+                0
+              ],
+              "semantic": {
+                "type": "movement",
+                "method": "dampingPercent",
+                "args": [
+                  0.05,
+                  0
+                ]
+              }
+            }
+          ],
+          "relative_frame": 1
+        },
+        {
+          "layer": "声音",
+          "global_frame": 240,
+          "duration": 26,
+          "scripts": [
+            "parent.$effect_ctrler.playSoundHit2();"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "playSoundHit2",
+              "args_raw": "",
+              "source": "parent.$effect_ctrler.playSoundHit2();",
+              "args": []
+            }
+          ],
+          "relative_frame": 0
+        }
+      ]
+    },
+    "atk5": {
+      "label": "砍5",
+      "loop": false,
+      "fps": 30,
+      "frames": [
+        "actions_game/atk5/0000.png",
+        "actions_game/atk5/0001.png",
+        "actions_game/atk5/0002.png",
+        "actions_game/atk5/0003.png",
+        "actions_game/atk5/0004.png",
+        "actions_game/atk5/0005.png",
+        "actions_game/atk5/0006.png",
+        "actions_game/atk5/0007.png",
+        "actions_game/atk5/0008.png",
+        "actions_game/atk5/0009.png",
+        "actions_game/atk5/0010.png",
+        "actions_game/atk5/0011.png",
+        "actions_game/atk5/0012.png",
+        "actions_game/atk5/0013.png",
+        "actions_game/atk5/0014.png",
+        "actions_game/atk5/0015.png",
+        "actions_game/atk5/0016.png",
+        "actions_game/atk5/0017.png",
+        "actions_game/atk5/0018.png",
+        "actions_game/atk5/0019.png",
+        "actions_game/atk5/0020.png",
+        "actions_game/atk5/0021.png",
+        "actions_game/atk5/0022.png",
+        "actions_game/atk5/0023.png",
+        "actions_game/atk5/0024.png",
+        "actions_game/atk5/0025.png",
+        "actions_game/atk5/0026.png",
+        "actions_game/atk5/0027.png",
+        "actions_game/atk5/0028.png",
+        "actions_game/atk5/0029.png",
+        "actions_game/atk5/0030.png",
+        "actions_game/atk5/0031.png",
+        "actions_game/atk5/0032.png",
+        "actions_game/atk5/0033.png",
+        "actions_game/atk5/0034.png",
+        "actions_game/atk5/0035.png",
+        "actions_game/atk5/0036.png",
+        "actions_game/atk5/0037.png",
+        "actions_game/atk5/0038.png",
+        "actions_game/atk5/0039.png",
+        "actions_game/atk5/0040.png",
+        "actions_game/atk5/0041.png",
+        "actions_game/atk5/0042.png",
+        "actions_game/atk5/0043.png",
+        "actions_game/atk5/0044.png",
+        "actions_game/atk5/0045.png",
+        "actions_game/atk5/0046.png",
+        "actions_game/atk5/0047.png",
+        "actions_game/atk5/0048.png",
+        "actions_game/atk5/0049.png",
+        "actions_game/atk5/0050.png",
+        "actions_game/atk5/0051.png",
+        "actions_game/atk5/0052.png",
+        "actions_game/atk5/0053.png",
+        "actions_game/atk5/0054.png",
+        "actions_game/atk5/0055.png",
+        "actions_game/atk5/0056.png",
+        "actions_game/atk5/0057.png"
+      ],
+      "events": [
+        {
+          "layer": "控制",
+          "global_frame": 278,
+          "duration": 25,
+          "scripts": [
+            "parent.$mc_ctrler.endAct();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "endAct",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.endAct();",
+              "args": [],
+              "semantic": {
+                "type": "end_action"
+              }
+            }
+          ],
+          "relative_frame": 14
+        },
+        {
+          "layer": "控制",
+          "global_frame": 303,
+          "duration": 20,
+          "scripts": [
+            "parent.$mc_ctrler.idle();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "idle",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.idle();",
+              "args": [],
+              "semantic": {
+                "type": "return_idle"
+              }
+            }
+          ],
+          "relative_frame": 39
+        },
+        {
+          "layer": "移动",
+          "global_frame": 264,
+          "duration": 294,
+          "scripts": [
+            "//执行移动\nparent.$mc_ctrler.movePercent(0.5,0); //参数为X,Y\nparent.$mc_ctrler.dampingPercent(0.05,0); //移动阻尼，参数为X,Y"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "movePercent",
+              "args_raw": "0.5,0",
+              "source": "parent.$mc_ctrler.movePercent(0.5,0);",
+              "args": [
+                0.5,
+                0
+              ],
+              "semantic": {
+                "type": "movement",
+                "method": "movePercent",
+                "args": [
+                  0.5,
+                  0
+                ]
+              }
+            },
+            {
+              "object": "mc_ctrler",
+              "method": "dampingPercent",
+              "args_raw": "0.05,0",
+              "source": "parent.$mc_ctrler.dampingPercent(0.05,0);",
+              "args": [
+                0.05,
+                0
+              ],
+              "semantic": {
+                "type": "movement",
+                "method": "dampingPercent",
+                "args": [
+                  0.05,
+                  0
+                ]
+              }
+            }
+          ],
+          "relative_frame": 0
+        }
+      ]
+    },
+    "skill2": {
+      "label": "招2",
+      "loop": false,
+      "fps": 30,
+      "frames": [
+        "actions_game/skill2/0000.png",
+        "actions_game/skill2/0001.png",
+        "actions_game/skill2/0002.png",
+        "actions_game/skill2/0003.png",
+        "actions_game/skill2/0004.png",
+        "actions_game/skill2/0005.png",
+        "actions_game/skill2/0006.png",
+        "actions_game/skill2/0007.png",
+        "actions_game/skill2/0008.png",
+        "actions_game/skill2/0009.png",
+        "actions_game/skill2/0010.png",
+        "actions_game/skill2/0011.png",
+        "actions_game/skill2/0012.png",
+        "actions_game/skill2/0013.png",
+        "actions_game/skill2/0014.png",
+        "actions_game/skill2/0015.png",
+        "actions_game/skill2/0016.png",
+        "actions_game/skill2/0017.png",
+        "actions_game/skill2/0018.png",
+        "actions_game/skill2/0019.png",
+        "actions_game/skill2/0020.png",
+        "actions_game/skill2/0021.png",
+        "actions_game/skill2/0022.png",
+        "actions_game/skill2/0023.png",
+        "actions_game/skill2/0024.png",
+        "actions_game/skill2/0025.png",
+        "actions_game/skill2/0026.png",
+        "actions_game/skill2/0027.png",
+        "actions_game/skill2/0028.png",
+        "actions_game/skill2/0029.png",
+        "actions_game/skill2/0030.png",
+        "actions_game/skill2/0031.png",
+        "actions_game/skill2/0032.png",
+        "actions_game/skill2/0033.png",
+        "actions_game/skill2/0034.png",
+        "actions_game/skill2/0035.png",
+        "actions_game/skill2/0036.png",
+        "actions_game/skill2/0037.png",
+        "actions_game/skill2/0038.png",
+        "actions_game/skill2/0039.png"
+      ],
+      "events": [
+        {
+          "layer": "控制",
+          "global_frame": 323,
+          "duration": 3,
+          "scripts": [
+            "parent.$mc_ctrler.addQi(5);\nparent.$mc_ctrler.setSteelBody(true);"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "addQi",
+              "args_raw": "5",
+              "source": "parent.$mc_ctrler.addQi(5);",
+              "args": [
+                5
+              ],
+              "semantic": {
+                "type": "add_qi",
+                "value": 5
+              }
+            },
+            {
+              "object": "mc_ctrler",
+              "method": "setSteelBody",
+              "args_raw": "true",
+              "source": "parent.$mc_ctrler.setSteelBody(true);",
+              "args": [
+                true
+              ],
+              "semantic": {
+                "type": "steel_body",
+                "enabled": true
+              }
+            }
+          ],
+          "relative_frame": 1
+        },
+        {
+          "layer": "控制",
+          "global_frame": 326,
+          "duration": 26,
+          "scripts": [
+            "parent.$mc_ctrler.setHitTarget(\"zh2_chkm\",\"招2_CHK\");"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "setHitTarget",
+              "args_raw": "\"zh2_chkm\",\"招2_CHK\"",
+              "source": "parent.$mc_ctrler.setHitTarget(\"zh2_chkm\",\"招2_CHK\");",
+              "args": [
+                "zh2_chkm",
+                "招2_CHK"
+              ],
+              "semantic": {
+                "type": "hit_target_check",
+                "hit_mc": "zh2_chkm",
+                "success_label": "招2_CHK"
+              }
+            }
+          ],
+          "relative_frame": 4
+        },
+        {
+          "layer": "控制",
+          "global_frame": 352,
+          "duration": 6,
+          "scripts": [
+            "parent.$mc_ctrler.endAct();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "endAct",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.endAct();",
+              "args": [],
+              "semantic": {
+                "type": "end_action"
+              }
+            }
+          ],
+          "relative_frame": 30
+        },
+        {
+          "layer": "控制",
+          "global_frame": 358,
+          "duration": 5,
+          "scripts": [
+            "parent.$mc_ctrler.idle();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "idle",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.idle();",
+              "args": [],
+              "semantic": {
+                "type": "return_idle"
+              }
+            }
+          ],
+          "relative_frame": 36
+        }
+      ]
+    },
+    "skill2_check": {
+      "label": "招2_CHK",
+      "loop": false,
+      "fps": 30,
+      "frames": [
+        "actions_game/skill2_check/0000.png",
+        "actions_game/skill2_check/0001.png",
+        "actions_game/skill2_check/0002.png",
+        "actions_game/skill2_check/0003.png",
+        "actions_game/skill2_check/0004.png",
+        "actions_game/skill2_check/0005.png",
+        "actions_game/skill2_check/0006.png",
+        "actions_game/skill2_check/0007.png",
+        "actions_game/skill2_check/0008.png",
+        "actions_game/skill2_check/0009.png",
+        "actions_game/skill2_check/0010.png",
+        "actions_game/skill2_check/0011.png",
+        "actions_game/skill2_check/0012.png",
+        "actions_game/skill2_check/0013.png",
+        "actions_game/skill2_check/0014.png",
+        "actions_game/skill2_check/0015.png",
+        "actions_game/skill2_check/0016.png",
+        "actions_game/skill2_check/0017.png",
+        "actions_game/skill2_check/0018.png",
+        "actions_game/skill2_check/0019.png",
+        "actions_game/skill2_check/0020.png",
+        "actions_game/skill2_check/0021.png",
+        "actions_game/skill2_check/0022.png",
+        "actions_game/skill2_check/0023.png",
+        "actions_game/skill2_check/0024.png",
+        "actions_game/skill2_check/0025.png",
+        "actions_game/skill2_check/0026.png",
+        "actions_game/skill2_check/0027.png",
+        "actions_game/skill2_check/0028.png",
+        "actions_game/skill2_check/0029.png",
+        "actions_game/skill2_check/0030.png",
+        "actions_game/skill2_check/0031.png",
+        "actions_game/skill2_check/0032.png",
+        "actions_game/skill2_check/0033.png",
+        "actions_game/skill2_check/0034.png",
+        "actions_game/skill2_check/0035.png",
+        "actions_game/skill2_check/0036.png",
+        "actions_game/skill2_check/0037.png",
+        "actions_game/skill2_check/0038.png",
+        "actions_game/skill2_check/0039.png",
+        "actions_game/skill2_check/0040.png",
+        "actions_game/skill2_check/0041.png",
+        "actions_game/skill2_check/0042.png",
+        "actions_game/skill2_check/0043.png",
+        "actions_game/skill2_check/0044.png",
+        "actions_game/skill2_check/0045.png",
+        "actions_game/skill2_check/0046.png",
+        "actions_game/skill2_check/0047.png",
+        "actions_game/skill2_check/0048.png",
+        "actions_game/skill2_check/0049.png",
+        "actions_game/skill2_check/0050.png",
+        "actions_game/skill2_check/0051.png",
+        "actions_game/skill2_check/0052.png",
+        "actions_game/skill2_check/0053.png",
+        "actions_game/skill2_check/0054.png"
+      ],
+      "events": [
+        {
+          "layer": "控制",
+          "global_frame": 363,
+          "duration": 5,
+          "scripts": [
+            "parent.$mc_ctrler.addQi(5);"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "addQi",
+              "args_raw": "5",
+              "source": "parent.$mc_ctrler.addQi(5);",
+              "args": [
+                5
+              ],
+              "semantic": {
+                "type": "add_qi",
+                "value": 5
+              }
+            }
+          ],
+          "relative_frame": 1
+        },
+        {
+          "layer": "控制",
+          "global_frame": 368,
+          "duration": 17,
+          "scripts": [
+            "parent.$mc_ctrler.endAct();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "endAct",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.endAct();",
+              "args": [],
+              "semantic": {
+                "type": "end_action"
+              }
+            }
+          ],
+          "relative_frame": 6
+        },
+        {
+          "layer": "控制",
+          "global_frame": 385,
+          "duration": 33,
+          "scripts": [
+            "parent.$mc_ctrler.idle();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "idle",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.idle();",
+              "args": [],
+              "semantic": {
+                "type": "return_idle"
+              }
+            }
+          ],
+          "relative_frame": 23
+        },
+        {
+          "layer": "效果",
+          "global_frame": 363,
+          "duration": 95,
+          "scripts": [
+            "parent.$effect_ctrler.shine();"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "shine",
+              "args_raw": "",
+              "source": "parent.$effect_ctrler.shine();",
+              "args": [],
+              "semantic": {
+                "type": "effect",
+                "effect_method": "shine"
+              }
+            }
+          ],
+          "relative_frame": 1
+        }
+      ]
+    },
+    "attack_skill1": {
+      "label": "砍技1",
+      "loop": false,
+      "fps": 30,
+      "frames": [
+        "actions_game/attack_skill1/0000.png",
+        "actions_game/attack_skill1/0001.png",
+        "actions_game/attack_skill1/0002.png",
+        "actions_game/attack_skill1/0003.png",
+        "actions_game/attack_skill1/0004.png",
+        "actions_game/attack_skill1/0005.png",
+        "actions_game/attack_skill1/0006.png",
+        "actions_game/attack_skill1/0007.png",
+        "actions_game/attack_skill1/0008.png",
+        "actions_game/attack_skill1/0009.png",
+        "actions_game/attack_skill1/0010.png",
+        "actions_game/attack_skill1/0011.png",
+        "actions_game/attack_skill1/0012.png",
+        "actions_game/attack_skill1/0013.png",
+        "actions_game/attack_skill1/0014.png",
+        "actions_game/attack_skill1/0015.png",
+        "actions_game/attack_skill1/0016.png",
+        "actions_game/attack_skill1/0017.png",
+        "actions_game/attack_skill1/0018.png",
+        "actions_game/attack_skill1/0019.png",
+        "actions_game/attack_skill1/0020.png",
+        "actions_game/attack_skill1/0021.png",
+        "actions_game/attack_skill1/0022.png",
+        "actions_game/attack_skill1/0023.png",
+        "actions_game/attack_skill1/0024.png",
+        "actions_game/attack_skill1/0025.png",
+        "actions_game/attack_skill1/0026.png",
+        "actions_game/attack_skill1/0027.png",
+        "actions_game/attack_skill1/0028.png",
+        "actions_game/attack_skill1/0029.png",
+        "actions_game/attack_skill1/0030.png"
+      ],
+      "events": [
+        {
+          "layer": "控制",
+          "global_frame": 418,
+          "duration": 14,
+          "scripts": [
+            "parent.$mc_ctrler.addQi(5);\nparent.$mc_ctrler.setHurtAction(\"砍技1_HA\");"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "addQi",
+              "args_raw": "5",
+              "source": "parent.$mc_ctrler.addQi(5);",
+              "args": [
+                5
+              ],
+              "semantic": {
+                "type": "add_qi",
+                "value": 5
+              }
+            },
+            {
+              "object": "mc_ctrler",
+              "method": "setHurtAction",
+              "args_raw": "\"砍技1_HA\"",
+              "source": "parent.$mc_ctrler.setHurtAction(\"砍技1_HA\");",
+              "args": [
+                "砍技1_HA"
+              ],
+              "semantic": {
+                "type": "set_hurt_action",
+                "target_label": "砍技1_HA"
+              }
+            }
+          ],
+          "relative_frame": 1
+        },
+        {
+          "layer": "控制",
+          "global_frame": 432,
+          "duration": 14,
+          "scripts": [
+            "parent.$mc_ctrler.endAct();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "endAct",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.endAct();",
+              "args": [],
+              "semantic": {
+                "type": "end_action"
+              }
+            }
+          ],
+          "relative_frame": 15
+        },
+        {
+          "layer": "控制",
+          "global_frame": 446,
+          "duration": 11,
+          "scripts": [
+            "parent.$mc_ctrler.idle();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "idle",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.idle();",
+              "args": [],
+              "semantic": {
+                "type": "return_idle"
+              }
+            }
+          ],
+          "relative_frame": 29
+        }
+      ]
+    },
+    "attack_skill1_extra": {
+      "label": "砍技1_HA",
+      "loop": false,
+      "fps": 30,
+      "frames": [
+        "actions_game/attack_skill1_extra/0000.png",
+        "actions_game/attack_skill1_extra/0001.png",
+        "actions_game/attack_skill1_extra/0002.png",
+        "actions_game/attack_skill1_extra/0003.png",
+        "actions_game/attack_skill1_extra/0004.png",
+        "actions_game/attack_skill1_extra/0005.png",
+        "actions_game/attack_skill1_extra/0006.png",
+        "actions_game/attack_skill1_extra/0007.png",
+        "actions_game/attack_skill1_extra/0008.png",
+        "actions_game/attack_skill1_extra/0009.png",
+        "actions_game/attack_skill1_extra/0010.png",
+        "actions_game/attack_skill1_extra/0011.png",
+        "actions_game/attack_skill1_extra/0012.png",
+        "actions_game/attack_skill1_extra/0013.png",
+        "actions_game/attack_skill1_extra/0014.png",
+        "actions_game/attack_skill1_extra/0015.png",
+        "actions_game/attack_skill1_extra/0016.png",
+        "actions_game/attack_skill1_extra/0017.png",
+        "actions_game/attack_skill1_extra/0018.png",
+        "actions_game/attack_skill1_extra/0019.png",
+        "actions_game/attack_skill1_extra/0020.png",
+        "actions_game/attack_skill1_extra/0021.png",
+        "actions_game/attack_skill1_extra/0022.png",
+        "actions_game/attack_skill1_extra/0023.png",
+        "actions_game/attack_skill1_extra/0024.png",
+        "actions_game/attack_skill1_extra/0025.png",
+        "actions_game/attack_skill1_extra/0026.png",
+        "actions_game/attack_skill1_extra/0027.png",
+        "actions_game/attack_skill1_extra/0028.png",
+        "actions_game/attack_skill1_extra/0029.png",
+        "actions_game/attack_skill1_extra/0030.png",
+        "actions_game/attack_skill1_extra/0031.png",
+        "actions_game/attack_skill1_extra/0032.png",
+        "actions_game/attack_skill1_extra/0033.png",
+        "actions_game/attack_skill1_extra/0034.png",
+        "actions_game/attack_skill1_extra/0035.png",
+        "actions_game/attack_skill1_extra/0036.png",
+        "actions_game/attack_skill1_extra/0037.png",
+        "actions_game/attack_skill1_extra/0038.png",
+        "actions_game/attack_skill1_extra/0039.png",
+        "actions_game/attack_skill1_extra/0040.png",
+        "actions_game/attack_skill1_extra/0041.png",
+        "actions_game/attack_skill1_extra/0042.png",
+        "actions_game/attack_skill1_extra/0043.png",
+        "actions_game/attack_skill1_extra/0044.png",
+        "actions_game/attack_skill1_extra/0045.png",
+        "actions_game/attack_skill1_extra/0046.png",
+        "actions_game/attack_skill1_extra/0047.png",
+        "actions_game/attack_skill1_extra/0048.png",
+        "actions_game/attack_skill1_extra/0049.png",
+        "actions_game/attack_skill1_extra/0050.png",
+        "actions_game/attack_skill1_extra/0051.png",
+        "actions_game/attack_skill1_extra/0052.png",
+        "actions_game/attack_skill1_extra/0053.png",
+        "actions_game/attack_skill1_extra/0054.png",
+        "actions_game/attack_skill1_extra/0055.png",
+        "actions_game/attack_skill1_extra/0056.png",
+        "actions_game/attack_skill1_extra/0057.png"
+      ],
+      "events": [
+        {
+          "layer": "控制",
+          "global_frame": 457,
+          "duration": 9,
+          "scripts": [
+            "//瞬间移动[参数：X,Y,是否自动转向]\nparent.$fighter_ctrler.moveToTarget(60,null,true);"
+          ],
+          "calls": [
+            {
+              "object": "fighter_ctrler",
+              "method": "moveToTarget",
+              "args_raw": "60,null,true",
+              "source": "parent.$fighter_ctrler.moveToTarget(60,null,true);",
+              "args": [
+                60,
+                null,
+                true
+              ],
+              "semantic": {
+                "type": "teleport_or_move_to_target",
+                "x": 60,
+                "y": null,
+                "auto_turn": true
+              }
+            }
+          ],
+          "relative_frame": 9
+        },
+        {
+          "layer": "控制",
+          "global_frame": 466,
+          "duration": 7,
+          "scripts": [
+            "parent.$mc_ctrler.setAttack(\"砍3\");\nparent.$mc_ctrler.setSkill2();\n//在结束时加上：parent.$mc_ctrler.endAct();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "setAttack",
+              "args_raw": "\"砍3\"",
+              "source": "parent.$mc_ctrler.setAttack(\"砍3\");",
+              "args": [
+                "砍3"
+              ],
+              "semantic": {
+                "type": "enable_next_attack",
+                "target_label": "砍3"
+              }
+            },
+            {
+              "object": "mc_ctrler",
+              "method": "setSkill2",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.setSkill2();",
+              "args": [],
+              "semantic": {
+                "type": "enable_skill",
+                "method": "setSkill2",
+                "target_label": null
+              }
+            },
+            {
+              "object": "mc_ctrler",
+              "method": "endAct",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.endAct();",
+              "args": [],
+              "semantic": {
+                "type": "end_action"
+              }
+            }
+          ],
+          "relative_frame": 18
+        },
+        {
+          "layer": "控制",
+          "global_frame": 473,
+          "duration": 10,
+          "scripts": [
+            "parent.$mc_ctrler.endAct();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "endAct",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.endAct();",
+              "args": [],
+              "semantic": {
+                "type": "end_action"
+              }
+            }
+          ],
+          "relative_frame": 25
+        },
+        {
+          "layer": "控制",
+          "global_frame": 483,
+          "duration": 24,
+          "scripts": [
+            "parent.$mc_ctrler.idle();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "idle",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.idle();",
+              "args": [],
+              "semantic": {
+                "type": "return_idle"
+              }
+            }
+          ],
+          "relative_frame": 35
+        },
+        {
+          "layer": "效果",
+          "global_frame": 458,
+          "duration": 53,
+          "scripts": [
+            "parent.$effect_ctrler.shine();"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "shine",
+              "args_raw": "",
+              "source": "parent.$effect_ctrler.shine();",
+              "args": [],
+              "semantic": {
+                "type": "effect",
+                "effect_method": "shine"
+              }
+            }
+          ],
+          "relative_frame": 10
+        }
+      ]
+    },
+    "skill1": {
+      "label": "招1",
+      "loop": false,
+      "fps": 30,
+      "frames": [
+        "actions_game/skill1/0000.png",
+        "actions_game/skill1/0001.png",
+        "actions_game/skill1/0002.png",
+        "actions_game/skill1/0003.png",
+        "actions_game/skill1/0004.png",
+        "actions_game/skill1/0005.png",
+        "actions_game/skill1/0006.png",
+        "actions_game/skill1/0007.png",
+        "actions_game/skill1/0008.png",
+        "actions_game/skill1/0009.png",
+        "actions_game/skill1/0010.png",
+        "actions_game/skill1/0011.png",
+        "actions_game/skill1/0012.png",
+        "actions_game/skill1/0013.png",
+        "actions_game/skill1/0014.png",
+        "actions_game/skill1/0015.png",
+        "actions_game/skill1/0016.png",
+        "actions_game/skill1/0017.png",
+        "actions_game/skill1/0018.png",
+        "actions_game/skill1/0019.png",
+        "actions_game/skill1/0020.png",
+        "actions_game/skill1/0021.png",
+        "actions_game/skill1/0022.png",
+        "actions_game/skill1/0023.png",
+        "actions_game/skill1/0024.png",
+        "actions_game/skill1/0025.png",
+        "actions_game/skill1/0026.png",
+        "actions_game/skill1/0027.png",
+        "actions_game/skill1/0028.png",
+        "actions_game/skill1/0029.png",
+        "actions_game/skill1/0030.png",
+        "actions_game/skill1/0031.png",
+        "actions_game/skill1/0032.png",
+        "actions_game/skill1/0033.png",
+        "actions_game/skill1/0034.png",
+        "actions_game/skill1/0035.png",
+        "actions_game/skill1/0036.png",
+        "actions_game/skill1/0037.png",
+        "actions_game/skill1/0038.png",
+        "actions_game/skill1/0039.png",
+        "actions_game/skill1/0040.png",
+        "actions_game/skill1/0041.png",
+        "actions_game/skill1/0042.png",
+        "actions_game/skill1/0043.png",
+        "actions_game/skill1/0044.png",
+        "actions_game/skill1/0045.png",
+        "actions_game/skill1/0046.png",
+        "actions_game/skill1/0047.png",
+        "actions_game/skill1/0048.png",
+        "actions_game/skill1/0049.png",
+        "actions_game/skill1/0050.png",
+        "actions_game/skill1/0051.png"
+      ],
+      "events": [
+        {
+          "layer": "控制",
+          "global_frame": 507,
+          "duration": 12,
+          "scripts": [
+            "parent.$mc_ctrler.addQi(10);"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "addQi",
+              "args_raw": "10",
+              "source": "parent.$mc_ctrler.addQi(10);",
+              "args": [
+                10
+              ],
+              "semantic": {
+                "type": "add_qi",
+                "value": 10
+              }
+            }
+          ],
+          "relative_frame": 1
+        },
+        {
+          "layer": "控制",
+          "global_frame": 519,
+          "duration": 21,
+          "scripts": [
+            "parent.$mc_ctrler.endAct();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "endAct",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.endAct();",
+              "args": [],
+              "semantic": {
+                "type": "end_action"
+              }
+            }
+          ],
+          "relative_frame": 13
+        },
+        {
+          "layer": "控制",
+          "global_frame": 540,
+          "duration": 19,
+          "scripts": [
+            "parent.$mc_ctrler.idle();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "idle",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.idle();",
+              "args": [],
+              "semantic": {
+                "type": "return_idle"
+              }
+            }
+          ],
+          "relative_frame": 34
+        },
+        {
+          "layer": "效果",
+          "global_frame": 511,
+          "duration": 48,
+          "scripts": [
+            "parent.$effect_ctrler.shine(0xFFFF00);"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "shine",
+              "args_raw": "0xFFFF00",
+              "source": "parent.$effect_ctrler.shine(0xFFFF00);",
+              "args": [
+                "0xFFFF00"
+              ],
+              "semantic": {
+                "type": "effect",
+                "effect_method": "shine"
+              }
+            }
+          ],
+          "relative_frame": 5
+        }
+      ]
+    },
+    "attack_skill2": {
+      "label": "砍技2",
+      "loop": false,
+      "fps": 30,
+      "frames": [
+        "actions_game/attack_skill2/0000.png",
+        "actions_game/attack_skill2/0001.png",
+        "actions_game/attack_skill2/0002.png",
+        "actions_game/attack_skill2/0003.png",
+        "actions_game/attack_skill2/0004.png",
+        "actions_game/attack_skill2/0005.png",
+        "actions_game/attack_skill2/0006.png",
+        "actions_game/attack_skill2/0007.png",
+        "actions_game/attack_skill2/0008.png",
+        "actions_game/attack_skill2/0009.png",
+        "actions_game/attack_skill2/0010.png",
+        "actions_game/attack_skill2/0011.png",
+        "actions_game/attack_skill2/0012.png",
+        "actions_game/attack_skill2/0013.png",
+        "actions_game/attack_skill2/0014.png",
+        "actions_game/attack_skill2/0015.png",
+        "actions_game/attack_skill2/0016.png",
+        "actions_game/attack_skill2/0017.png",
+        "actions_game/attack_skill2/0018.png",
+        "actions_game/attack_skill2/0019.png",
+        "actions_game/attack_skill2/0020.png",
+        "actions_game/attack_skill2/0021.png",
+        "actions_game/attack_skill2/0022.png",
+        "actions_game/attack_skill2/0023.png",
+        "actions_game/attack_skill2/0024.png",
+        "actions_game/attack_skill2/0025.png",
+        "actions_game/attack_skill2/0026.png",
+        "actions_game/attack_skill2/0027.png",
+        "actions_game/attack_skill2/0028.png",
+        "actions_game/attack_skill2/0029.png",
+        "actions_game/attack_skill2/0030.png",
+        "actions_game/attack_skill2/0031.png",
+        "actions_game/attack_skill2/0032.png",
+        "actions_game/attack_skill2/0033.png",
+        "actions_game/attack_skill2/0034.png",
+        "actions_game/attack_skill2/0035.png",
+        "actions_game/attack_skill2/0036.png",
+        "actions_game/attack_skill2/0037.png",
+        "actions_game/attack_skill2/0038.png"
+      ],
+      "events": [
+        {
+          "layer": "控制",
+          "global_frame": 559,
+          "duration": 19,
+          "scripts": [
+            "parent.$mc_ctrler.addQi(5);"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "addQi",
+              "args_raw": "5",
+              "source": "parent.$mc_ctrler.addQi(5);",
+              "args": [
+                5
+              ],
+              "semantic": {
+                "type": "add_qi",
+                "value": 5
+              }
+            }
+          ],
+          "relative_frame": 1
+        },
+        {
+          "layer": "控制",
+          "global_frame": 578,
+          "duration": 4,
+          "scripts": [
+            "parent.$mc_ctrler.endAct();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "endAct",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.endAct();",
+              "args": [],
+              "semantic": {
+                "type": "end_action"
+              }
+            }
+          ],
+          "relative_frame": 20
+        },
+        {
+          "layer": "控制",
+          "global_frame": 582,
+          "duration": 26,
+          "scripts": [
+            "parent.$mc_ctrler.idle();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "idle",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.idle();",
+              "args": [],
+              "semantic": {
+                "type": "return_idle"
+              }
+            }
+          ],
+          "relative_frame": 24
+        },
+        {
+          "layer": "移动",
+          "global_frame": 558,
+          "duration": 20,
+          "scripts": [
+            "//执行移动\nparent.$mc_ctrler.movePercent(2,0); //参数为X,Y\n\n//攻击区域检测[参数：检测MC名称，帧标签]\nparent.$mc_ctrler.setHitTarget(\"kj2_chkm\",\"砍技2_CHK\");"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "movePercent",
+              "args_raw": "2,0",
+              "source": "parent.$mc_ctrler.movePercent(2,0);",
+              "args": [
+                2,
+                0
+              ],
+              "semantic": {
+                "type": "movement",
+                "method": "movePercent",
+                "args": [
+                  2,
+                  0
+                ]
+              }
+            },
+            {
+              "object": "mc_ctrler",
+              "method": "setHitTarget",
+              "args_raw": "\"kj2_chkm\",\"砍技2_CHK\"",
+              "source": "parent.$mc_ctrler.setHitTarget(\"kj2_chkm\",\"砍技2_CHK\");",
+              "args": [
+                "kj2_chkm",
+                "砍技2_CHK"
+              ],
+              "semantic": {
+                "type": "hit_target_check",
+                "hit_mc": "kj2_chkm",
+                "success_label": "砍技2_CHK"
+              }
+            }
+          ],
+          "relative_frame": 0
+        },
+        {
+          "layer": "移动",
+          "global_frame": 578,
+          "duration": 19,
+          "scripts": [
+            "parent.$mc_ctrler.dampingPercent(0.2,0); //移动阻尼，参数为X,Y"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "dampingPercent",
+              "args_raw": "0.2,0",
+              "source": "parent.$mc_ctrler.dampingPercent(0.2,0);",
+              "args": [
+                0.2,
+                0
+              ],
+              "semantic": {
+                "type": "movement",
+                "method": "dampingPercent",
+                "args": [
+                  0.2,
+                  0
+                ]
+              }
+            }
+          ],
+          "relative_frame": 20
+        },
+        {
+          "layer": "效果",
+          "global_frame": 559,
+          "duration": 77,
+          "scripts": [
+            "parent.$effect_ctrler.dash();\n//残影开始\nparent.$effect_ctrler.shadow(50,255,255);"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "dash",
+              "args_raw": "",
+              "source": "parent.$effect_ctrler.dash();",
+              "args": [],
+              "semantic": {
+                "type": "effect",
+                "effect_method": "dash"
+              }
+            },
+            {
+              "object": "effect_ctrler",
+              "method": "shadow",
+              "args_raw": "50,255,255",
+              "source": "parent.$effect_ctrler.shadow(50,255,255);",
+              "args": [
+                50,
+                255,
+                255
+              ]
+            }
+          ],
+          "relative_frame": 1
+        }
+      ]
+    },
+    "attack_skill2_check": {
+      "label": "砍技2_CHK",
+      "loop": false,
+      "fps": 30,
+      "frames": [
+        "actions_game/attack_skill2_check/0000.png",
+        "actions_game/attack_skill2_check/0001.png",
+        "actions_game/attack_skill2_check/0002.png",
+        "actions_game/attack_skill2_check/0003.png",
+        "actions_game/attack_skill2_check/0004.png",
+        "actions_game/attack_skill2_check/0005.png",
+        "actions_game/attack_skill2_check/0006.png",
+        "actions_game/attack_skill2_check/0007.png",
+        "actions_game/attack_skill2_check/0008.png",
+        "actions_game/attack_skill2_check/0009.png",
+        "actions_game/attack_skill2_check/0010.png",
+        "actions_game/attack_skill2_check/0011.png",
+        "actions_game/attack_skill2_check/0012.png",
+        "actions_game/attack_skill2_check/0013.png",
+        "actions_game/attack_skill2_check/0014.png",
+        "actions_game/attack_skill2_check/0015.png",
+        "actions_game/attack_skill2_check/0016.png",
+        "actions_game/attack_skill2_check/0017.png",
+        "actions_game/attack_skill2_check/0018.png",
+        "actions_game/attack_skill2_check/0019.png",
+        "actions_game/attack_skill2_check/0020.png",
+        "actions_game/attack_skill2_check/0021.png",
+        "actions_game/attack_skill2_check/0022.png",
+        "actions_game/attack_skill2_check/0023.png",
+        "actions_game/attack_skill2_check/0024.png",
+        "actions_game/attack_skill2_check/0025.png",
+        "actions_game/attack_skill2_check/0026.png",
+        "actions_game/attack_skill2_check/0027.png",
+        "actions_game/attack_skill2_check/0028.png"
+      ],
+      "events": [
+        {
+          "layer": "控制",
+          "global_frame": 608,
+          "duration": 6,
+          "scripts": [
+            "parent.$mc_ctrler.setAttack(\"砍4_QK\");\nparent.$mc_ctrler.setSkill2(\"砍技2_1\");"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "setAttack",
+              "args_raw": "\"砍4_QK\"",
+              "source": "parent.$mc_ctrler.setAttack(\"砍4_QK\");",
+              "args": [
+                "砍4_QK"
+              ],
+              "semantic": {
+                "type": "enable_next_attack",
+                "target_label": "砍4_QK"
+              }
+            },
+            {
+              "object": "mc_ctrler",
+              "method": "setSkill2",
+              "args_raw": "\"砍技2_1\"",
+              "source": "parent.$mc_ctrler.setSkill2(\"砍技2_1\");",
+              "args": [
+                "砍技2_1"
+              ],
+              "semantic": {
+                "type": "enable_skill",
+                "method": "setSkill2",
+                "target_label": "砍技2_1"
+              }
+            }
+          ],
+          "relative_frame": 11
+        },
+        {
+          "layer": "控制",
+          "global_frame": 614,
+          "duration": 7,
+          "scripts": [
+            "parent.$mc_ctrler.endAct();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "endAct",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.endAct();",
+              "args": [],
+              "semantic": {
+                "type": "end_action"
+              }
+            }
+          ],
+          "relative_frame": 17
+        },
+        {
+          "layer": "控制",
+          "global_frame": 621,
+          "duration": 6,
+          "scripts": [
+            "parent.$mc_ctrler.idle();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "idle",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.idle();",
+              "args": [],
+              "semantic": {
+                "type": "return_idle"
+              }
+            }
+          ],
+          "relative_frame": 24
+        },
+        {
+          "layer": "移动",
+          "global_frame": 597,
+          "duration": 137,
+          "scripts": [
+            "//执行移动\nparent.$mc_ctrler.movePercent(2,0); //参数为X,Y\nparent.$mc_ctrler.dampingPercent(0.4,0); //移动阻尼，参数为X,Y"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "movePercent",
+              "args_raw": "2,0",
+              "source": "parent.$mc_ctrler.movePercent(2,0);",
+              "args": [
+                2,
+                0
+              ],
+              "semantic": {
+                "type": "movement",
+                "method": "movePercent",
+                "args": [
+                  2,
+                  0
+                ]
+              }
+            },
+            {
+              "object": "mc_ctrler",
+              "method": "dampingPercent",
+              "args_raw": "0.4,0",
+              "source": "parent.$mc_ctrler.dampingPercent(0.4,0);",
+              "args": [
+                0.4,
+                0
+              ],
+              "semantic": {
+                "type": "movement",
+                "method": "dampingPercent",
+                "args": [
+                  0.4,
+                  0
+                ]
+              }
+            }
+          ],
+          "relative_frame": 0
+        },
+        {
+          "layer": "声音",
+          "global_frame": 599,
+          "duration": 29,
+          "scripts": [
+            "parent.$effect_ctrler.playSoundHit2();"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "playSoundHit2",
+              "args_raw": "",
+              "source": "parent.$effect_ctrler.playSoundHit2();",
+              "args": []
+            }
+          ],
+          "relative_frame": 2
+        }
+      ]
+    },
+    "attack_skill2_1": {
+      "label": "砍技2_1",
+      "loop": false,
+      "fps": 30,
+      "frames": [
+        "actions_game/attack_skill2_1/0000.png",
+        "actions_game/attack_skill2_1/0001.png",
+        "actions_game/attack_skill2_1/0002.png",
+        "actions_game/attack_skill2_1/0003.png",
+        "actions_game/attack_skill2_1/0004.png",
+        "actions_game/attack_skill2_1/0005.png",
+        "actions_game/attack_skill2_1/0006.png",
+        "actions_game/attack_skill2_1/0007.png",
+        "actions_game/attack_skill2_1/0008.png",
+        "actions_game/attack_skill2_1/0009.png",
+        "actions_game/attack_skill2_1/0010.png",
+        "actions_game/attack_skill2_1/0011.png",
+        "actions_game/attack_skill2_1/0012.png",
+        "actions_game/attack_skill2_1/0013.png",
+        "actions_game/attack_skill2_1/0014.png",
+        "actions_game/attack_skill2_1/0015.png",
+        "actions_game/attack_skill2_1/0016.png",
+        "actions_game/attack_skill2_1/0017.png",
+        "actions_game/attack_skill2_1/0018.png",
+        "actions_game/attack_skill2_1/0019.png",
+        "actions_game/attack_skill2_1/0020.png",
+        "actions_game/attack_skill2_1/0021.png",
+        "actions_game/attack_skill2_1/0022.png",
+        "actions_game/attack_skill2_1/0023.png",
+        "actions_game/attack_skill2_1/0024.png",
+        "actions_game/attack_skill2_1/0025.png",
+        "actions_game/attack_skill2_1/0026.png",
+        "actions_game/attack_skill2_1/0027.png",
+        "actions_game/attack_skill2_1/0028.png",
+        "actions_game/attack_skill2_1/0029.png",
+        "actions_game/attack_skill2_1/0030.png",
+        "actions_game/attack_skill2_1/0031.png",
+        "actions_game/attack_skill2_1/0032.png",
+        "actions_game/attack_skill2_1/0033.png",
+        "actions_game/attack_skill2_1/0034.png",
+        "actions_game/attack_skill2_1/0035.png",
+        "actions_game/attack_skill2_1/0036.png",
+        "actions_game/attack_skill2_1/0037.png",
+        "actions_game/attack_skill2_1/0038.png",
+        "actions_game/attack_skill2_1/0039.png",
+        "actions_game/attack_skill2_1/0040.png",
+        "actions_game/attack_skill2_1/0041.png",
+        "actions_game/attack_skill2_1/0042.png",
+        "actions_game/attack_skill2_1/0043.png",
+        "actions_game/attack_skill2_1/0044.png",
+        "actions_game/attack_skill2_1/0045.png",
+        "actions_game/attack_skill2_1/0046.png",
+        "actions_game/attack_skill2_1/0047.png"
+      ],
+      "events": [
+        {
+          "layer": "控制",
+          "global_frame": 627,
+          "duration": 12,
+          "scripts": [
+            "parent.$mc_ctrler.addQi(5);"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "addQi",
+              "args_raw": "5",
+              "source": "parent.$mc_ctrler.addQi(5);",
+              "args": [
+                5
+              ],
+              "semantic": {
+                "type": "add_qi",
+                "value": 5
+              }
+            }
+          ],
+          "relative_frame": 1
+        },
+        {
+          "layer": "控制",
+          "global_frame": 639,
+          "duration": 23,
+          "scripts": [
+            "parent.$mc_ctrler.endAct();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "endAct",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.endAct();",
+              "args": [],
+              "semantic": {
+                "type": "end_action"
+              }
+            }
+          ],
+          "relative_frame": 13
+        },
+        {
+          "layer": "控制",
+          "global_frame": 662,
+          "duration": 13,
+          "scripts": [
+            "parent.$mc_ctrler.idle();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "idle",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.idle();",
+              "args": [],
+              "semantic": {
+                "type": "return_idle"
+              }
+            }
+          ],
+          "relative_frame": 36
+        },
+        {
+          "layer": "效果",
+          "global_frame": 636,
+          "duration": 168,
+          "scripts": [
+            "parent.$effect_ctrler.shine();"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "shine",
+              "args_raw": "",
+              "source": "parent.$effect_ctrler.shine();",
+              "args": [],
+              "semantic": {
+                "type": "effect",
+                "effect_method": "shine"
+              }
+            }
+          ],
+          "relative_frame": 10
+        }
+      ]
+    },
+    "skill3": {
+      "label": "招3",
+      "loop": false,
+      "fps": 30,
+      "frames": [
+        "actions_game/skill3/0000.png",
+        "actions_game/skill3/0001.png",
+        "actions_game/skill3/0002.png",
+        "actions_game/skill3/0003.png",
+        "actions_game/skill3/0004.png",
+        "actions_game/skill3/0005.png",
+        "actions_game/skill3/0006.png",
+        "actions_game/skill3/0007.png",
+        "actions_game/skill3/0008.png",
+        "actions_game/skill3/0009.png",
+        "actions_game/skill3/0010.png",
+        "actions_game/skill3/0011.png",
+        "actions_game/skill3/0012.png",
+        "actions_game/skill3/0013.png",
+        "actions_game/skill3/0014.png",
+        "actions_game/skill3/0015.png",
+        "actions_game/skill3/0016.png",
+        "actions_game/skill3/0017.png",
+        "actions_game/skill3/0018.png",
+        "actions_game/skill3/0019.png",
+        "actions_game/skill3/0020.png",
+        "actions_game/skill3/0021.png",
+        "actions_game/skill3/0022.png",
+        "actions_game/skill3/0023.png",
+        "actions_game/skill3/0024.png",
+        "actions_game/skill3/0025.png",
+        "actions_game/skill3/0026.png",
+        "actions_game/skill3/0027.png",
+        "actions_game/skill3/0028.png",
+        "actions_game/skill3/0029.png",
+        "actions_game/skill3/0030.png",
+        "actions_game/skill3/0031.png",
+        "actions_game/skill3/0032.png",
+        "actions_game/skill3/0033.png"
+      ],
+      "events": [
+        {
+          "layer": "控制",
+          "global_frame": 675,
+          "duration": 18,
+          "scripts": [
+            "parent.$mc_ctrler.addQi(10);"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "addQi",
+              "args_raw": "10",
+              "source": "parent.$mc_ctrler.addQi(10);",
+              "args": [
+                10
+              ],
+              "semantic": {
+                "type": "add_qi",
+                "value": 10
+              }
+            }
+          ],
+          "relative_frame": 1
+        },
+        {
+          "layer": "控制",
+          "global_frame": 693,
+          "duration": 16,
+          "scripts": [
+            "parent.$mc_ctrler.idle();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "idle",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.idle();",
+              "args": [],
+              "semantic": {
+                "type": "return_idle"
+              }
+            }
+          ],
+          "relative_frame": 19
+        },
+        {
+          "layer": "背后特效",
+          "global_frame": 680,
+          "duration": 3,
+          "scripts": [
+            "//加入攻击对象[参数：MC名称，params]\n/*\nparams 参数 {\n\tx:Number(速度X)|{moveToTarget:Boolean(是否移动到目标),followTarget:Boolean(是否跟随目标),offset:Number(距离目标偏移量),range:Array[left,right](攻击范围)} , \n\ty:Number(速度Y)|{moveToTarget:Boolean(是否移动到目标),followTarget:Boolean(是否跟随目标),offset:Number(距离目标偏移量),range:Array[top,bottom](攻击范围)} , \n\tapplyG:Boolean(是否受重力影响) ,\n}\n*/\nparent.$mc_ctrler.addAttacker(\"zh3mc\",{applyG:false});\n\n\n//如果比较复杂，需要在MC内部加入代码，实现接口\n/*\nvar $attacker_ctrler:*;\nfunction setAttackerCtrler(attackerCtrler:*):void{\n\t$attacker_ctrler = attackerCtrler;\n}\n\n//调用效果接口，等同于parent.$effect_ctrler\n$attacker_ctrler.effect\n\n//动作结束，用于AI判断\n$attacker_ctrler.endAct();\n\n//移动\n$attacker_ctrler.move(0,0);\n\n//阻尼\n$attacker_ctrler.damping(0,0);\n\n//停止播放\n$attacker_ctrler.stop();\n\n//跳到帧并播放\n$attacker_ctrler.gotoAndPlay(\"帧名称\");\n\n//跳到帧并停止\n$attacker_ctrler.gotoAndStop(\"帧名称\");\n\n//落地时跳转帧\n$attacker_ctrler.setTouchFloor(\"帧名称\");\n\n*/"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "addAttacker",
+              "args_raw": "\"zh3mc\",{applyG:false}",
+              "source": "parent.$mc_ctrler.addAttacker(\"zh3mc\",{applyG:false});",
+              "args": [
+                "zh3mc",
+                "{applyG:false}"
+              ]
+            }
+          ],
+          "relative_frame": 6
+        }
+      ]
+    },
+    "throw1": {
+      "label": "摔1",
+      "loop": false,
+      "fps": 30,
+      "frames": [
+        "actions_game/throw1/0000.png",
+        "actions_game/throw1/0001.png",
+        "actions_game/throw1/0002.png",
+        "actions_game/throw1/0003.png",
+        "actions_game/throw1/0004.png",
+        "actions_game/throw1/0005.png",
+        "actions_game/throw1/0006.png",
+        "actions_game/throw1/0007.png",
+        "actions_game/throw1/0008.png",
+        "actions_game/throw1/0009.png",
+        "actions_game/throw1/0010.png",
+        "actions_game/throw1/0011.png",
+        "actions_game/throw1/0012.png",
+        "actions_game/throw1/0013.png",
+        "actions_game/throw1/0014.png",
+        "actions_game/throw1/0015.png",
+        "actions_game/throw1/0016.png",
+        "actions_game/throw1/0017.png",
+        "actions_game/throw1/0018.png",
+        "actions_game/throw1/0019.png",
+        "actions_game/throw1/0020.png"
+      ],
+      "events": [
+        {
+          "layer": "控制",
+          "global_frame": 709,
+          "duration": 4,
+          "scripts": [
+            "parent.$mc_ctrler.addQi(5);"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "addQi",
+              "args_raw": "5",
+              "source": "parent.$mc_ctrler.addQi(5);",
+              "args": [
+                5
+              ],
+              "semantic": {
+                "type": "add_qi",
+                "value": 5
+              }
+            }
+          ],
+          "relative_frame": 1
+        },
+        {
+          "layer": "控制",
+          "global_frame": 713,
+          "duration": 11,
+          "scripts": [
+            "parent.$fighter_ctrler.setCross(true);"
+          ],
+          "calls": [
+            {
+              "object": "fighter_ctrler",
+              "method": "setCross",
+              "args_raw": "true",
+              "source": "parent.$fighter_ctrler.setCross(true);",
+              "args": [
+                true
+              ],
+              "semantic": {
+                "type": "set_cross",
+                "enabled": true
+              }
+            }
+          ],
+          "relative_frame": 5
+        },
+        {
+          "layer": "控制",
+          "global_frame": 724,
+          "duration": 6,
+          "scripts": [
+            "parent.$mc_ctrler.idle();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "idle",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.idle();",
+              "args": [],
+              "semantic": {
+                "type": "return_idle"
+              }
+            }
+          ],
+          "relative_frame": 16
+        },
+        {
+          "layer": "声音",
+          "global_frame": 714,
+          "duration": 84,
+          "scripts": [
+            "parent.$effect_ctrler.playSoundHit2();"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "playSoundHit2",
+              "args_raw": "",
+              "source": "parent.$effect_ctrler.playSoundHit2();",
+              "args": []
+            }
+          ],
+          "relative_frame": 6
+        }
+      ]
+    },
+    "throw2": {
+      "label": "摔2",
+      "loop": false,
+      "fps": 30,
+      "frames": [
+        "actions_game/throw2/0000.png",
+        "actions_game/throw2/0001.png",
+        "actions_game/throw2/0002.png",
+        "actions_game/throw2/0003.png",
+        "actions_game/throw2/0004.png",
+        "actions_game/throw2/0005.png",
+        "actions_game/throw2/0006.png",
+        "actions_game/throw2/0007.png",
+        "actions_game/throw2/0008.png",
+        "actions_game/throw2/0009.png",
+        "actions_game/throw2/0010.png",
+        "actions_game/throw2/0011.png",
+        "actions_game/throw2/0012.png",
+        "actions_game/throw2/0013.png",
+        "actions_game/throw2/0014.png",
+        "actions_game/throw2/0015.png",
+        "actions_game/throw2/0016.png",
+        "actions_game/throw2/0017.png",
+        "actions_game/throw2/0018.png",
+        "actions_game/throw2/0019.png",
+        "actions_game/throw2/0020.png",
+        "actions_game/throw2/0021.png",
+        "actions_game/throw2/0022.png",
+        "actions_game/throw2/0023.png",
+        "actions_game/throw2/0024.png",
+        "actions_game/throw2/0025.png",
+        "actions_game/throw2/0026.png",
+        "actions_game/throw2/0027.png",
+        "actions_game/throw2/0028.png",
+        "actions_game/throw2/0029.png",
+        "actions_game/throw2/0030.png",
+        "actions_game/throw2/0031.png",
+        "actions_game/throw2/0032.png",
+        "actions_game/throw2/0033.png",
+        "actions_game/throw2/0034.png"
+      ],
+      "events": [
+        {
+          "layer": "控制",
+          "global_frame": 730,
+          "duration": 19,
+          "scripts": [
+            "parent.$mc_ctrler.addQi(10);"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "addQi",
+              "args_raw": "10",
+              "source": "parent.$mc_ctrler.addQi(10);",
+              "args": [
+                10
+              ],
+              "semantic": {
+                "type": "add_qi",
+                "value": 10
+              }
+            }
+          ],
+          "relative_frame": 1
+        },
+        {
+          "layer": "控制",
+          "global_frame": 749,
+          "duration": 8,
+          "scripts": [
+            "parent.$mc_ctrler.endAct();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "endAct",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.endAct();",
+              "args": [],
+              "semantic": {
+                "type": "end_action"
+              }
+            }
+          ],
+          "relative_frame": 20
+        },
+        {
+          "layer": "控制",
+          "global_frame": 757,
+          "duration": 9,
+          "scripts": [
+            "parent.$mc_ctrler.idle();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "idle",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.idle();",
+              "args": [],
+              "semantic": {
+                "type": "return_idle"
+              }
+            }
+          ],
+          "relative_frame": 28
+        },
+        {
+          "layer": "移动",
+          "global_frame": 734,
+          "duration": 13,
+          "scripts": [
+            "parent.$mc_ctrler.moveTarget({followmc:\"move_mc\",speed:5});"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "moveTarget",
+              "args_raw": "{followmc:\"move_mc\",speed:5}",
+              "source": "parent.$mc_ctrler.moveTarget({followmc:\"move_mc\",speed:5});",
+              "args": [
+                "{followmc:\"move_mc\"",
+                "speed:5}"
+              ],
+              "semantic": {
+                "type": "move_target",
+                "args_raw": "{followmc:\"move_mc\",speed:5}"
+              }
+            }
+          ],
+          "relative_frame": 5
+        },
+        {
+          "layer": "移动",
+          "global_frame": 747,
+          "duration": 922,
+          "scripts": [
+            "parent.$mc_ctrler.moveTarget(null);"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "moveTarget",
+              "args_raw": "null",
+              "source": "parent.$mc_ctrler.moveTarget(null);",
+              "args": [
+                null
+              ],
+              "semantic": {
+                "type": "move_target",
+                "args_raw": "null"
+              }
+            }
+          ],
+          "relative_frame": 18
+        }
+      ]
+    },
+    "super": {
+      "label": "必杀",
+      "loop": false,
+      "fps": 30,
+      "frames": [
+        "actions_game/super/0000.png",
+        "actions_game/super/0001.png",
+        "actions_game/super/0002.png",
+        "actions_game/super/0003.png",
+        "actions_game/super/0004.png",
+        "actions_game/super/0005.png",
+        "actions_game/super/0006.png",
+        "actions_game/super/0007.png",
+        "actions_game/super/0008.png",
+        "actions_game/super/0009.png",
+        "actions_game/super/0010.png",
+        "actions_game/super/0011.png",
+        "actions_game/super/0012.png",
+        "actions_game/super/0013.png",
+        "actions_game/super/0014.png",
+        "actions_game/super/0015.png",
+        "actions_game/super/0016.png",
+        "actions_game/super/0017.png",
+        "actions_game/super/0018.png",
+        "actions_game/super/0019.png",
+        "actions_game/super/0020.png",
+        "actions_game/super/0021.png",
+        "actions_game/super/0022.png",
+        "actions_game/super/0023.png",
+        "actions_game/super/0024.png",
+        "actions_game/super/0025.png",
+        "actions_game/super/0026.png",
+        "actions_game/super/0027.png",
+        "actions_game/super/0028.png",
+        "actions_game/super/0029.png",
+        "actions_game/super/0030.png",
+        "actions_game/super/0031.png",
+        "actions_game/super/0032.png",
+        "actions_game/super/0033.png",
+        "actions_game/super/0034.png",
+        "actions_game/super/0035.png",
+        "actions_game/super/0036.png",
+        "actions_game/super/0037.png",
+        "actions_game/super/0038.png",
+        "actions_game/super/0039.png",
+        "actions_game/super/0040.png",
+        "actions_game/super/0041.png",
+        "actions_game/super/0042.png",
+        "actions_game/super/0043.png",
+        "actions_game/super/0044.png",
+        "actions_game/super/0045.png",
+        "actions_game/super/0046.png",
+        "actions_game/super/0047.png",
+        "actions_game/super/0048.png",
+        "actions_game/super/0049.png",
+        "actions_game/super/0050.png",
+        "actions_game/super/0051.png",
+        "actions_game/super/0052.png",
+        "actions_game/super/0053.png",
+        "actions_game/super/0054.png",
+        "actions_game/super/0055.png",
+        "actions_game/super/0056.png",
+        "actions_game/super/0057.png",
+        "actions_game/super/0058.png",
+        "actions_game/super/0059.png",
+        "actions_game/super/0060.png",
+        "actions_game/super/0061.png",
+        "actions_game/super/0062.png",
+        "actions_game/super/0063.png",
+        "actions_game/super/0064.png",
+        "actions_game/super/0065.png",
+        "actions_game/super/0066.png",
+        "actions_game/super/0067.png",
+        "actions_game/super/0068.png",
+        "actions_game/super/0069.png",
+        "actions_game/super/0070.png",
+        "actions_game/super/0071.png",
+        "actions_game/super/0072.png",
+        "actions_game/super/0073.png",
+        "actions_game/super/0074.png",
+        "actions_game/super/0075.png",
+        "actions_game/super/0076.png",
+        "actions_game/super/0077.png",
+        "actions_game/super/0078.png",
+        "actions_game/super/0079.png",
+        "actions_game/super/0080.png",
+        "actions_game/super/0081.png",
+        "actions_game/super/0082.png",
+        "actions_game/super/0083.png",
+        "actions_game/super/0084.png",
+        "actions_game/super/0085.png",
+        "actions_game/super/0086.png",
+        "actions_game/super/0087.png",
+        "actions_game/super/0088.png",
+        "actions_game/super/0089.png",
+        "actions_game/super/0090.png",
+        "actions_game/super/0091.png",
+        "actions_game/super/0092.png",
+        "actions_game/super/0093.png",
+        "actions_game/super/0094.png",
+        "actions_game/super/0095.png",
+        "actions_game/super/0096.png",
+        "actions_game/super/0097.png",
+        "actions_game/super/0098.png",
+        "actions_game/super/0099.png",
+        "actions_game/super/0100.png",
+        "actions_game/super/0101.png",
+        "actions_game/super/0102.png",
+        "actions_game/super/0103.png",
+        "actions_game/super/0104.png",
+        "actions_game/super/0105.png",
+        "actions_game/super/0106.png",
+        "actions_game/super/0107.png",
+        "actions_game/super/0108.png",
+        "actions_game/super/0109.png",
+        "actions_game/super/0110.png",
+        "actions_game/super/0111.png",
+        "actions_game/super/0112.png"
+      ],
+      "events": [
+        {
+          "layer": "控制",
+          "global_frame": 766,
+          "duration": 36,
+          "scripts": [
+            "parent.$effect_ctrler.bisha(false,\"Aizen_1\");"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "bisha",
+              "args_raw": "false,\"Aizen_1\"",
+              "source": "parent.$effect_ctrler.bisha(false,\"Aizen_1\");",
+              "args": [
+                false,
+                "Aizen_1"
+              ],
+              "semantic": {
+                "type": "super_effect_start",
+                "is_super": false,
+                "effect_name": "Aizen_1"
+              }
+            }
+          ],
+          "relative_frame": 2
+        },
+        {
+          "layer": "控制",
+          "global_frame": 802,
+          "duration": 56,
+          "scripts": [
+            "parent.$effect_ctrler.endBisha();"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "endBisha",
+              "args_raw": "",
+              "source": "parent.$effect_ctrler.endBisha();",
+              "args": [],
+              "semantic": {
+                "type": "super_effect_end"
+              }
+            }
+          ],
+          "relative_frame": 38
+        },
+        {
+          "layer": "控制",
+          "global_frame": 858,
+          "duration": 15,
+          "scripts": [
+            "parent.$mc_ctrler.endAct();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "endAct",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.endAct();",
+              "args": [],
+              "semantic": {
+                "type": "end_action"
+              }
+            }
+          ],
+          "relative_frame": 94
+        },
+        {
+          "layer": "控制",
+          "global_frame": 873,
+          "duration": 5,
+          "scripts": [
+            "parent.$mc_ctrler.idle();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "idle",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.idle();",
+              "args": [],
+              "semantic": {
+                "type": "return_idle"
+              }
+            }
+          ],
+          "relative_frame": 109
+        },
+        {
+          "layer": "效果",
+          "global_frame": 804,
+          "duration": 114,
+          "scripts": [
+            "parent.$effect_ctrler.shine(0x000000);"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "shine",
+              "args_raw": "0x000000",
+              "source": "parent.$effect_ctrler.shine(0x000000);",
+              "args": [
+                "0x000000"
+              ],
+              "semantic": {
+                "type": "effect",
+                "effect_method": "shine"
+              }
+            }
+          ],
+          "relative_frame": 40
+        },
+        {
+          "layer": "特效",
+          "global_frame": 804,
+          "duration": 4,
+          "scripts": [
+            "//加入攻击对象[参数：MC名称，params]\n/*\nparams 参数 {\n\tx:Number(速度X)|{moveToTarget:Boolean(是否移动到目标),followTarget:Boolean(是否跟随目标),offset:Number(距离目标偏移量),range:Array[left,right](攻击范围)} , \n\ty:Number(速度Y)|{moveToTarget:Boolean(是否移动到目标),followTarget:Boolean(是否跟随目标),offset:Number(距离目标偏移量),range:Array[top,bottom](攻击范围)} , \n\tapplyG:Boolean(是否受重力影响) ,\n}\n*/\nparent.$mc_ctrler.addAttacker(\"bsmc\",{x:{followTarget:true,offset:0},y:{followTarget:true,offset:-25},applyG:false});\n\n\n//如果比较复杂，需要在MC内部加入代码，实现接口\n/*\nvar $attacker_ctrler:*;\nfunction setAttackerCtrler(attackerCtrler:*):void{\n\t$attacker_ctrler = attackerCtrler;\n}\n\n//调用效果接口，等同于parent.$effect_ctrler\n$attacker_ctrler.effect\n\n//动作结束，用于AI判断\n$attacker_ctrler.endAct();\n\n//移动\n$attacker_ctrler.move(0,0);\n\n//阻尼\n$attacker_ctrler.damping(0,0);\n\n//停止播放\n$attacker_ctrler.stop();\n\n//跳到帧并播放\n$attacker_ctrler.gotoAndPlay(\"帧名称\");\n\n//跳到帧并停止\n$attacker_ctrler.gotoAndStop(\"帧名称\");\n\n//落地时跳转帧\n$attacker_ctrler.setTouchFloor(\"帧名称\");\n\n*/"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "addAttacker",
+              "args_raw": "\"bsmc\",{x:{followTarget:true,offset:0},y:{followTarget:true,offset:-25},applyG:false}",
+              "source": "parent.$mc_ctrler.addAttacker(\"bsmc\",{x:{followTarget:true,offset:0},y:{followTarget:true,offset:-25},applyG:false});",
+              "args": [
+                "bsmc",
+                "{x:{followTarget:true",
+                "offset:0}",
+                "y:{followTarget:true",
+                "offset:-25}",
+                "applyG:false}"
+              ]
+            }
+          ],
+          "relative_frame": 40
+        }
+      ]
+    },
+    "super_up": {
+      "label": "上必杀",
+      "loop": false,
+      "fps": 30,
+      "frames": [
+        "actions_game/super_up/0000.png",
+        "actions_game/super_up/0001.png",
+        "actions_game/super_up/0002.png",
+        "actions_game/super_up/0003.png",
+        "actions_game/super_up/0004.png",
+        "actions_game/super_up/0005.png",
+        "actions_game/super_up/0006.png",
+        "actions_game/super_up/0007.png",
+        "actions_game/super_up/0008.png",
+        "actions_game/super_up/0009.png",
+        "actions_game/super_up/0010.png",
+        "actions_game/super_up/0011.png",
+        "actions_game/super_up/0012.png",
+        "actions_game/super_up/0013.png",
+        "actions_game/super_up/0014.png",
+        "actions_game/super_up/0015.png",
+        "actions_game/super_up/0016.png",
+        "actions_game/super_up/0017.png",
+        "actions_game/super_up/0018.png",
+        "actions_game/super_up/0019.png",
+        "actions_game/super_up/0020.png",
+        "actions_game/super_up/0021.png",
+        "actions_game/super_up/0022.png",
+        "actions_game/super_up/0023.png",
+        "actions_game/super_up/0024.png",
+        "actions_game/super_up/0025.png",
+        "actions_game/super_up/0026.png",
+        "actions_game/super_up/0027.png",
+        "actions_game/super_up/0028.png",
+        "actions_game/super_up/0029.png",
+        "actions_game/super_up/0030.png",
+        "actions_game/super_up/0031.png",
+        "actions_game/super_up/0032.png",
+        "actions_game/super_up/0033.png",
+        "actions_game/super_up/0034.png",
+        "actions_game/super_up/0035.png",
+        "actions_game/super_up/0036.png",
+        "actions_game/super_up/0037.png",
+        "actions_game/super_up/0038.png",
+        "actions_game/super_up/0039.png",
+        "actions_game/super_up/0040.png",
+        "actions_game/super_up/0041.png",
+        "actions_game/super_up/0042.png",
+        "actions_game/super_up/0043.png",
+        "actions_game/super_up/0044.png",
+        "actions_game/super_up/0045.png",
+        "actions_game/super_up/0046.png",
+        "actions_game/super_up/0047.png",
+        "actions_game/super_up/0048.png",
+        "actions_game/super_up/0049.png",
+        "actions_game/super_up/0050.png",
+        "actions_game/super_up/0051.png",
+        "actions_game/super_up/0052.png",
+        "actions_game/super_up/0053.png",
+        "actions_game/super_up/0054.png",
+        "actions_game/super_up/0055.png",
+        "actions_game/super_up/0056.png",
+        "actions_game/super_up/0057.png",
+        "actions_game/super_up/0058.png",
+        "actions_game/super_up/0059.png",
+        "actions_game/super_up/0060.png",
+        "actions_game/super_up/0061.png",
+        "actions_game/super_up/0062.png",
+        "actions_game/super_up/0063.png",
+        "actions_game/super_up/0064.png",
+        "actions_game/super_up/0065.png",
+        "actions_game/super_up/0066.png",
+        "actions_game/super_up/0067.png",
+        "actions_game/super_up/0068.png"
+      ],
+      "events": [
+        {
+          "layer": "控制",
+          "global_frame": 878,
+          "duration": 37,
+          "scripts": [
+            "parent.$effect_ctrler.bisha(false,\"Aizen_1\");"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "bisha",
+              "args_raw": "false,\"Aizen_1\"",
+              "source": "parent.$effect_ctrler.bisha(false,\"Aizen_1\");",
+              "args": [
+                false,
+                "Aizen_1"
+              ],
+              "semantic": {
+                "type": "super_effect_start",
+                "is_super": false,
+                "effect_name": "Aizen_1"
+              }
+            }
+          ],
+          "relative_frame": 1
+        },
+        {
+          "layer": "控制",
+          "global_frame": 915,
+          "duration": 2,
+          "scripts": [
+            "parent.$effect_ctrler.endBisha();"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "endBisha",
+              "args_raw": "",
+              "source": "parent.$effect_ctrler.endBisha();",
+              "args": [],
+              "semantic": {
+                "type": "super_effect_end"
+              }
+            }
+          ],
+          "relative_frame": 38
+        },
+        {
+          "layer": "控制",
+          "global_frame": 917,
+          "duration": 1,
+          "scripts": [
+            "parent.$effect_ctrler.shine();\n//瞬间移动[参数：X,Y,是否自动转向]\nparent.$fighter_ctrler.moveToTarget(30,0,true);"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "shine",
+              "args_raw": "",
+              "source": "parent.$effect_ctrler.shine();",
+              "args": [],
+              "semantic": {
+                "type": "effect",
+                "effect_method": "shine"
+              }
+            },
+            {
+              "object": "fighter_ctrler",
+              "method": "moveToTarget",
+              "args_raw": "30,0,true",
+              "source": "parent.$fighter_ctrler.moveToTarget(30,0,true);",
+              "args": [
+                30,
+                0,
+                true
+              ],
+              "semantic": {
+                "type": "teleport_or_move_to_target",
+                "x": 30,
+                "y": 0,
+                "auto_turn": true
+              }
+            }
+          ],
+          "relative_frame": 40
+        },
+        {
+          "layer": "控制",
+          "global_frame": 918,
+          "duration": 7,
+          "scripts": [
+            "parent.$mc_ctrler.isApplyG(false);"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "isApplyG",
+              "args_raw": "false",
+              "source": "parent.$mc_ctrler.isApplyG(false);",
+              "args": [
+                false
+              ],
+              "semantic": {
+                "type": "apply_gravity",
+                "enabled": false
+              }
+            }
+          ],
+          "relative_frame": 41
+        },
+        {
+          "layer": "控制",
+          "global_frame": 925,
+          "duration": 2,
+          "scripts": [
+            "//检测上次攻击，通过ID判断，如果通过，则跳转到相应的帧[参数：攻击ID，帧标签，检查失败时是否返回站立，对方防御时是否继续攻击]\nparent.$mc_ctrler.justHitToPlay(\"sbs1\",\"上必杀_HIT\",false,false);"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "justHitToPlay",
+              "args_raw": "\"sbs1\",\"上必杀_HIT\",false,false",
+              "source": "parent.$mc_ctrler.justHitToPlay(\"sbs1\",\"上必杀_HIT\",false,false);",
+              "args": [
+                "sbs1",
+                "上必杀_HIT",
+                false,
+                false
+              ],
+              "semantic": {
+                "type": "if_last_hit_play",
+                "attack_id": "sbs1",
+                "target_label": "上必杀_HIT",
+                "return_idle_on_fail": false,
+                "continue_when_defended": false
+              }
+            }
+          ],
+          "relative_frame": 48
+        },
+        {
+          "layer": "控制",
+          "global_frame": 927,
+          "duration": 14,
+          "scripts": [
+            "parent.$mc_ctrler.endAct();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "endAct",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.endAct();",
+              "args": [],
+              "semantic": {
+                "type": "end_action"
+              }
+            }
+          ],
+          "relative_frame": 50
+        },
+        {
+          "layer": "控制",
+          "global_frame": 941,
+          "duration": 6,
+          "scripts": [
+            "parent.$mc_ctrler.idle();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "idle",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.idle();",
+              "args": [],
+              "semantic": {
+                "type": "return_idle"
+              }
+            }
+          ],
+          "relative_frame": 64
+        },
+        {
+          "layer": "效果",
+          "global_frame": 918,
+          "duration": 9,
+          "scripts": [
+            "//慢放效果[参数：时间（秒）]\n//parent.$effect_ctrler.slowDown(0.5);\n\n//残影开始\nparent.$effect_ctrler.shadow(100,255,255);"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "slowDown",
+              "args_raw": "0.5",
+              "source": "parent.$effect_ctrler.slowDown(0.5);",
+              "args": [
+                0.5
+              ]
+            },
+            {
+              "object": "effect_ctrler",
+              "method": "shadow",
+              "args_raw": "100,255,255",
+              "source": "parent.$effect_ctrler.shadow(100,255,255);",
+              "args": [
+                100,
+                255,
+                255
+              ]
+            }
+          ],
+          "relative_frame": 41
+        },
+        {
+          "layer": "效果",
+          "global_frame": 927,
+          "duration": 20,
+          "scripts": [
+            "//残影结束\nparent.$effect_ctrler.endShadow();"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "endShadow",
+              "args_raw": "",
+              "source": "parent.$effect_ctrler.endShadow();",
+              "args": []
+            }
+          ],
+          "relative_frame": 50
+        },
+        {
+          "layer": "声音",
+          "global_frame": 881,
+          "duration": 35,
+          "scripts": [
+            "parent.$effect_ctrler.playSoundHit1();"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "playSoundHit1",
+              "args_raw": "",
+              "source": "parent.$effect_ctrler.playSoundHit1();",
+              "args": []
+            }
+          ],
+          "relative_frame": 4
+        },
+        {
+          "layer": "声音",
+          "global_frame": 919,
+          "duration": 31,
+          "scripts": [
+            "parent.$effect_ctrler.playSoundHit1();"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "playSoundHit1",
+              "args_raw": "",
+              "source": "parent.$effect_ctrler.playSoundHit1();",
+              "args": []
+            }
+          ],
+          "relative_frame": 42
+        }
+      ]
+    },
+    "super_up_hit": {
+      "label": "上必杀_HIT",
+      "loop": false,
+      "fps": 30,
+      "frames": [
+        "actions_game/super_up_hit/0000.png",
+        "actions_game/super_up_hit/0001.png",
+        "actions_game/super_up_hit/0002.png",
+        "actions_game/super_up_hit/0003.png",
+        "actions_game/super_up_hit/0004.png",
+        "actions_game/super_up_hit/0005.png",
+        "actions_game/super_up_hit/0006.png",
+        "actions_game/super_up_hit/0007.png",
+        "actions_game/super_up_hit/0008.png",
+        "actions_game/super_up_hit/0009.png",
+        "actions_game/super_up_hit/0010.png",
+        "actions_game/super_up_hit/0011.png",
+        "actions_game/super_up_hit/0012.png",
+        "actions_game/super_up_hit/0013.png",
+        "actions_game/super_up_hit/0014.png",
+        "actions_game/super_up_hit/0015.png",
+        "actions_game/super_up_hit/0016.png",
+        "actions_game/super_up_hit/0017.png",
+        "actions_game/super_up_hit/0018.png",
+        "actions_game/super_up_hit/0019.png",
+        "actions_game/super_up_hit/0020.png",
+        "actions_game/super_up_hit/0021.png",
+        "actions_game/super_up_hit/0022.png",
+        "actions_game/super_up_hit/0023.png",
+        "actions_game/super_up_hit/0024.png",
+        "actions_game/super_up_hit/0025.png",
+        "actions_game/super_up_hit/0026.png",
+        "actions_game/super_up_hit/0027.png",
+        "actions_game/super_up_hit/0028.png",
+        "actions_game/super_up_hit/0029.png",
+        "actions_game/super_up_hit/0030.png",
+        "actions_game/super_up_hit/0031.png",
+        "actions_game/super_up_hit/0032.png",
+        "actions_game/super_up_hit/0033.png",
+        "actions_game/super_up_hit/0034.png",
+        "actions_game/super_up_hit/0035.png",
+        "actions_game/super_up_hit/0036.png",
+        "actions_game/super_up_hit/0037.png",
+        "actions_game/super_up_hit/0038.png",
+        "actions_game/super_up_hit/0039.png",
+        "actions_game/super_up_hit/0040.png",
+        "actions_game/super_up_hit/0041.png",
+        "actions_game/super_up_hit/0042.png",
+        "actions_game/super_up_hit/0043.png",
+        "actions_game/super_up_hit/0044.png",
+        "actions_game/super_up_hit/0045.png",
+        "actions_game/super_up_hit/0046.png",
+        "actions_game/super_up_hit/0047.png",
+        "actions_game/super_up_hit/0048.png",
+        "actions_game/super_up_hit/0049.png",
+        "actions_game/super_up_hit/0050.png",
+        "actions_game/super_up_hit/0051.png",
+        "actions_game/super_up_hit/0052.png",
+        "actions_game/super_up_hit/0053.png",
+        "actions_game/super_up_hit/0054.png",
+        "actions_game/super_up_hit/0055.png",
+        "actions_game/super_up_hit/0056.png",
+        "actions_game/super_up_hit/0057.png",
+        "actions_game/super_up_hit/0058.png",
+        "actions_game/super_up_hit/0059.png",
+        "actions_game/super_up_hit/0060.png",
+        "actions_game/super_up_hit/0061.png",
+        "actions_game/super_up_hit/0062.png",
+        "actions_game/super_up_hit/0063.png",
+        "actions_game/super_up_hit/0064.png",
+        "actions_game/super_up_hit/0065.png",
+        "actions_game/super_up_hit/0066.png",
+        "actions_game/super_up_hit/0067.png",
+        "actions_game/super_up_hit/0068.png",
+        "actions_game/super_up_hit/0069.png",
+        "actions_game/super_up_hit/0070.png",
+        "actions_game/super_up_hit/0071.png",
+        "actions_game/super_up_hit/0072.png",
+        "actions_game/super_up_hit/0073.png",
+        "actions_game/super_up_hit/0074.png",
+        "actions_game/super_up_hit/0075.png",
+        "actions_game/super_up_hit/0076.png",
+        "actions_game/super_up_hit/0077.png",
+        "actions_game/super_up_hit/0078.png",
+        "actions_game/super_up_hit/0079.png",
+        "actions_game/super_up_hit/0080.png",
+        "actions_game/super_up_hit/0081.png",
+        "actions_game/super_up_hit/0082.png",
+        "actions_game/super_up_hit/0083.png",
+        "actions_game/super_up_hit/0084.png",
+        "actions_game/super_up_hit/0085.png",
+        "actions_game/super_up_hit/0086.png",
+        "actions_game/super_up_hit/0087.png",
+        "actions_game/super_up_hit/0088.png",
+        "actions_game/super_up_hit/0089.png",
+        "actions_game/super_up_hit/0090.png",
+        "actions_game/super_up_hit/0091.png",
+        "actions_game/super_up_hit/0092.png",
+        "actions_game/super_up_hit/0093.png",
+        "actions_game/super_up_hit/0094.png",
+        "actions_game/super_up_hit/0095.png",
+        "actions_game/super_up_hit/0096.png",
+        "actions_game/super_up_hit/0097.png",
+        "actions_game/super_up_hit/0098.png",
+        "actions_game/super_up_hit/0099.png",
+        "actions_game/super_up_hit/0100.png",
+        "actions_game/super_up_hit/0101.png",
+        "actions_game/super_up_hit/0102.png",
+        "actions_game/super_up_hit/0103.png",
+        "actions_game/super_up_hit/0104.png",
+        "actions_game/super_up_hit/0105.png",
+        "actions_game/super_up_hit/0106.png",
+        "actions_game/super_up_hit/0107.png",
+        "actions_game/super_up_hit/0108.png",
+        "actions_game/super_up_hit/0109.png",
+        "actions_game/super_up_hit/0110.png",
+        "actions_game/super_up_hit/0111.png",
+        "actions_game/super_up_hit/0112.png",
+        "actions_game/super_up_hit/0113.png",
+        "actions_game/super_up_hit/0114.png",
+        "actions_game/super_up_hit/0115.png",
+        "actions_game/super_up_hit/0116.png",
+        "actions_game/super_up_hit/0117.png",
+        "actions_game/super_up_hit/0118.png",
+        "actions_game/super_up_hit/0119.png",
+        "actions_game/super_up_hit/0120.png",
+        "actions_game/super_up_hit/0121.png",
+        "actions_game/super_up_hit/0122.png",
+        "actions_game/super_up_hit/0123.png",
+        "actions_game/super_up_hit/0124.png",
+        "actions_game/super_up_hit/0125.png",
+        "actions_game/super_up_hit/0126.png",
+        "actions_game/super_up_hit/0127.png",
+        "actions_game/super_up_hit/0128.png",
+        "actions_game/super_up_hit/0129.png",
+        "actions_game/super_up_hit/0130.png",
+        "actions_game/super_up_hit/0131.png",
+        "actions_game/super_up_hit/0132.png",
+        "actions_game/super_up_hit/0133.png",
+        "actions_game/super_up_hit/0134.png",
+        "actions_game/super_up_hit/0135.png",
+        "actions_game/super_up_hit/0136.png",
+        "actions_game/super_up_hit/0137.png",
+        "actions_game/super_up_hit/0138.png",
+        "actions_game/super_up_hit/0139.png",
+        "actions_game/super_up_hit/0140.png",
+        "actions_game/super_up_hit/0141.png",
+        "actions_game/super_up_hit/0142.png",
+        "actions_game/super_up_hit/0143.png",
+        "actions_game/super_up_hit/0144.png",
+        "actions_game/super_up_hit/0145.png",
+        "actions_game/super_up_hit/0146.png",
+        "actions_game/super_up_hit/0147.png",
+        "actions_game/super_up_hit/0148.png",
+        "actions_game/super_up_hit/0149.png",
+        "actions_game/super_up_hit/0150.png",
+        "actions_game/super_up_hit/0151.png",
+        "actions_game/super_up_hit/0152.png",
+        "actions_game/super_up_hit/0153.png",
+        "actions_game/super_up_hit/0154.png",
+        "actions_game/super_up_hit/0155.png",
+        "actions_game/super_up_hit/0156.png",
+        "actions_game/super_up_hit/0157.png",
+        "actions_game/super_up_hit/0158.png",
+        "actions_game/super_up_hit/0159.png",
+        "actions_game/super_up_hit/0160.png",
+        "actions_game/super_up_hit/0161.png",
+        "actions_game/super_up_hit/0162.png",
+        "actions_game/super_up_hit/0163.png",
+        "actions_game/super_up_hit/0164.png",
+        "actions_game/super_up_hit/0165.png",
+        "actions_game/super_up_hit/0166.png",
+        "actions_game/super_up_hit/0167.png",
+        "actions_game/super_up_hit/0168.png",
+        "actions_game/super_up_hit/0169.png",
+        "actions_game/super_up_hit/0170.png",
+        "actions_game/super_up_hit/0171.png",
+        "actions_game/super_up_hit/0172.png",
+        "actions_game/super_up_hit/0173.png",
+        "actions_game/super_up_hit/0174.png",
+        "actions_game/super_up_hit/0175.png",
+        "actions_game/super_up_hit/0176.png",
+        "actions_game/super_up_hit/0177.png",
+        "actions_game/super_up_hit/0178.png",
+        "actions_game/super_up_hit/0179.png"
+      ],
+      "events": [
+        {
+          "layer": "控制",
+          "global_frame": 947,
+          "duration": 12,
+          "scripts": [
+            "//瞬间移动[参数：X,Y,是否自动转向]\nparent.$fighter_ctrler.moveToTarget(30,0,true);\nparent.$mc_ctrler.isApplyG(false);"
+          ],
+          "calls": [
+            {
+              "object": "fighter_ctrler",
+              "method": "moveToTarget",
+              "args_raw": "30,0,true",
+              "source": "parent.$fighter_ctrler.moveToTarget(30,0,true);",
+              "args": [
+                30,
+                0,
+                true
+              ],
+              "semantic": {
+                "type": "teleport_or_move_to_target",
+                "x": 30,
+                "y": 0,
+                "auto_turn": true
+              }
+            },
+            {
+              "object": "mc_ctrler",
+              "method": "isApplyG",
+              "args_raw": "false",
+              "source": "parent.$mc_ctrler.isApplyG(false);",
+              "args": [
+                false
+              ],
+              "semantic": {
+                "type": "apply_gravity",
+                "enabled": false
+              }
+            }
+          ],
+          "relative_frame": 1
+        },
+        {
+          "layer": "控制",
+          "global_frame": 959,
+          "duration": 13,
+          "scripts": [
+            "//瞬间移动[参数：X,Y,是否自动转向]\nparent.$fighter_ctrler.moveToTarget(30,0,true);"
+          ],
+          "calls": [
+            {
+              "object": "fighter_ctrler",
+              "method": "moveToTarget",
+              "args_raw": "30,0,true",
+              "source": "parent.$fighter_ctrler.moveToTarget(30,0,true);",
+              "args": [
+                30,
+                0,
+                true
+              ],
+              "semantic": {
+                "type": "teleport_or_move_to_target",
+                "x": 30,
+                "y": 0,
+                "auto_turn": true
+              }
+            }
+          ],
+          "relative_frame": 13
+        },
+        {
+          "layer": "控制",
+          "global_frame": 972,
+          "duration": 16,
+          "scripts": [
+            "//瞬间移动[参数：X,Y,是否自动转向]\nparent.$fighter_ctrler.moveToTarget(30,0,true);"
+          ],
+          "calls": [
+            {
+              "object": "fighter_ctrler",
+              "method": "moveToTarget",
+              "args_raw": "30,0,true",
+              "source": "parent.$fighter_ctrler.moveToTarget(30,0,true);",
+              "args": [
+                30,
+                0,
+                true
+              ],
+              "semantic": {
+                "type": "teleport_or_move_to_target",
+                "x": 30,
+                "y": 0,
+                "auto_turn": true
+              }
+            }
+          ],
+          "relative_frame": 26
+        },
+        {
+          "layer": "控制",
+          "global_frame": 988,
+          "duration": 13,
+          "scripts": [
+            "//瞬间移动[参数：X,Y,是否自动转向]\nparent.$fighter_ctrler.moveToTarget(30,0,true);"
+          ],
+          "calls": [
+            {
+              "object": "fighter_ctrler",
+              "method": "moveToTarget",
+              "args_raw": "30,0,true",
+              "source": "parent.$fighter_ctrler.moveToTarget(30,0,true);",
+              "args": [
+                30,
+                0,
+                true
+              ],
+              "semantic": {
+                "type": "teleport_or_move_to_target",
+                "x": 30,
+                "y": 0,
+                "auto_turn": true
+              }
+            }
+          ],
+          "relative_frame": 42
+        },
+        {
+          "layer": "控制",
+          "global_frame": 1001,
+          "duration": 17,
+          "scripts": [
+            "//瞬间移动[参数：X,Y,是否自动转向]\nparent.$fighter_ctrler.moveToTarget(30,0,true);"
+          ],
+          "calls": [
+            {
+              "object": "fighter_ctrler",
+              "method": "moveToTarget",
+              "args_raw": "30,0,true",
+              "source": "parent.$fighter_ctrler.moveToTarget(30,0,true);",
+              "args": [
+                30,
+                0,
+                true
+              ],
+              "semantic": {
+                "type": "teleport_or_move_to_target",
+                "x": 30,
+                "y": 0,
+                "auto_turn": true
+              }
+            }
+          ],
+          "relative_frame": 55
+        },
+        {
+          "layer": "控制",
+          "global_frame": 1018,
+          "duration": 19,
+          "scripts": [
+            "//瞬间移动[参数：X,Y,是否自动转向]\nparent.$fighter_ctrler.moveToTarget(50,0,true);"
+          ],
+          "calls": [
+            {
+              "object": "fighter_ctrler",
+              "method": "moveToTarget",
+              "args_raw": "50,0,true",
+              "source": "parent.$fighter_ctrler.moveToTarget(50,0,true);",
+              "args": [
+                50,
+                0,
+                true
+              ],
+              "semantic": {
+                "type": "teleport_or_move_to_target",
+                "x": 50,
+                "y": 0,
+                "auto_turn": true
+              }
+            }
+          ],
+          "relative_frame": 72
+        },
+        {
+          "layer": "控制",
+          "global_frame": 1037,
+          "duration": 18,
+          "scripts": [
+            "//瞬间移动[参数：X,Y,是否自动转向]\nparent.$fighter_ctrler.moveToTarget(50,0,true);"
+          ],
+          "calls": [
+            {
+              "object": "fighter_ctrler",
+              "method": "moveToTarget",
+              "args_raw": "50,0,true",
+              "source": "parent.$fighter_ctrler.moveToTarget(50,0,true);",
+              "args": [
+                50,
+                0,
+                true
+              ],
+              "semantic": {
+                "type": "teleport_or_move_to_target",
+                "x": 50,
+                "y": 0,
+                "auto_turn": true
+              }
+            }
+          ],
+          "relative_frame": 91
+        },
+        {
+          "layer": "控制",
+          "global_frame": 1055,
+          "duration": 14,
+          "scripts": [
+            "parent.$effect_ctrler.shine();\n//瞬间移动[参数：X,Y,是否自动转向]\nparent.$fighter_ctrler.moveToTarget(50,0,true);"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "shine",
+              "args_raw": "",
+              "source": "parent.$effect_ctrler.shine();",
+              "args": [],
+              "semantic": {
+                "type": "effect",
+                "effect_method": "shine"
+              }
+            },
+            {
+              "object": "fighter_ctrler",
+              "method": "moveToTarget",
+              "args_raw": "50,0,true",
+              "source": "parent.$fighter_ctrler.moveToTarget(50,0,true);",
+              "args": [
+                50,
+                0,
+                true
+              ],
+              "semantic": {
+                "type": "teleport_or_move_to_target",
+                "x": 50,
+                "y": 0,
+                "auto_turn": true
+              }
+            }
+          ],
+          "relative_frame": 109
+        },
+        {
+          "layer": "控制",
+          "global_frame": 1069,
+          "duration": 42,
+          "scripts": [
+            "parent.$mc_ctrler.endAct();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "endAct",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.endAct();",
+              "args": [],
+              "semantic": {
+                "type": "end_action"
+              }
+            }
+          ],
+          "relative_frame": 123
+        },
+        {
+          "layer": "控制",
+          "global_frame": 1111,
+          "duration": 17,
+          "scripts": [
+            "parent.$mc_ctrler.idle();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "idle",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.idle();",
+              "args": [],
+              "semantic": {
+                "type": "return_idle"
+              }
+            }
+          ],
+          "relative_frame": 165
+        },
+        {
+          "layer": "效果",
+          "global_frame": 947,
+          "duration": 12,
+          "scripts": [
+            "parent.$effect_ctrler.shine();\n//残影开始\nparent.$effect_ctrler.shadow(100,255,255);"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "shine",
+              "args_raw": "",
+              "source": "parent.$effect_ctrler.shine();",
+              "args": [],
+              "semantic": {
+                "type": "effect",
+                "effect_method": "shine"
+              }
+            },
+            {
+              "object": "effect_ctrler",
+              "method": "shadow",
+              "args_raw": "100,255,255",
+              "source": "parent.$effect_ctrler.shadow(100,255,255);",
+              "args": [
+                100,
+                255,
+                255
+              ]
+            }
+          ],
+          "relative_frame": 1
+        },
+        {
+          "layer": "效果",
+          "global_frame": 959,
+          "duration": 13,
+          "scripts": [
+            "parent.$effect_ctrler.shine();"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "shine",
+              "args_raw": "",
+              "source": "parent.$effect_ctrler.shine();",
+              "args": [],
+              "semantic": {
+                "type": "effect",
+                "effect_method": "shine"
+              }
+            }
+          ],
+          "relative_frame": 13
+        },
+        {
+          "layer": "效果",
+          "global_frame": 972,
+          "duration": 16,
+          "scripts": [
+            "parent.$effect_ctrler.shine();"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "shine",
+              "args_raw": "",
+              "source": "parent.$effect_ctrler.shine();",
+              "args": [],
+              "semantic": {
+                "type": "effect",
+                "effect_method": "shine"
+              }
+            }
+          ],
+          "relative_frame": 26
+        },
+        {
+          "layer": "效果",
+          "global_frame": 988,
+          "duration": 13,
+          "scripts": [
+            "parent.$effect_ctrler.shine();"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "shine",
+              "args_raw": "",
+              "source": "parent.$effect_ctrler.shine();",
+              "args": [],
+              "semantic": {
+                "type": "effect",
+                "effect_method": "shine"
+              }
+            }
+          ],
+          "relative_frame": 42
+        },
+        {
+          "layer": "效果",
+          "global_frame": 1001,
+          "duration": 17,
+          "scripts": [
+            "parent.$effect_ctrler.shine();"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "shine",
+              "args_raw": "",
+              "source": "parent.$effect_ctrler.shine();",
+              "args": [],
+              "semantic": {
+                "type": "effect",
+                "effect_method": "shine"
+              }
+            }
+          ],
+          "relative_frame": 55
+        },
+        {
+          "layer": "效果",
+          "global_frame": 1018,
+          "duration": 19,
+          "scripts": [
+            "parent.$effect_ctrler.shine();"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "shine",
+              "args_raw": "",
+              "source": "parent.$effect_ctrler.shine();",
+              "args": [],
+              "semantic": {
+                "type": "effect",
+                "effect_method": "shine"
+              }
+            }
+          ],
+          "relative_frame": 72
+        },
+        {
+          "layer": "效果",
+          "global_frame": 1037,
+          "duration": 18,
+          "scripts": [
+            "parent.$effect_ctrler.shine();"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "shine",
+              "args_raw": "",
+              "source": "parent.$effect_ctrler.shine();",
+              "args": [],
+              "semantic": {
+                "type": "effect",
+                "effect_method": "shine"
+              }
+            }
+          ],
+          "relative_frame": 91
+        },
+        {
+          "layer": "效果",
+          "global_frame": 1055,
+          "duration": 91,
+          "scripts": [
+            "//残影结束\nparent.$effect_ctrler.endShadow();"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "endShadow",
+              "args_raw": "",
+              "source": "parent.$effect_ctrler.endShadow();",
+              "args": []
+            }
+          ],
+          "relative_frame": 109
+        },
+        {
+          "layer": "声音",
+          "global_frame": 950,
+          "duration": 11,
+          "scripts": [
+            "parent.$effect_ctrler.playSoundHit1();"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "playSoundHit1",
+              "args_raw": "",
+              "source": "parent.$effect_ctrler.playSoundHit1();",
+              "args": []
+            }
+          ],
+          "relative_frame": 4
+        },
+        {
+          "layer": "声音",
+          "global_frame": 961,
+          "duration": 14,
+          "scripts": [
+            "parent.$effect_ctrler.playSoundHit1();"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "playSoundHit1",
+              "args_raw": "",
+              "source": "parent.$effect_ctrler.playSoundHit1();",
+              "args": []
+            }
+          ],
+          "relative_frame": 15
+        },
+        {
+          "layer": "声音",
+          "global_frame": 975,
+          "duration": 17,
+          "scripts": [
+            "parent.$effect_ctrler.playSoundHit1();"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "playSoundHit1",
+              "args_raw": "",
+              "source": "parent.$effect_ctrler.playSoundHit1();",
+              "args": []
+            }
+          ],
+          "relative_frame": 29
+        },
+        {
+          "layer": "声音",
+          "global_frame": 992,
+          "duration": 12,
+          "scripts": [
+            "parent.$effect_ctrler.playSoundHit1();"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "playSoundHit1",
+              "args_raw": "",
+              "source": "parent.$effect_ctrler.playSoundHit1();",
+              "args": []
+            }
+          ],
+          "relative_frame": 46
+        },
+        {
+          "layer": "声音",
+          "global_frame": 1004,
+          "duration": 17,
+          "scripts": [
+            "parent.$effect_ctrler.playSoundHit1();"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "playSoundHit1",
+              "args_raw": "",
+              "source": "parent.$effect_ctrler.playSoundHit1();",
+              "args": []
+            }
+          ],
+          "relative_frame": 58
+        },
+        {
+          "layer": "声音",
+          "global_frame": 1021,
+          "duration": 19,
+          "scripts": [
+            "parent.$effect_ctrler.playSoundHit2();"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "playSoundHit2",
+              "args_raw": "",
+              "source": "parent.$effect_ctrler.playSoundHit2();",
+              "args": []
+            }
+          ],
+          "relative_frame": 75
+        },
+        {
+          "layer": "声音",
+          "global_frame": 1040,
+          "duration": 22,
+          "scripts": [
+            "parent.$effect_ctrler.playSoundHit2();"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "playSoundHit2",
+              "args_raw": "",
+              "source": "parent.$effect_ctrler.playSoundHit2();",
+              "args": []
+            }
+          ],
+          "relative_frame": 94
+        }
+      ]
+    },
+    "super_air": {
+      "label": "空中必杀",
+      "loop": false,
+      "fps": 30,
+      "frames": [
+        "actions_game/super_air/0000.png",
+        "actions_game/super_air/0001.png",
+        "actions_game/super_air/0002.png",
+        "actions_game/super_air/0003.png",
+        "actions_game/super_air/0004.png",
+        "actions_game/super_air/0005.png",
+        "actions_game/super_air/0006.png",
+        "actions_game/super_air/0007.png",
+        "actions_game/super_air/0008.png",
+        "actions_game/super_air/0009.png",
+        "actions_game/super_air/0010.png",
+        "actions_game/super_air/0011.png",
+        "actions_game/super_air/0012.png",
+        "actions_game/super_air/0013.png",
+        "actions_game/super_air/0014.png",
+        "actions_game/super_air/0015.png",
+        "actions_game/super_air/0016.png",
+        "actions_game/super_air/0017.png",
+        "actions_game/super_air/0018.png",
+        "actions_game/super_air/0019.png",
+        "actions_game/super_air/0020.png",
+        "actions_game/super_air/0021.png",
+        "actions_game/super_air/0022.png",
+        "actions_game/super_air/0023.png",
+        "actions_game/super_air/0024.png",
+        "actions_game/super_air/0025.png",
+        "actions_game/super_air/0026.png",
+        "actions_game/super_air/0027.png",
+        "actions_game/super_air/0028.png",
+        "actions_game/super_air/0029.png",
+        "actions_game/super_air/0030.png",
+        "actions_game/super_air/0031.png",
+        "actions_game/super_air/0032.png",
+        "actions_game/super_air/0033.png",
+        "actions_game/super_air/0034.png",
+        "actions_game/super_air/0035.png",
+        "actions_game/super_air/0036.png",
+        "actions_game/super_air/0037.png",
+        "actions_game/super_air/0038.png",
+        "actions_game/super_air/0039.png",
+        "actions_game/super_air/0040.png",
+        "actions_game/super_air/0041.png",
+        "actions_game/super_air/0042.png",
+        "actions_game/super_air/0043.png",
+        "actions_game/super_air/0044.png",
+        "actions_game/super_air/0045.png",
+        "actions_game/super_air/0046.png",
+        "actions_game/super_air/0047.png",
+        "actions_game/super_air/0048.png",
+        "actions_game/super_air/0049.png",
+        "actions_game/super_air/0050.png",
+        "actions_game/super_air/0051.png",
+        "actions_game/super_air/0052.png",
+        "actions_game/super_air/0053.png",
+        "actions_game/super_air/0054.png",
+        "actions_game/super_air/0055.png",
+        "actions_game/super_air/0056.png",
+        "actions_game/super_air/0057.png",
+        "actions_game/super_air/0058.png",
+        "actions_game/super_air/0059.png",
+        "actions_game/super_air/0060.png",
+        "actions_game/super_air/0061.png",
+        "actions_game/super_air/0062.png",
+        "actions_game/super_air/0063.png",
+        "actions_game/super_air/0064.png",
+        "actions_game/super_air/0065.png",
+        "actions_game/super_air/0066.png",
+        "actions_game/super_air/0067.png",
+        "actions_game/super_air/0068.png",
+        "actions_game/super_air/0069.png",
+        "actions_game/super_air/0070.png"
+      ],
+      "events": [
+        {
+          "layer": "控制",
+          "global_frame": 1128,
+          "duration": 6,
+          "scripts": [
+            "parent.$effect_ctrler.dash();\nparent.$effect_ctrler.bisha(false,\"Aizen_1\");\nparent.$mc_ctrler.isApplyG(false);"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "dash",
+              "args_raw": "",
+              "source": "parent.$effect_ctrler.dash();",
+              "args": [],
+              "semantic": {
+                "type": "effect",
+                "effect_method": "dash"
+              }
+            },
+            {
+              "object": "effect_ctrler",
+              "method": "bisha",
+              "args_raw": "false,\"Aizen_1\"",
+              "source": "parent.$effect_ctrler.bisha(false,\"Aizen_1\");",
+              "args": [
+                false,
+                "Aizen_1"
+              ],
+              "semantic": {
+                "type": "super_effect_start",
+                "is_super": false,
+                "effect_name": "Aizen_1"
+              }
+            },
+            {
+              "object": "mc_ctrler",
+              "method": "isApplyG",
+              "args_raw": "false",
+              "source": "parent.$mc_ctrler.isApplyG(false);",
+              "args": [
+                false
+              ],
+              "semantic": {
+                "type": "apply_gravity",
+                "enabled": false
+              }
+            }
+          ],
+          "relative_frame": 2
+        },
+        {
+          "layer": "控制",
+          "global_frame": 1134,
+          "duration": 12,
+          "scripts": [
+            "//瞬间移动[参数：X,Y,是否自动转向]\nparent.$fighter_ctrler.moveToTarget(50,-70,true);"
+          ],
+          "calls": [
+            {
+              "object": "fighter_ctrler",
+              "method": "moveToTarget",
+              "args_raw": "50,-70,true",
+              "source": "parent.$fighter_ctrler.moveToTarget(50,-70,true);",
+              "args": [
+                50,
+                -70,
+                true
+              ],
+              "semantic": {
+                "type": "teleport_or_move_to_target",
+                "x": 50,
+                "y": -70,
+                "auto_turn": true
+              }
+            }
+          ],
+          "relative_frame": 8
+        },
+        {
+          "layer": "控制",
+          "global_frame": 1146,
+          "duration": 5,
+          "scripts": [
+            "parent.$effect_ctrler.endBisha();\nparent.$mc_ctrler.isApplyG(false);"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "endBisha",
+              "args_raw": "",
+              "source": "parent.$effect_ctrler.endBisha();",
+              "args": [],
+              "semantic": {
+                "type": "super_effect_end"
+              }
+            },
+            {
+              "object": "mc_ctrler",
+              "method": "isApplyG",
+              "args_raw": "false",
+              "source": "parent.$mc_ctrler.isApplyG(false);",
+              "args": [
+                false
+              ],
+              "semantic": {
+                "type": "apply_gravity",
+                "enabled": false
+              }
+            }
+          ],
+          "relative_frame": 20
+        },
+        {
+          "layer": "控制",
+          "global_frame": 1151,
+          "duration": 23,
+          "scripts": [
+            "parent.$mc_ctrler.endAct();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "endAct",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.endAct();",
+              "args": [],
+              "semantic": {
+                "type": "end_action"
+              }
+            }
+          ],
+          "relative_frame": 25
+        },
+        {
+          "layer": "控制",
+          "global_frame": 1174,
+          "duration": 25,
+          "scripts": [
+            "parent.$mc_ctrler.idle();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "idle",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.idle();",
+              "args": [],
+              "semantic": {
+                "type": "return_idle"
+              }
+            }
+          ],
+          "relative_frame": 48
+        },
+        {
+          "layer": "效果",
+          "global_frame": 1146,
+          "duration": 523,
+          "scripts": [
+            "parent.$effect_ctrler.shine();"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "shine",
+              "args_raw": "",
+              "source": "parent.$effect_ctrler.shine();",
+              "args": [],
+              "semantic": {
+                "type": "effect",
+                "effect_method": "shine"
+              }
+            }
+          ],
+          "relative_frame": 20
+        }
+      ]
+    },
+    "super_special": {
+      "label": "超必杀",
+      "loop": false,
+      "fps": 30,
+      "frames": [
+        "actions_game/super_special/0000.png",
+        "actions_game/super_special/0001.png",
+        "actions_game/super_special/0002.png",
+        "actions_game/super_special/0003.png",
+        "actions_game/super_special/0004.png",
+        "actions_game/super_special/0005.png",
+        "actions_game/super_special/0006.png",
+        "actions_game/super_special/0007.png",
+        "actions_game/super_special/0008.png",
+        "actions_game/super_special/0009.png",
+        "actions_game/super_special/0010.png",
+        "actions_game/super_special/0011.png",
+        "actions_game/super_special/0012.png",
+        "actions_game/super_special/0013.png",
+        "actions_game/super_special/0014.png",
+        "actions_game/super_special/0015.png",
+        "actions_game/super_special/0016.png",
+        "actions_game/super_special/0017.png",
+        "actions_game/super_special/0018.png",
+        "actions_game/super_special/0019.png",
+        "actions_game/super_special/0020.png",
+        "actions_game/super_special/0021.png",
+        "actions_game/super_special/0022.png",
+        "actions_game/super_special/0023.png",
+        "actions_game/super_special/0024.png",
+        "actions_game/super_special/0025.png",
+        "actions_game/super_special/0026.png",
+        "actions_game/super_special/0027.png",
+        "actions_game/super_special/0028.png",
+        "actions_game/super_special/0029.png",
+        "actions_game/super_special/0030.png",
+        "actions_game/super_special/0031.png",
+        "actions_game/super_special/0032.png",
+        "actions_game/super_special/0033.png",
+        "actions_game/super_special/0034.png",
+        "actions_game/super_special/0035.png",
+        "actions_game/super_special/0036.png",
+        "actions_game/super_special/0037.png",
+        "actions_game/super_special/0038.png",
+        "actions_game/super_special/0039.png",
+        "actions_game/super_special/0040.png",
+        "actions_game/super_special/0041.png",
+        "actions_game/super_special/0042.png",
+        "actions_game/super_special/0043.png",
+        "actions_game/super_special/0044.png",
+        "actions_game/super_special/0045.png",
+        "actions_game/super_special/0046.png",
+        "actions_game/super_special/0047.png",
+        "actions_game/super_special/0048.png",
+        "actions_game/super_special/0049.png",
+        "actions_game/super_special/0050.png",
+        "actions_game/super_special/0051.png",
+        "actions_game/super_special/0052.png",
+        "actions_game/super_special/0053.png",
+        "actions_game/super_special/0054.png",
+        "actions_game/super_special/0055.png",
+        "actions_game/super_special/0056.png",
+        "actions_game/super_special/0057.png",
+        "actions_game/super_special/0058.png",
+        "actions_game/super_special/0059.png",
+        "actions_game/super_special/0060.png",
+        "actions_game/super_special/0061.png",
+        "actions_game/super_special/0062.png",
+        "actions_game/super_special/0063.png",
+        "actions_game/super_special/0064.png",
+        "actions_game/super_special/0065.png",
+        "actions_game/super_special/0066.png",
+        "actions_game/super_special/0067.png",
+        "actions_game/super_special/0068.png",
+        "actions_game/super_special/0069.png",
+        "actions_game/super_special/0070.png",
+        "actions_game/super_special/0071.png",
+        "actions_game/super_special/0072.png",
+        "actions_game/super_special/0073.png",
+        "actions_game/super_special/0074.png",
+        "actions_game/super_special/0075.png",
+        "actions_game/super_special/0076.png",
+        "actions_game/super_special/0077.png",
+        "actions_game/super_special/0078.png",
+        "actions_game/super_special/0079.png",
+        "actions_game/super_special/0080.png",
+        "actions_game/super_special/0081.png",
+        "actions_game/super_special/0082.png",
+        "actions_game/super_special/0083.png",
+        "actions_game/super_special/0084.png",
+        "actions_game/super_special/0085.png",
+        "actions_game/super_special/0086.png",
+        "actions_game/super_special/0087.png",
+        "actions_game/super_special/0088.png",
+        "actions_game/super_special/0089.png",
+        "actions_game/super_special/0090.png",
+        "actions_game/super_special/0091.png",
+        "actions_game/super_special/0092.png",
+        "actions_game/super_special/0093.png",
+        "actions_game/super_special/0094.png",
+        "actions_game/super_special/0095.png",
+        "actions_game/super_special/0096.png",
+        "actions_game/super_special/0097.png",
+        "actions_game/super_special/0098.png",
+        "actions_game/super_special/0099.png",
+        "actions_game/super_special/0100.png",
+        "actions_game/super_special/0101.png",
+        "actions_game/super_special/0102.png",
+        "actions_game/super_special/0103.png",
+        "actions_game/super_special/0104.png",
+        "actions_game/super_special/0105.png",
+        "actions_game/super_special/0106.png",
+        "actions_game/super_special/0107.png",
+        "actions_game/super_special/0108.png",
+        "actions_game/super_special/0109.png",
+        "actions_game/super_special/0110.png",
+        "actions_game/super_special/0111.png",
+        "actions_game/super_special/0112.png",
+        "actions_game/super_special/0113.png",
+        "actions_game/super_special/0114.png",
+        "actions_game/super_special/0115.png",
+        "actions_game/super_special/0116.png",
+        "actions_game/super_special/0117.png",
+        "actions_game/super_special/0118.png",
+        "actions_game/super_special/0119.png",
+        "actions_game/super_special/0120.png",
+        "actions_game/super_special/0121.png",
+        "actions_game/super_special/0122.png",
+        "actions_game/super_special/0123.png",
+        "actions_game/super_special/0124.png",
+        "actions_game/super_special/0125.png",
+        "actions_game/super_special/0126.png",
+        "actions_game/super_special/0127.png",
+        "actions_game/super_special/0128.png",
+        "actions_game/super_special/0129.png",
+        "actions_game/super_special/0130.png",
+        "actions_game/super_special/0131.png",
+        "actions_game/super_special/0132.png",
+        "actions_game/super_special/0133.png",
+        "actions_game/super_special/0134.png",
+        "actions_game/super_special/0135.png",
+        "actions_game/super_special/0136.png",
+        "actions_game/super_special/0137.png",
+        "actions_game/super_special/0138.png",
+        "actions_game/super_special/0139.png",
+        "actions_game/super_special/0140.png",
+        "actions_game/super_special/0141.png",
+        "actions_game/super_special/0142.png",
+        "actions_game/super_special/0143.png",
+        "actions_game/super_special/0144.png",
+        "actions_game/super_special/0145.png",
+        "actions_game/super_special/0146.png",
+        "actions_game/super_special/0147.png",
+        "actions_game/super_special/0148.png",
+        "actions_game/super_special/0149.png",
+        "actions_game/super_special/0150.png",
+        "actions_game/super_special/0151.png",
+        "actions_game/super_special/0152.png",
+        "actions_game/super_special/0153.png",
+        "actions_game/super_special/0154.png",
+        "actions_game/super_special/0155.png",
+        "actions_game/super_special/0156.png",
+        "actions_game/super_special/0157.png",
+        "actions_game/super_special/0158.png",
+        "actions_game/super_special/0159.png",
+        "actions_game/super_special/0160.png",
+        "actions_game/super_special/0161.png",
+        "actions_game/super_special/0162.png",
+        "actions_game/super_special/0163.png",
+        "actions_game/super_special/0164.png",
+        "actions_game/super_special/0165.png",
+        "actions_game/super_special/0166.png",
+        "actions_game/super_special/0167.png",
+        "actions_game/super_special/0168.png",
+        "actions_game/super_special/0169.png",
+        "actions_game/super_special/0170.png",
+        "actions_game/super_special/0171.png",
+        "actions_game/super_special/0172.png",
+        "actions_game/super_special/0173.png",
+        "actions_game/super_special/0174.png",
+        "actions_game/super_special/0175.png",
+        "actions_game/super_special/0176.png",
+        "actions_game/super_special/0177.png",
+        "actions_game/super_special/0178.png",
+        "actions_game/super_special/0179.png",
+        "actions_game/super_special/0180.png",
+        "actions_game/super_special/0181.png",
+        "actions_game/super_special/0182.png",
+        "actions_game/super_special/0183.png",
+        "actions_game/super_special/0184.png",
+        "actions_game/super_special/0185.png",
+        "actions_game/super_special/0186.png",
+        "actions_game/super_special/0187.png",
+        "actions_game/super_special/0188.png",
+        "actions_game/super_special/0189.png",
+        "actions_game/super_special/0190.png",
+        "actions_game/super_special/0191.png",
+        "actions_game/super_special/0192.png",
+        "actions_game/super_special/0193.png",
+        "actions_game/super_special/0194.png",
+        "actions_game/super_special/0195.png",
+        "actions_game/super_special/0196.png",
+        "actions_game/super_special/0197.png",
+        "actions_game/super_special/0198.png",
+        "actions_game/super_special/0199.png",
+        "actions_game/super_special/0200.png",
+        "actions_game/super_special/0201.png",
+        "actions_game/super_special/0202.png",
+        "actions_game/super_special/0203.png",
+        "actions_game/super_special/0204.png",
+        "actions_game/super_special/0205.png",
+        "actions_game/super_special/0206.png",
+        "actions_game/super_special/0207.png",
+        "actions_game/super_special/0208.png",
+        "actions_game/super_special/0209.png",
+        "actions_game/super_special/0210.png",
+        "actions_game/super_special/0211.png",
+        "actions_game/super_special/0212.png",
+        "actions_game/super_special/0213.png",
+        "actions_game/super_special/0214.png",
+        "actions_game/super_special/0215.png",
+        "actions_game/super_special/0216.png",
+        "actions_game/super_special/0217.png",
+        "actions_game/super_special/0218.png",
+        "actions_game/super_special/0219.png",
+        "actions_game/super_special/0220.png",
+        "actions_game/super_special/0221.png",
+        "actions_game/super_special/0222.png",
+        "actions_game/super_special/0223.png",
+        "actions_game/super_special/0224.png",
+        "actions_game/super_special/0225.png",
+        "actions_game/super_special/0226.png",
+        "actions_game/super_special/0227.png",
+        "actions_game/super_special/0228.png",
+        "actions_game/super_special/0229.png",
+        "actions_game/super_special/0230.png",
+        "actions_game/super_special/0231.png",
+        "actions_game/super_special/0232.png",
+        "actions_game/super_special/0233.png",
+        "actions_game/super_special/0234.png",
+        "actions_game/super_special/0235.png"
+      ],
+      "events": [
+        {
+          "layer": "控制",
+          "global_frame": 1199,
+          "duration": 40,
+          "scripts": [
+            "parent.$effect_ctrler.bisha(true,\"Aizen_2\");"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "bisha",
+              "args_raw": "true,\"Aizen_2\"",
+              "source": "parent.$effect_ctrler.bisha(true,\"Aizen_2\");",
+              "args": [
+                true,
+                "Aizen_2"
+              ],
+              "semantic": {
+                "type": "super_effect_start",
+                "is_super": true,
+                "effect_name": "Aizen_2"
+              }
+            }
+          ],
+          "relative_frame": 2
+        },
+        {
+          "layer": "控制",
+          "global_frame": 1239,
+          "duration": 141,
+          "scripts": [
+            "parent.$effect_ctrler.endBisha();"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "endBisha",
+              "args_raw": "",
+              "source": "parent.$effect_ctrler.endBisha();",
+              "args": [],
+              "semantic": {
+                "type": "super_effect_end"
+              }
+            }
+          ],
+          "relative_frame": 42
+        },
+        {
+          "layer": "控制",
+          "global_frame": 1380,
+          "duration": 36,
+          "scripts": [
+            "parent.$mc_ctrler.endAct();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "endAct",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.endAct();",
+              "args": [],
+              "semantic": {
+                "type": "end_action"
+              }
+            }
+          ],
+          "relative_frame": 183
+        },
+        {
+          "layer": "控制",
+          "global_frame": 1416,
+          "duration": 88,
+          "scripts": [
+            "parent.$mc_ctrler.idle();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "idle",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.idle();",
+              "args": [],
+              "semantic": {
+                "type": "return_idle"
+              }
+            }
+          ],
+          "relative_frame": 219
+        }
+      ]
+    },
+    "defend": {
+      "label": "防御",
+      "loop": false,
+      "fps": 30,
+      "frames": [
+        "actions_game/defend/0000.png",
+        "actions_game/defend/0001.png",
+        "actions_game/defend/0002.png",
+        "actions_game/defend/0003.png",
+        "actions_game/defend/0004.png",
+        "actions_game/defend/0005.png"
+      ],
+      "events": []
+    },
+    "defend_recover": {
+      "label": "防御恢复",
+      "loop": false,
+      "fps": 30,
+      "frames": [
+        "actions_game/defend_recover/0000.png",
+        "actions_game/defend_recover/0001.png",
+        "actions_game/defend_recover/0002.png",
+        "actions_game/defend_recover/0003.png",
+        "actions_game/defend_recover/0004.png",
+        "actions_game/defend_recover/0005.png",
+        "actions_game/defend_recover/0006.png",
+        "actions_game/defend_recover/0007.png",
+        "actions_game/defend_recover/0008.png",
+        "actions_game/defend_recover/0009.png",
+        "actions_game/defend_recover/0010.png",
+        "actions_game/defend_recover/0011.png"
+      ],
+      "events": []
+    },
+    "hurt": {
+      "label": "被打",
+      "loop": false,
+      "fps": 30,
+      "frames": [
+        "actions_game/hurt/0000.png",
+        "actions_game/hurt/0001.png",
+        "actions_game/hurt/0002.png",
+        "actions_game/hurt/0003.png",
+        "actions_game/hurt/0004.png",
+        "actions_game/hurt/0005.png",
+        "actions_game/hurt/0006.png",
+        "actions_game/hurt/0007.png",
+        "actions_game/hurt/0008.png",
+        "actions_game/hurt/0009.png",
+        "actions_game/hurt/0010.png",
+        "actions_game/hurt/0011.png",
+        "actions_game/hurt/0012.png"
+      ],
+      "events": []
+    },
+    "knock_fly": {
+      "label": "击飞",
+      "loop": false,
+      "fps": 30,
+      "frames": [
+        "actions_game/knock_fly/0000.png",
+        "actions_game/knock_fly/0001.png",
+        "actions_game/knock_fly/0002.png",
+        "actions_game/knock_fly/0003.png",
+        "actions_game/knock_fly/0004.png"
+      ],
+      "events": []
+    },
+    "knock_fall": {
+      "label": "击飞_落",
+      "loop": false,
+      "fps": 30,
+      "frames": [
+        "actions_game/knock_fall/0000.png",
+        "actions_game/knock_fall/0001.png",
+        "actions_game/knock_fall/0002.png",
+        "actions_game/knock_fall/0003.png",
+        "actions_game/knock_fall/0004.png",
+        "actions_game/knock_fall/0005.png",
+        "actions_game/knock_fall/0006.png",
+        "actions_game/knock_fall/0007.png",
+        "actions_game/knock_fall/0008.png",
+        "actions_game/knock_fall/0009.png"
+      ],
+      "events": []
+    },
+    "knock_bounce": {
+      "label": "击飞_弹",
+      "loop": false,
+      "fps": 30,
+      "frames": [
+        "actions_game/knock_bounce/0000.png",
+        "actions_game/knock_bounce/0001.png",
+        "actions_game/knock_bounce/0002.png",
+        "actions_game/knock_bounce/0003.png",
+        "actions_game/knock_bounce/0004.png",
+        "actions_game/knock_bounce/0005.png",
+        "actions_game/knock_bounce/0006.png",
+        "actions_game/knock_bounce/0007.png",
+        "actions_game/knock_bounce/0008.png"
+      ],
+      "events": []
+    },
+    "knock_down": {
+      "label": "击飞_倒",
+      "loop": false,
+      "fps": 30,
+      "frames": [
+        "actions_game/knock_down/0000.png",
+        "actions_game/knock_down/0001.png",
+        "actions_game/knock_down/0002.png",
+        "actions_game/knock_down/0003.png",
+        "actions_game/knock_down/0004.png",
+        "actions_game/knock_down/0005.png",
+        "actions_game/knock_down/0006.png",
+        "actions_game/knock_down/0007.png",
+        "actions_game/knock_down/0008.png"
+      ],
+      "events": []
+    },
+    "knock_getup_part": {
+      "label": "击飞_起",
+      "loop": false,
+      "fps": 30,
+      "frames": [
+        "actions_game/knock_getup_part/0000.png",
+        "actions_game/knock_getup_part/0001.png",
+        "actions_game/knock_getup_part/0002.png",
+        "actions_game/knock_getup_part/0003.png",
+        "actions_game/knock_getup_part/0004.png",
+        "actions_game/knock_getup_part/0005.png",
+        "actions_game/knock_getup_part/0006.png",
+        "actions_game/knock_getup_part/0007.png",
+        "actions_game/knock_getup_part/0008.png",
+        "actions_game/knock_getup_part/0009.png",
+        "actions_game/knock_getup_part/0010.png",
+        "actions_game/knock_getup_part/0011.png",
+        "actions_game/knock_getup_part/0012.png",
+        "actions_game/knock_getup_part/0013.png",
+        "actions_game/knock_getup_part/0014.png",
+        "actions_game/knock_getup_part/0015.png"
+      ],
+      "events": [
+        {
+          "layer": "控制",
+          "global_frame": 1504,
+          "duration": 20,
+          "scripts": [
+            "parent.$mc_ctrler.idle();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "idle",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.idle();",
+              "args": [],
+              "semantic": {
+                "type": "return_idle"
+              }
+            }
+          ],
+          "relative_frame": 7
+        }
+      ]
+    },
+    "getup": {
+      "label": "起身",
+      "loop": false,
+      "fps": 30,
+      "frames": [
+        "actions_game/getup/0000.png",
+        "actions_game/getup/0001.png",
+        "actions_game/getup/0002.png",
+        "actions_game/getup/0003.png",
+        "actions_game/getup/0004.png",
+        "actions_game/getup/0005.png",
+        "actions_game/getup/0006.png",
+        "actions_game/getup/0007.png",
+        "actions_game/getup/0008.png",
+        "actions_game/getup/0009.png",
+        "actions_game/getup/0010.png",
+        "actions_game/getup/0011.png",
+        "actions_game/getup/0012.png",
+        "actions_game/getup/0013.png",
+        "actions_game/getup/0014.png",
+        "actions_game/getup/0015.png",
+        "actions_game/getup/0016.png",
+        "actions_game/getup/0017.png",
+        "actions_game/getup/0018.png",
+        "actions_game/getup/0019.png",
+        "actions_game/getup/0020.png",
+        "actions_game/getup/0021.png",
+        "actions_game/getup/0022.png",
+        "actions_game/getup/0023.png"
+      ],
+      "events": [
+        {
+          "layer": "控制",
+          "global_frame": 1524,
+          "duration": 71,
+          "scripts": [
+            "parent.$mc_ctrler.idle();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "idle",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.idle();",
+              "args": [],
+              "semantic": {
+                "type": "return_idle"
+              }
+            }
+          ],
+          "relative_frame": 11
+        }
+      ]
+    },
+    "intro": {
+      "label": "开场",
+      "loop": false,
+      "fps": 30,
+      "frames": [
+        "actions_game/intro/0000.png",
+        "actions_game/intro/0001.png",
+        "actions_game/intro/0002.png",
+        "actions_game/intro/0003.png",
+        "actions_game/intro/0004.png",
+        "actions_game/intro/0005.png",
+        "actions_game/intro/0006.png",
+        "actions_game/intro/0007.png",
+        "actions_game/intro/0008.png",
+        "actions_game/intro/0009.png",
+        "actions_game/intro/0010.png",
+        "actions_game/intro/0011.png",
+        "actions_game/intro/0012.png",
+        "actions_game/intro/0013.png",
+        "actions_game/intro/0014.png",
+        "actions_game/intro/0015.png",
+        "actions_game/intro/0016.png",
+        "actions_game/intro/0017.png",
+        "actions_game/intro/0018.png",
+        "actions_game/intro/0019.png",
+        "actions_game/intro/0020.png",
+        "actions_game/intro/0021.png",
+        "actions_game/intro/0022.png",
+        "actions_game/intro/0023.png",
+        "actions_game/intro/0024.png",
+        "actions_game/intro/0025.png",
+        "actions_game/intro/0026.png",
+        "actions_game/intro/0027.png",
+        "actions_game/intro/0028.png",
+        "actions_game/intro/0029.png",
+        "actions_game/intro/0030.png",
+        "actions_game/intro/0031.png",
+        "actions_game/intro/0032.png",
+        "actions_game/intro/0033.png",
+        "actions_game/intro/0034.png",
+        "actions_game/intro/0035.png",
+        "actions_game/intro/0036.png",
+        "actions_game/intro/0037.png",
+        "actions_game/intro/0038.png",
+        "actions_game/intro/0039.png",
+        "actions_game/intro/0040.png",
+        "actions_game/intro/0041.png",
+        "actions_game/intro/0042.png",
+        "actions_game/intro/0043.png",
+        "actions_game/intro/0044.png",
+        "actions_game/intro/0045.png",
+        "actions_game/intro/0046.png",
+        "actions_game/intro/0047.png",
+        "actions_game/intro/0048.png",
+        "actions_game/intro/0049.png",
+        "actions_game/intro/0050.png",
+        "actions_game/intro/0051.png",
+        "actions_game/intro/0052.png",
+        "actions_game/intro/0053.png",
+        "actions_game/intro/0054.png",
+        "actions_game/intro/0055.png",
+        "actions_game/intro/0056.png",
+        "actions_game/intro/0057.png",
+        "actions_game/intro/0058.png"
+      ],
+      "events": [
+        {
+          "layer": "控制",
+          "global_frame": 1595,
+          "duration": 46,
+          "scripts": [
+            "parent.$mc_ctrler.idle();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "idle",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.idle();",
+              "args": [],
+              "semantic": {
+                "type": "return_idle"
+              }
+            }
+          ],
+          "relative_frame": 58
+        }
+      ]
+    },
+    "win": {
+      "label": "胜利",
+      "loop": false,
+      "fps": 30,
+      "frames": [
+        "actions_game/win/0000.png",
+        "actions_game/win/0001.png",
+        "actions_game/win/0002.png",
+        "actions_game/win/0003.png",
+        "actions_game/win/0004.png",
+        "actions_game/win/0005.png",
+        "actions_game/win/0006.png",
+        "actions_game/win/0007.png",
+        "actions_game/win/0008.png",
+        "actions_game/win/0009.png",
+        "actions_game/win/0010.png",
+        "actions_game/win/0011.png",
+        "actions_game/win/0012.png",
+        "actions_game/win/0013.png",
+        "actions_game/win/0014.png",
+        "actions_game/win/0015.png",
+        "actions_game/win/0016.png",
+        "actions_game/win/0017.png",
+        "actions_game/win/0018.png",
+        "actions_game/win/0019.png",
+        "actions_game/win/0020.png",
+        "actions_game/win/0021.png",
+        "actions_game/win/0022.png",
+        "actions_game/win/0023.png",
+        "actions_game/win/0024.png",
+        "actions_game/win/0025.png",
+        "actions_game/win/0026.png",
+        "actions_game/win/0027.png",
+        "actions_game/win/0028.png",
+        "actions_game/win/0029.png",
+        "actions_game/win/0030.png",
+        "actions_game/win/0031.png",
+        "actions_game/win/0032.png",
+        "actions_game/win/0033.png",
+        "actions_game/win/0034.png",
+        "actions_game/win/0035.png",
+        "actions_game/win/0036.png",
+        "actions_game/win/0037.png",
+        "actions_game/win/0038.png",
+        "actions_game/win/0039.png",
+        "actions_game/win/0040.png",
+        "actions_game/win/0041.png",
+        "actions_game/win/0042.png",
+        "actions_game/win/0043.png",
+        "actions_game/win/0044.png",
+        "actions_game/win/0045.png"
+      ],
+      "events": [
+        {
+          "layer": "控制",
+          "global_frame": 1641,
+          "duration": 27,
+          "scripts": [
+            "parent.$mc_ctrler.stop();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "stop",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.stop();",
+              "args": [],
+              "semantic": {
+                "type": "stop_animation"
+              }
+            }
+          ],
+          "relative_frame": 45
+        }
+      ]
+    },
+    "lose": {
+      "label": "失败",
+      "loop": false,
+      "fps": 30,
+      "frames": [
+        "actions_game/lose/0000.png",
+        "actions_game/lose/0001.png",
+        "actions_game/lose/0002.png",
+        "actions_game/lose/0003.png",
+        "actions_game/lose/0004.png",
+        "actions_game/lose/0005.png",
+        "actions_game/lose/0006.png",
+        "actions_game/lose/0007.png",
+        "actions_game/lose/0008.png",
+        "actions_game/lose/0009.png",
+        "actions_game/lose/0010.png",
+        "actions_game/lose/0011.png",
+        "actions_game/lose/0012.png",
+        "actions_game/lose/0013.png",
+        "actions_game/lose/0014.png",
+        "actions_game/lose/0015.png",
+        "actions_game/lose/0016.png",
+        "actions_game/lose/0017.png",
+        "actions_game/lose/0018.png",
+        "actions_game/lose/0019.png",
+        "actions_game/lose/0020.png",
+        "actions_game/lose/0021.png",
+        "actions_game/lose/0022.png",
+        "actions_game/lose/0023.png",
+        "actions_game/lose/0024.png",
+        "actions_game/lose/0025.png",
+        "actions_game/lose/0026.png"
+      ],
+      "events": [
+        {
+          "layer": "控制",
+          "global_frame": 1668,
+          "duration": 1,
+          "scripts": [
+            "parent.$mc_ctrler.stop();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "stop",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.stop();",
+              "args": [],
+              "semantic": {
+                "type": "stop_animation"
+              }
+            }
+          ],
+          "relative_frame": 26
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://crk484lv2k6fe"]
+
+[ext_resource type="Script" uid="uid://blflyagc2pdxu" path="res://scripts/battle/BattlePlaceholder.gd" id="1_7r43y"]
+
+[node name="BattlePlaceholder" type="Control" unique_id=1924875572]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_7r43y")

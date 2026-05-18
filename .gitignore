@@ -1,4 +1,12 @@
-venv/
-.idea/
-__pycache__/
-*.pyc
+﻿.godot/
+.export/
+builds/
+*.tmp
+*.log
+.DS_Store
+Thumbs.db
+
+# Do not commit duplicate asset archives
+*.zip
+*.rar
+*.7z

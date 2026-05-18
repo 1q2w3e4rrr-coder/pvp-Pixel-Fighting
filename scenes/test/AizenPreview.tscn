@@ -1,0 +1,10 @@
+[gd_scene format=3 uid="uid://bny0cntgtgjja"]
+
+[ext_resource type="Script" uid="uid://bnu7umbedh3pw" path="res://scripts/character/AizenPreview.gd" id="1_irlvi"]
+
+[node name="AizenPreview" type="Node2D" unique_id=1674016228]
+position = Vector2(540, 600)
+script = ExtResource("1_irlvi")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=939803779]
+scale = Vector2(3, 3)

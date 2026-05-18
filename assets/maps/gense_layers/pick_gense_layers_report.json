@@ -1,0 +1,367 @@
+{
+  "ffdec_out": "D:\\学习文件\\大三下\\软件工程实践\\导出\\xianshi_ffdec",
+  "gense_out": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\maps\\gense_layers",
+  "expected": {
+    "map_picture_02.png": [
+      [
+        4000,
+        1000
+      ],
+      [
+        4000,
+        900
+      ],
+      [
+        2400,
+        600
+      ],
+      [
+        2168,
+        542
+      ]
+    ],
+    "front_picture_03.png": [
+      [
+        2168,
+        542
+      ],
+      [
+        2400,
+        600
+      ],
+      [
+        4000,
+        1000
+      ]
+    ]
+  },
+  "matches": {
+    "map_picture_02.png": [],
+    "front_picture_03.png": []
+  },
+  "all_pngs_sorted": [
+    {
+      "path": "D:\\学习文件\\大三下\\软件工程实践\\导出\\xianshi_ffdec\\sprites\\DefineSprite_3\\1.png",
+      "name": "1.png",
+      "size": [
+        800,
+        600
+      ],
+      "has_alpha": true,
+      "alpha_not_empty": true,
+      "alpha_bbox": [
+        0,
+        0,
+        800,
+        600
+      ],
+      "bytes": 168411
+    },
+    {
+      "path": "D:\\学习文件\\大三下\\软件工程实践\\导出\\xianshi_ffdec\\sprites\\DefineSprite_12\\1.png",
+      "name": "1.png",
+      "size": [
+        1000,
+        397
+      ],
+      "has_alpha": true,
+      "alpha_not_empty": true,
+      "alpha_bbox": [
+        0,
+        0,
+        1000,
+        397
+      ],
+      "bytes": 19298
+    },
+    {
+      "path": "D:\\学习文件\\大三下\\软件工程实践\\导出\\xianshi_ffdec\\images\\4.png",
+      "name": "4.png",
+      "size": [
+        1000,
+        397
+      ],
+      "has_alpha": true,
+      "alpha_not_empty": true,
+      "alpha_bbox": [
+        0,
+        0,
+        1000,
+        397
+      ],
+      "bytes": 15010
+    },
+    {
+      "path": "D:\\学习文件\\大三下\\软件工程实践\\导出\\xianshi_ffdec\\sprites\\DefineSprite_18\\1.png",
+      "name": "1.png",
+      "size": [
+        1201,
+        229
+      ],
+      "has_alpha": true,
+      "alpha_not_empty": true,
+      "alpha_bbox": [
+        6,
+        0,
+        1193,
+        229
+      ],
+      "bytes": 5913
+    },
+    {
+      "path": "D:\\学习文件\\大三下\\软件工程实践\\导出\\xianshi_ffdec\\images\\1.png",
+      "name": "1.png",
+      "size": [
+        600,
+        400
+      ],
+      "has_alpha": false,
+      "alpha_not_empty": true,
+      "alpha_bbox": [
+        0,
+        0,
+        600,
+        400
+      ],
+      "bytes": 94336
+    },
+    {
+      "path": "D:\\学习文件\\大三下\\软件工程实践\\导出\\xianshi_ffdec\\images\\13.png",
+      "name": "13.png",
+      "size": [
+        542,
+        229
+      ],
+      "has_alpha": true,
+      "alpha_not_empty": true,
+      "alpha_bbox": [
+        0,
+        0,
+        542,
+        229
+      ],
+      "bytes": 4559
+    },
+    {
+      "path": "D:\\学习文件\\大三下\\软件工程实践\\导出\\xianshi_ffdec\\sprites\\DefineSprite_34\\1.png",
+      "name": "1.png",
+      "size": [
+        86,
+        866
+      ],
+      "has_alpha": true,
+      "alpha_not_empty": true,
+      "alpha_bbox": [
+        0,
+        0,
+        85,
+        866
+      ],
+      "bytes": 1884
+    },
+    {
+      "path": "D:\\学习文件\\大三下\\软件工程实践\\导出\\xianshi_ffdec\\sprites\\DefineSprite_39\\1.png",
+      "name": "1.png",
+      "size": [
+        86,
+        866
+      ],
+      "has_alpha": true,
+      "alpha_not_empty": true,
+      "alpha_bbox": [
+        0,
+        0,
+        85,
+        866
+      ],
+      "bytes": 1877
+    },
+    {
+      "path": "D:\\学习文件\\大三下\\软件工程实践\\导出\\xianshi_ffdec\\sprites\\DefineSprite_28\\1.png",
+      "name": "1.png",
+      "size": [
+        825,
+        60
+      ],
+      "has_alpha": true,
+      "alpha_not_empty": true,
+      "alpha_bbox": [
+        0,
+        0,
+        825,
+        60
+      ],
+      "bytes": 360
+    },
+    {
+      "path": "D:\\学习文件\\大三下\\软件工程实践\\导出\\xianshi_ffdec\\sprites\\DefineSprite_37\\1.png",
+      "name": "1.png",
+      "size": [
+        1377,
+        35
+      ],
+      "has_alpha": true,
+      "alpha_not_empty": true,
+      "alpha_bbox": [
+        0,
+        0,
+        1377,
+        35
+      ],
+      "bytes": 1781
+    },
+    {
+      "path": "D:\\学习文件\\大三下\\软件工程实践\\导出\\xianshi_ffdec\\sprites\\DefineSprite_42\\1.png",
+      "name": "1.png",
+      "size": [
+        1379,
+        33
+      ],
+      "has_alpha": true,
+      "alpha_not_empty": true,
+      "alpha_bbox": [
+        0,
+        0,
+        1379,
+        33
+      ],
+      "bytes": 1798
+    },
+    {
+      "path": "D:\\学习文件\\大三下\\软件工程实践\\导出\\xianshi_ffdec\\sprites\\DefineSprite_11\\1.png",
+      "name": "1.png",
+      "size": [
+        939,
+        35
+      ],
+      "has_alpha": true,
+      "alpha_not_empty": true,
+      "alpha_bbox": [
+        0,
+        0,
+        938,
+        30
+      ],
+      "bytes": 2380
+    },
+    {
+      "path": "D:\\学习文件\\大三下\\软件工程实践\\导出\\xianshi_ffdec\\sprites\\DefineSprite_29\\1.png",
+      "name": "1.png",
+      "size": [
+        1010,
+        23
+      ],
+      "has_alpha": true,
+      "alpha_not_empty": true,
+      "alpha_bbox": [
+        0,
+        0,
+        1010,
+        23
+      ],
+      "bytes": 319
+    },
+    {
+      "path": "D:\\学习文件\\大三下\\软件工程实践\\导出\\xianshi_ffdec\\sprites\\DefineSprite_15\\1.png",
+      "name": "1.png",
+      "size": [
+        30,
+        229
+      ],
+      "has_alpha": true,
+      "alpha_not_empty": true,
+      "alpha_bbox": [
+        0,
+        0,
+        24,
+        229
+      ],
+      "bytes": 1031
+    },
+    {
+      "path": "D:\\学习文件\\大三下\\软件工程实践\\导出\\xianshi_ffdec\\sprites\\DefineSprite_17\\1.png",
+      "name": "1.png",
+      "size": [
+        79,
+        48
+      ],
+      "has_alpha": true,
+      "alpha_not_empty": true,
+      "alpha_bbox": [
+        6,
+        10,
+        70,
+        47
+      ],
+      "bytes": 876
+    },
+    {
+      "path": "D:\\学习文件\\大三下\\软件工程实践\\导出\\xianshi_ffdec\\images\\9.png",
+      "name": "9.png",
+      "size": [
+        81,
+        31
+      ],
+      "has_alpha": true,
+      "alpha_not_empty": true,
+      "alpha_bbox": [
+        0,
+        0,
+        81,
+        31
+      ],
+      "bytes": 1042
+    },
+    {
+      "path": "D:\\学习文件\\大三下\\软件工程实践\\导出\\xianshi_ffdec\\sprites\\DefineSprite_23\\1.png",
+      "name": "1.png",
+      "size": [
+        37,
+        45
+      ],
+      "has_alpha": true,
+      "alpha_not_empty": true,
+      "alpha_bbox": [
+        0,
+        1,
+        25,
+        45
+      ],
+      "bytes": 894
+    },
+    {
+      "path": "D:\\学习文件\\大三下\\软件工程实践\\导出\\xianshi_ffdec\\sprites\\DefineSprite_26\\1.png",
+      "name": "1.png",
+      "size": [
+        37,
+        45
+      ],
+      "has_alpha": true,
+      "alpha_not_empty": true,
+      "alpha_bbox": [
+        0,
+        1,
+        25,
+        45
+      ],
+      "bytes": 725
+    },
+    {
+      "path": "D:\\学习文件\\大三下\\软件工程实践\\导出\\xianshi_ffdec\\sprites\\DefineSprite_8\\1.png",
+      "name": "1.png",
+      "size": [
+        35,
+        12
+      ],
+      "has_alpha": true,
+      "alpha_not_empty": true,
+      "alpha_bbox": [
+        0,
+        2,
+        26,
+        11
+      ],
+      "bytes": 468
+    }
+  ]
+}

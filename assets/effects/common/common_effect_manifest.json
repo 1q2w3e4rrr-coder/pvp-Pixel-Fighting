@@ -1,0 +1,215 @@
+{
+  "effects": {
+    "hit_1": {
+      "linkage": "XG_kan",
+      "fps": 30,
+      "loop": false,
+      "frames": [
+        "hit_1/0000.png",
+        "hit_1/0001.png",
+        "hit_1/0002.png",
+        "hit_1/0003.png",
+        "hit_1/0004.png",
+        "hit_1/0005.png",
+        "hit_1/0006.png",
+        "hit_1/0007.png",
+        "hit_1/0008.png",
+        "hit_1/0009.png"
+      ],
+      "additive": true
+    },
+    "hit_2": {
+      "linkage": "XG_qdj",
+      "fps": 30,
+      "loop": false,
+      "frames": [
+        "hit_2/0000.png",
+        "hit_2/0001.png",
+        "hit_2/0002.png",
+        "hit_2/0003.png",
+        "hit_2/0004.png",
+        "hit_2/0005.png",
+        "hit_2/0006.png",
+        "hit_2/0007.png",
+        "hit_2/0008.png",
+        "hit_2/0009.png",
+        "hit_2/0010.png"
+      ],
+      "additive": true
+    },
+    "hit_4": {
+      "linkage": "XG_mfdj",
+      "fps": 30,
+      "loop": false,
+      "frames": [
+        "hit_4/0000.png",
+        "hit_4/0001.png",
+        "hit_4/0002.png",
+        "hit_4/0003.png",
+        "hit_4/0004.png",
+        "hit_4/0005.png",
+        "hit_4/0006.png",
+        "hit_4/0007.png",
+        "hit_4/0008.png",
+        "hit_4/0009.png",
+        "hit_4/0010.png"
+      ],
+      "additive": true
+    },
+    "defense_2": {
+      "linkage": "XG_fyq",
+      "fps": 30,
+      "loop": false,
+      "frames": [
+        "defense_2/0000.png",
+        "defense_2/0001.png",
+        "defense_2/0002.png",
+        "defense_2/0003.png",
+        "defense_2/0004.png",
+        "defense_2/0005.png",
+        "defense_2/0006.png",
+        "defense_2/0007.png",
+        "defense_2/0008.png"
+      ],
+      "additive": true
+    },
+    "defense_4": {
+      "linkage": "XG_mffy",
+      "fps": 30,
+      "loop": false,
+      "frames": [
+        "defense_4/0000.png",
+        "defense_4/0001.png",
+        "defense_4/0002.png",
+        "defense_4/0003.png",
+        "defense_4/0004.png",
+        "defense_4/0005.png",
+        "defense_4/0006.png",
+        "defense_4/0007.png",
+        "defense_4/0008.png",
+        "defense_4/0009.png",
+        "defense_4/0010.png"
+      ],
+      "additive": true
+    },
+    "hit_6": {
+      "linkage": "XG_kanx",
+      "fps": 30,
+      "loop": false,
+      "frames": [
+        "hit_6/0000.png",
+        "hit_6/0001.png",
+        "hit_6/0002.png",
+        "hit_6/0003.png",
+        "hit_6/0004.png",
+        "hit_6/0005.png",
+        "hit_6/0006.png",
+        "hit_6/0007.png"
+      ],
+      "additive": true,
+      "fallback_shape_render": true
+    },
+    "hit_3": {
+      "linkage": "XG_qdjx",
+      "fps": 30,
+      "loop": false,
+      "frames": [
+        "hit_3/0000.png",
+        "hit_3/0001.png",
+        "hit_3/0002.png",
+        "hit_3/0003.png",
+        "hit_3/0004.png",
+        "hit_3/0005.png",
+        "hit_3/0006.png",
+        "hit_3/0007.png"
+      ],
+      "additive": true,
+      "fallback_shape_render": true
+    },
+    "hit_5": {
+      "linkage": "XG_mfdjx",
+      "fps": 30,
+      "loop": false,
+      "frames": [
+        "hit_5/0000.png",
+        "hit_5/0001.png",
+        "hit_5/0002.png",
+        "hit_5/0003.png",
+        "hit_5/0004.png",
+        "hit_5/0005.png",
+        "hit_5/0006.png",
+        "hit_5/0007.png"
+      ],
+      "additive": true,
+      "fallback_shape_render": true
+    },
+    "defense_6": {
+      "linkage": "XG_fykanx",
+      "fps": 30,
+      "loop": false,
+      "frames": [
+        "defense_6/0000.png",
+        "defense_6/0001.png",
+        "defense_6/0002.png",
+        "defense_6/0003.png",
+        "defense_6/0004.png",
+        "defense_6/0005.png",
+        "defense_6/0006.png",
+        "defense_6/0007.png"
+      ],
+      "additive": true,
+      "fallback_shape_render": true
+    },
+    "defense_3": {
+      "linkage": "XG_fyqx",
+      "fps": 30,
+      "loop": false,
+      "frames": [
+        "defense_3/0000.png",
+        "defense_3/0001.png",
+        "defense_3/0002.png",
+        "defense_3/0003.png",
+        "defense_3/0004.png",
+        "defense_3/0005.png",
+        "defense_3/0006.png",
+        "defense_3/0007.png"
+      ],
+      "additive": true,
+      "fallback_shape_render": true
+    },
+    "defense_5": {
+      "linkage": "XG_mffyx",
+      "fps": 30,
+      "loop": false,
+      "frames": [
+        "defense_5/0000.png",
+        "defense_5/0001.png",
+        "defense_5/0002.png",
+        "defense_5/0003.png",
+        "defense_5/0004.png",
+        "defense_5/0005.png",
+        "defense_5/0006.png",
+        "defense_5/0007.png"
+      ],
+      "additive": true,
+      "fallback_shape_render": true
+    },
+    "break_def": {
+      "linkage": "",
+      "fps": 30,
+      "loop": false,
+      "frames": [
+        "break_def/0000.png",
+        "break_def/0001.png",
+        "break_def/0002.png",
+        "break_def/0003.png",
+        "break_def/0004.png",
+        "break_def/0005.png",
+        "break_def/0006.png",
+        "break_def/0007.png"
+      ],
+      "additive": true,
+      "fallback_shape_render": true
+    }
+  }
+}

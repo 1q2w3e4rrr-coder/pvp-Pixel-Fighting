@@ -1,0 +1,42 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[application]
+
+config/name="BVN_Godot"
+run/main_scene="uid://diiie27imfic4"
+config/features=PackedStringArray("4.6", "Forward Plus")
+config/icon="res://icon.svg"
+
+[autoload]
+
+AudioManager="*uid://bie8npdx16u67"
+GameData="*uid://dqjfg67f3d1ar"
+
+[display]
+
+window/size/viewport_width=800
+window/size/viewport_height=600
+window/size/mode=2
+window/stretch/mode="viewport"
+window/size/window_width=800
+window/size/window_height=600
+
+[dotnet]
+
+project/assembly_name="BVN_Godot"
+
+[physics]
+
+3d/physics_engine="Jolt Physics"
+
+[rendering]
+
+rendering_device/driver.windows="d3d12"

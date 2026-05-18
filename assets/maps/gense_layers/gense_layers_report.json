@@ -1,0 +1,84 @@
+{
+  "exports": [
+    {
+      "name": "图片/picture_01",
+      "target": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\maps\\gense_layers\\bg_picture_01.png",
+      "status": "decoded_bitmapDataHRef",
+      "source": "D:\\学习文件\\大三下\\软件工程实践\\素材\\OpenBleachVsNaruto\\swf_source\\map\\GenSe\\bin\\M 4 1481511437.dat",
+      "size": [
+        600,
+        400
+      ]
+    },
+    {
+      "name": "图片/picture_02",
+      "target": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\maps\\gense_layers\\map_picture_02.png",
+      "status": "needs_ffdec_or_animate_export",
+      "source": "D:\\学习文件\\大三下\\软件工程实践\\素材\\OpenBleachVsNaruto\\swf_source\\map\\GenSe\\bin\\M 2 1481507147.dat",
+      "hint": "Export this bitmap from GenSe.xfl/GenSe.swf as PNG without recompressing or drawing replacements."
+    },
+    {
+      "name": "图片/picture_03",
+      "target": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\maps\\gense_layers\\front_picture_03.png",
+      "status": "needs_ffdec_or_animate_export",
+      "source": "D:\\学习文件\\大三下\\软件工程实践\\素材\\OpenBleachVsNaruto\\swf_source\\map\\GenSe\\bin\\M 3 1481507260.dat",
+      "hint": "Export this bitmap from GenSe.xfl/GenSe.swf as PNG without recompressing or drawing replacements."
+    }
+  ],
+  "meta": {
+    "stage": {
+      "game_size": [
+        800,
+        600
+      ],
+      "stage_size": [
+        1000,
+        600
+      ]
+    },
+    "bounds": {
+      "line_player_bottom_y": 365,
+      "line_bottom_y": 395,
+      "offsetY": 205,
+      "playerBottom_after_offset": 570,
+      "p1_after_offset": [
+        370.1,
+        570
+      ],
+      "p2_after_offset": [
+        643.55,
+        570
+      ]
+    },
+    "layers": {
+      "bg": {
+        "symbol": "mc_04",
+        "bitmap": "picture_01",
+        "matrix_in_mc_04": {
+          "a": 1.33331298828125,
+          "d": 1.5
+        }
+      },
+      "map": {
+        "symbol": "mc_03",
+        "bitmap": "picture_02",
+        "map_instance_matrix": {
+          "a": 1.00004577636719,
+          "ty": -80.2
+        },
+        "bitmap_in_mc_03": {
+          "ty": 79
+        }
+      },
+      "front": {
+        "symbol": "mc_07",
+        "bitmap": "picture_03",
+        "front_instance_matrix": {
+          "a": 1.00004577636719,
+          "tx": 430.5,
+          "ty": 166.5
+        }
+      }
+    }
+  }
+}

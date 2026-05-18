@@ -1,0 +1,39 @@
+{
+  "source": "FFDec exported from original embedded fight.swf in FighterTester_ORG.swf",
+  "source_swf": "embedded_02_id_2_FWS / LIKELY_fight_swf_FWS.swf",
+  "segments_1_based": {
+    "start": [
+      9,
+      87
+    ],
+    "ko": [
+      144,
+      189
+    ],
+    "winner_p1": [
+      199,
+      209
+    ],
+    "winner_p2": [
+      199,
+      209
+    ],
+    "winner_p1_perfect": [
+      199,
+      209
+    ],
+    "winner_p2_perfect": [
+      199,
+      209
+    ],
+    "timeover": [
+      219,
+      262
+    ],
+    "drawgame": [
+      266,
+      308
+    ]
+  },
+  "note": "No placeholder drawing. These PNGs are copied from FFDec sprite export of the original SWF."
+}
