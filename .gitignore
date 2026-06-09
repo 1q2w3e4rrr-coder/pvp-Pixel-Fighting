@@ -1,3 +1,8 @@
 # Godot 4+ specific ignores
 .godot/
 /android/
+
+# Ignore duplicate compressed asset archives
+*.zip
+*.rar
+*.7z

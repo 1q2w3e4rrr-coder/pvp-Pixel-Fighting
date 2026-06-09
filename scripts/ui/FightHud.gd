@@ -32,6 +32,15 @@ const HP_FRONT_SIZE: Vector2 = Vector2(260.0, 15.0)
 const HP_FRONT_OFFSET: Vector2 = Vector2(4.0, 4.0)
 const HP_GLASS_SIZE: Vector2 = Vector2(268.0, 19.0)       # picture_008, hpbar_barmc 玻璃层
 const FACE_FRAME_SIZE: Vector2 = Vector2(105.0, 64.0)     # picture_090, hpbar_facemc
+# 原版战斗血条头像不是 55x55 普通头像，而是 FightFaceUI -> AssetManager.getFighterFaceBar()
+# 使用 FighterVO.faceBarCls，并在 AssetManager 中强制 size=(102,64)。
+# 当前 BVN 资源配置里 id="aizen" 对应的是 start_frame=1 的队长蓝染，face_bar=aizen_captain_m.png；
+# id="aizen_gz" 才对应叛变/白衣蓝染，face_bar=aizen_m.png。
+const FACE_BAR_SIZE: Vector2 = Vector2(102.0, 64.0)
+# mc_035(hpbar_facegroup) 内 face = mc_034 的 Matrix tx=0.15。
+# faceBar 图本身是 102x64，外框 picture_090 是 105x64；P2 通过外层镜像后视觉上右边贴齐，所以左侧补 3px。
+const P1_FACE_BAR_POS: Vector2 = Vector2(0.15, 6.0)
+const P2_FACE_BAR_POS: Vector2 = Vector2(701.0, 6.0)
 const ENERGY_FRAME_SIZE: Vector2 = Vector2(140.0, 10.0)   # picture_061, energybar_barmc
 const ENERGY_FILL_SIZE: Vector2 = Vector2(123.0, 5.0)     # picture_057 / shape_002
 const QI_FRAME_SIZE: Vector2 = Vector2(191.0, 23.0)       # picture_063, qbar_barmc
@@ -639,14 +648,31 @@ func _build_original_layout(p1_character: String, p2_character: String) -> void:
 	top_mask.color = Color(0.0, 0.0, 0.0, 0.22)
 	add_child(top_mask)
 
-	p1_face_frame = _tex_rect("P1FaceFrame", tex_face_frame, P1_FACE_POS, FACE_FRAME_SIZE, false)
-	p2_face_frame = _tex_rect("P2FaceFrame", tex_face_frame, P2_FACE_POS, FACE_FRAME_SIZE, true)
-	add_child(p1_face_frame)
-	add_child(p2_face_frame)
-	p1_face = _face_rect("P1Face", p1_character, P1_FACE_POS + Vector2(13.0, 6.0), Vector2(55.0, 55.0), false)
-	p2_face = _face_rect("P2Face", p2_character, P2_FACE_POS + Vector2(34.0, 6.0), Vector2(55.0, 55.0), true)
+	# 原版 hpbar_facemc：ct 中放入 102x64 faceBar，外层 frame / mask 再压上去。
+	# P2 在原版 mc_040.xml 中不是重新计算一个新裁切框，而是 face2 外层 Matrix a=-1。
+	# 所以 Godot 侧要把“P1 已裁切好的头像层 + frame overlay”整体做水平镜像，
+	# 不能只在 shader 里单独镜像 UV 或单独镜像 mask。
+	p1_face = _face_bar_rect("P1Face", p1_character, P1_FACE_BAR_POS, FACE_BAR_SIZE, false)
+	p2_face = _face_bar_rect("P2Face", p2_character, P2_FACE_BAR_POS + Vector2(FACE_BAR_SIZE.x, 0.0), FACE_BAR_SIZE, false)
+	p2_face.scale = Vector2(-1.0, 1.0)
+	p1_face.z_index = 34
+	p2_face.z_index = 34
 	add_child(p1_face)
 	add_child(p2_face)
+	p1_face_frame = _tex_rect("P1FaceFrame", tex_face_frame, P1_FACE_POS, FACE_FRAME_SIZE, false)
+	p2_face_frame = _tex_rect("P2FaceFrame", tex_face_frame, P2_FACE_POS + Vector2(FACE_FRAME_SIZE.x, 0.0), FACE_FRAME_SIZE, false)
+	p2_face_frame.scale = Vector2(-1.0, 1.0)
+	# hpbar_face_frame.png / picture_090 本身带黑色内底。
+	# 原版 mc_034.xml 中 ct 头像层受 mask 裁切后显示在框内；
+	# Godot 里如果直接把 picture_090 压在头像上层，会把头像完全盖黑。
+	# 因此这里保留外框高光，但把原版 mask 内部区域打透明，让 faceBar 显示出来。
+	# P2 通过节点 scale.x=-1 镜像整个 P1 结果，所以 overlay shader 仍使用 P1 的非镜像 mask。
+	p1_face_frame.material = _make_face_frame_overlay_material(false)
+	p2_face_frame.material = _make_face_frame_overlay_material(false)
+	p1_face_frame.z_index = 35
+	p2_face_frame.z_index = 35
+	add_child(p1_face_frame)
+	add_child(p2_face_frame)
 
 	_build_hp_side(true)
 	_build_hp_side(false)
@@ -1281,12 +1307,25 @@ func _apply_hp_side_positions(is_p1: bool, delta: Vector2) -> void:
 
 
 func _apply_face_positions(is_p1: bool, delta: Vector2) -> void:
-	var base: Vector2 = P1_FACE_POS if is_p1 else P2_FACE_POS
 	var frame: TextureRect = p1_face_frame if is_p1 else p2_face_frame
 	var face: TextureRect = p1_face if is_p1 else p2_face
-	var face_offset: Vector2 = Vector2(13.0, 6.0) if is_p1 else Vector2(34.0, 6.0)
-	_set_pos_if_valid(frame, base + delta)
-	_set_pos_if_valid(face, base + face_offset + delta)
+	# 原版 mc_040 在 fadin_fin 帧把 face1/face2 放到 hpbar_mc 两侧；
+	# mc_035(hpbar_facegroup) 内部 face(mc_034) 的 faceBar 是 102x64。
+	# P2 的原版 face2 外层 Matrix a=-1，所以这里用负 scale 镜像整个 P1 裁切结果。
+	if is_p1:
+		_set_pos_if_valid(frame, P1_FACE_POS + delta)
+		_set_pos_if_valid(face, P1_FACE_BAR_POS + delta)
+		if frame != null:
+			frame.scale = Vector2.ONE
+		if face != null:
+			face.scale = Vector2.ONE
+	else:
+		_set_pos_if_valid(frame, P2_FACE_POS + Vector2(FACE_FRAME_SIZE.x, 0.0) + delta)
+		_set_pos_if_valid(face, P2_FACE_BAR_POS + Vector2(FACE_BAR_SIZE.x, 0.0) + delta)
+		if frame != null:
+			frame.scale = Vector2(-1.0, 1.0)
+		if face != null:
+			face.scale = Vector2(-1.0, 1.0)
 
 
 func _apply_energy_positions(is_p1: bool, delta: Vector2) -> void:
@@ -1941,9 +1980,114 @@ func _tex_rect(node_name: String, tex: Texture2D, pos: Vector2, rect_size: Vecto
 
 
 func _face_rect(node_name: String, character: String, pos: Vector2, rect_size: Vector2, flip_h: bool) -> TextureRect:
+	# 通用头像贴图：用于 qbar_facemc / 辅助头像等小头像，不套 hpbar_facemc 的 102x64 mask。
 	var rect: TextureRect = _tex_rect(node_name, _load_face_texture(character), pos, rect_size, flip_h)
-	rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	rect.stretch_mode = TextureRect.STRETCH_SCALE
+	rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	return rect
+
+
+func _face_bar_rect(node_name: String, character: String, pos: Vector2, rect_size: Vector2, _flip_h: bool) -> TextureRect:
+	# 战斗顶部 HP 头像专用：对应 FightFaceUI.setData -> AssetManager.getFighterFaceBar。
+	# 这里始终使用 P1 的原始 mask。P2 不在 shader 内拆开镜像，
+	# 而是在 _build_original_layout() / _apply_face_positions() 中把整个已裁切结果 scale.x=-1，
+	# 对齐原版 mc_040.xml face2 的 Matrix a=-1。
+	var rect: TextureRect = _tex_rect(node_name, _load_face_bar_texture(character), pos, rect_size, false)
+	rect.stretch_mode = TextureRect.STRETCH_SCALE
+	rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	rect.material = _make_face_bar_mask_material(false)
+	return rect
+
+
+func _make_face_bar_mask_material(mirror_mask: bool = false) -> ShaderMaterial:
+	var shader := Shader.new()
+	shader.code = """
+shader_type canvas_item;
+
+uniform vec2 face_size = vec2(102.0, 64.0);
+uniform bool mirror_mask = false;
+
+float cross2(vec2 a, vec2 b, vec2 p) {
+	return (b.x - a.x) * (p.y - a.y) - (b.y - a.y) * (p.x - a.x);
+}
+
+void fragment() {
+	vec2 sample_uv = UV;
+	vec2 p = UV * face_size;
+	if (mirror_mask) {
+		// P2 的最终结果应与 P1 完全镜像：
+		// 1) 先镜像未裁切头像图片的采样；
+		// 2) 再把 P1 的 faceBar mask 多边形也水平镜像。
+		// 等价于“先镜像原图，再使用镜像后的 P1 裁切形状”。
+		sample_uv.x = 1.0 - sample_uv.x;
+		p.x = face_size.x - p.x;
+	}
+	vec4 col = texture(TEXTURE, sample_uv);
+
+	// fight.xfl / mc_034.xml / hpbar_facemc 的 mask 层：
+	// edges="!1988 956|1681 1242!1681 1242|282 1242!..."，Flash twip / 20 = 像素。
+	// 这个 mask 只裁 102x64 faceBar 图像，不负责画外框；外框由 hpbar_face_frame.png 压在上层。
+	// P2 时 sample_uv 与 p 都镜像，保证内容和裁切形状同时成为 P1 的水平镜像。
+	float inside = 1.0;
+	inside *= step(0.0, cross2(vec2(99.40, 47.80), vec2(84.05, 62.10), p));
+	inside *= step(0.0, cross2(vec2(84.05, 62.10), vec2(14.10, 62.10), p));
+	inside *= step(0.0, cross2(vec2(14.10, 62.10), vec2(-0.15, 50.65), p));
+	inside *= step(0.0, cross2(vec2(-0.15, 50.65), vec2(-0.15, 3.85), p));
+	inside *= step(0.0, cross2(vec2(-0.15, 3.85), vec2(70.00, 3.85), p));
+	inside *= step(0.0, cross2(vec2(70.00, 3.85), vec2(99.40, 27.75), p));
+	inside *= step(0.0, cross2(vec2(99.40, 27.75), vec2(99.40, 47.80), p));
+
+	col.a *= inside;
+	COLOR = col;
+}
+"""
+	var material := ShaderMaterial.new()
+	material.shader = shader
+	material.set_shader_parameter("face_size", FACE_BAR_SIZE)
+	material.set_shader_parameter("mirror_mask", mirror_mask)
+	return material
+
+
+func _make_face_frame_overlay_material(mirror_mask: bool = false) -> ShaderMaterial:
+	var shader := Shader.new()
+	shader.code = """
+shader_type canvas_item;
+
+uniform vec2 frame_size = vec2(105.0, 64.0);
+uniform bool mirror_mask = false;
+
+float cross2(vec2 a, vec2 b, vec2 p) {
+	return (b.x - a.x) * (p.y - a.y) - (b.y - a.y) * (p.x - a.x);
+}
+
+void fragment() {
+	vec4 col = texture(TEXTURE, UV);
+	vec2 p = UV * frame_size;
+	if (mirror_mask) {
+		p.x = frame_size.x - p.x;
+	}
+
+	// hpbar_facemc / mc_034.xml 的 mask 多边形，换算自 twip / 20。
+	// 对 picture_090 外框层取反：mask 内部透明，只保留外框/高光在头像上方。
+	float inside = 1.0;
+	inside *= step(0.0, cross2(vec2(99.40, 47.80), vec2(84.05, 62.10), p));
+	inside *= step(0.0, cross2(vec2(84.05, 62.10), vec2(14.10, 62.10), p));
+	inside *= step(0.0, cross2(vec2(14.10, 62.10), vec2(-0.15, 50.65), p));
+	inside *= step(0.0, cross2(vec2(-0.15, 50.65), vec2(-0.15, 3.85), p));
+	inside *= step(0.0, cross2(vec2(-0.15, 3.85), vec2(70.00, 3.85), p));
+	inside *= step(0.0, cross2(vec2(70.00, 3.85), vec2(99.40, 27.75), p));
+	inside *= step(0.0, cross2(vec2(99.40, 27.75), vec2(99.40, 47.80), p));
+
+	// 防止半透明边缘留下黑底：内部完全打空，边框区域保持原图。
+	col.a *= (1.0 - inside);
+	COLOR = col;
+}
+"""
+	var material := ShaderMaterial.new()
+	material.shader = shader
+	material.set_shader_parameter("frame_size", FACE_FRAME_SIZE)
+	material.set_shader_parameter("mirror_mask", mirror_mask)
+	return material
 
 
 func _make_label(text_value: String, pos: Vector2, rect_size: Vector2, font_size: int, color: Color, align: HorizontalAlignment) -> Label:
@@ -1984,13 +2128,70 @@ func _load_tex(file_name: String) -> Texture2D:
 	return tex as Texture2D
 
 
+func _load_face_bar_texture(character: String) -> Texture2D:
+	var key: String = character.strip_edges().to_lower()
+	if key == "":
+		key = "aizen"
+
+	var candidates: Array[String] = []
+
+	# 当前项目的 Aizen 使用原版 start_frame=1 队长蓝染。
+	# 在 BleachVsNaruto-master/shared/assets/assets/config/fighter.json 中：
+	#   id="aizen"    -> face_bar="aizen_captain_m.png"
+	#   id="aizen_gz" -> face_bar="aizen_m.png"
+	# 之前直接按 OpenBleachVsNaruto 旧 fighter.xml 取 aizen_m，会误用白衣/叛变蓝染头像。
+	match key:
+		"aizen":
+			candidates.append("res://assets/face/aizen_captain_m.png")
+			candidates.append("res://assets/face/aizen_m.png")
+		"aizen_gz", "aizen_rebel", "aizen_rebellion":
+			candidates.append("res://assets/face/aizen_m.png")
+		"aizen_captain":
+			candidates.append("res://assets/face/aizen_captain_m.png")
+		_:
+			if key.ends_with("_m"):
+				candidates.append("res://assets/face/" + key + ".png")
+			else:
+				candidates.append("res://assets/face/" + key + "_m.png")
+				candidates.append("res://assets/face/" + key + ".png")
+
+	candidates.append("res://assets/face/aizen_captain_m.png")
+	candidates.append("res://assets/face/aizen_m.png")
+	candidates.append("res://assets/face/aizen.png")
+
+	for path: String in candidates:
+		if ResourceLoader.exists(path):
+			return load(path) as Texture2D
+
+	return null
+
+
 func _load_face_texture(character: String) -> Texture2D:
 	var key: String = character.strip_edges().to_lower()
-	var path: String = "res://assets/face/" + key + ".png"
-	var tex: Resource = load(path)
-	if tex == null:
-		tex = load("res://assets/face/aizen.png")
-	return tex as Texture2D
+	if key == "":
+		key = "aizen"
+
+	var candidates: Array[String] = []
+
+	# 原版战斗 HUD 头像使用 FighterVO.faceBarCls。
+	# fighter.xml 中蓝染为：
+	# <face cls="aizen" big_cls="aizen_b" bar_cls="aizen_m" win_cls="aizen_w"/>
+	# 所以战斗 HUD 应优先加载 *_m.png，而不是普通 face/*.png。
+	if key.ends_with("_m"):
+		candidates.append("res://assets/face/" + key + ".png")
+	else:
+		candidates.append("res://assets/face/" + key + "_m.png")
+		candidates.append("res://assets/face/" + key + ".png")
+
+	# 当前 Demo 的安全 fallback：仍优先使用战斗 HUD 头像。
+	candidates.append("res://assets/face/aizen_m.png")
+	candidates.append("res://assets/face/aizen.png")
+
+	for path: String in candidates:
+		if ResourceLoader.exists(path):
+			return load(path) as Texture2D
+
+	return null
 
 
 func _node_float(node_value: Variant, property_name: String, default_value: float) -> float:
