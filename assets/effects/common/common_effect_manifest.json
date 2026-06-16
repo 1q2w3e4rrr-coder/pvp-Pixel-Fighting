@@ -357,6 +357,28 @@
       ],
       "additive": false,
       "sound": "snd_dash_air"
+    },
+    "catch_hit": {
+      "linkage": "xg_catch_hit",
+      "source": "OpenBleachVsNaruto/swf_source/assets/effect/LIBRARY/mc/mc_045.xml (linkageClassName=xg_catch_hit, linkageIdentifier=XG_qdj)",
+      "fps": 30,
+      "loop": false,
+      "frames": [
+        "hit_2/0000.png",
+        "hit_2/0001.png",
+        "hit_2/0002.png",
+        "hit_2/0003.png",
+        "hit_2/0004.png",
+        "hit_2/0005.png",
+        "hit_2/0006.png",
+        "hit_2/0007.png",
+        "hit_2/0008.png",
+        "hit_2/0009.png",
+        "hit_2/0010.png"
+      ],
+      "additive": true,
+      "sound": "snd_hit_cache",
+      "freeze_ms": 400
     }
   }
 }

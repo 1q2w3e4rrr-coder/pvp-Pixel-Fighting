@@ -12,6 +12,7 @@ var fps: float = 30.0
 
 var playing: bool = false
 var facing: int = 1
+var original_time_scale: float = 1.0
 
 var additive_material: CanvasItemMaterial
 
@@ -111,6 +112,10 @@ func apply_blend_mode(additive: bool) -> void:
 		sprite.material = null
 
 
+func set_original_time_scale(value: float) -> void:
+	original_time_scale = clampf(value, 0.01, 4.0)
+
+
 func stop_effect() -> void:
 	playing = false
 	visible = false
@@ -138,7 +143,7 @@ func _process(delta: float) -> void:
 		stop_effect()
 		return
 
-	frame_timer += delta
+	frame_timer += delta * original_time_scale
 
 	var frame_duration: float = 1.0 / fps
 
@@ -163,7 +168,7 @@ func update_frame() -> void:
 	if frame_index < 0 or frame_index >= frames.size():
 		return
 
-	var rel_path: String = String(frames[frame_index])
+	var rel_path: String = str(frames[frame_index])
 	var full_path: String = "res://assets/characters/aizen/" + rel_path
 
 	var tex: Texture2D = load(full_path)

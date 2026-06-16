@@ -16,6 +16,13 @@ var face_rect: TextureRect
 var xg_effect: EffectPlayer
 
 var is_active: bool = false
+var original_time_scale: float = 1.0
+
+
+func set_original_time_scale(value: float) -> void:
+	original_time_scale = clampf(value, 0.01, 4.0)
+	if xg_effect != null and xg_effect.has_method("set_original_time_scale"):
+		xg_effect.set_original_time_scale(original_time_scale)
 
 
 func _ready() -> void:
@@ -41,6 +48,7 @@ func create_nodes() -> void:
 	xg_effect.z_index = 5
 	add_child(xg_effect)
 	xg_effect.setup("res://assets/characters/aizen/aizen_effect_manifest.json")
+	xg_effect.set_original_time_scale(original_time_scale)
 
 	face_rect = TextureRect.new()
 	face_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE

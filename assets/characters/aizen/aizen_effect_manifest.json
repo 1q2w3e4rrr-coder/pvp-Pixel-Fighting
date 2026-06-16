@@ -333,7 +333,8 @@
         "effects_game/xg_bs/0014.png",
         "effects_game/xg_bs/0015.png",
         "effects_game/xg_bs/0016.png"
-      ]
+      ],
+      "original_vertical_reference": "EffectCtrler.bisha target.y - 50 converted from world to screen before HUD-layer playback"
     },
     "xg_cbs": {
       "source_linkage": "XG_cbs",
@@ -357,7 +358,8 @@
         "effects_game/xg_cbs/0014.png",
         "effects_game/xg_cbs/0015.png",
         "effects_game/xg_cbs/0016.png"
-      ]
+      ],
+      "original_vertical_reference": "EffectCtrler.bisha target.y - 50 converted from world to screen before HUD-layer playback"
     },
     "bsmc": {
       "frames": [
@@ -436,7 +438,9 @@
       ],
       "visual_offset_mirrors_with_facing": false,
       "registration_source": "Step8: FFDec canvas -> original registration visual correction; original runtime origin remains currentTarget + raw offset (0,-25).",
-      "sprite_centered": true
+      "sprite_centered": true,
+      "original_vertical_reference": "currentTarget.y - 25 from addAttacker raw params y:{followTarget:true,offset:-25}",
+      "height_alignment_source": "Aizen mc_023 frame 804 addAttacker(\"bsmc\", {x:{followTarget:true,offset:0}, y:{followTarget:true,offset:-25}, applyG:false})"
     },
     "zh3mc": {
       "frames": [
@@ -471,7 +475,9 @@
       ],
       "visual_offset_mirrors_with_facing": true,
       "registration_source": "Step8: FFDec-rebased visual offset; x mirrors with fighter facing. Original hit area still uses XFL-composed ZH3ATM_RECT.",
-      "sprite_centered": true
+      "sprite_centered": true,
+      "original_vertical_reference": "caster fighter origin y at creation time; visual_offset only compensates FFDec flattened PNG registration",
+      "height_alignment_source": "Aizen mc_023 frame 680 addAttacker(\"zh3mc\", {applyG:false}); mc_015 zh3atm matrix preserved for hitbox height"
     }
   }
 }

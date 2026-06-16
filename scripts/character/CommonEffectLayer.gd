@@ -19,7 +19,7 @@ const HIT_EFFECT_BY_TYPE := {
 	7: "hit_5",
 	8: "hit_5",
 	9: "hit_5",
-	11: "hit_2"
+	11: "catch_hit"
 }
 
 const DEFENSE_EFFECT_BY_TYPE := {
@@ -73,6 +73,7 @@ const DEF_SOUND_BY_TYPE := {
 
 var manifest: Dictionary = {}
 var active_items: Array[Dictionary] = []
+var original_time_scale: float = 1.0
 var additive_material: CanvasItemMaterial
 
 
@@ -81,6 +82,10 @@ func _ready() -> void:
 	additive_material = CanvasItemMaterial.new()
 	additive_material.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
 	load_manifest()
+
+
+func set_original_time_scale(value: float) -> void:
+	original_time_scale = clampf(value, 0.01, 4.0)
 
 
 func load_manifest() -> void:
@@ -97,8 +102,8 @@ func load_manifest() -> void:
 
 func play_hit_effect(hit_vo: Dictionary, hit_rect: Rect2, facing: int = 1) -> void:
 	var hit_type: int = int(hit_vo.get("hitType", 0))
-	var effect_id: String = String(HIT_EFFECT_BY_TYPE.get(hit_type, "hit_4"))
-	var sound_id: String = String(HIT_SOUND_BY_TYPE.get(hit_type, "snd_hit2"))
+	var effect_id: String = str(HIT_EFFECT_BY_TYPE.get(hit_type, "hit_4"))
+	var sound_id: String = str(HIT_SOUND_BY_TYPE.get(hit_type, "snd_hit2"))
 	play_effect(effect_id, hit_rect.get_center(), facing, 1.0, true)
 	AudioManager.play_effect_sfx(sound_id)
 
@@ -106,8 +111,8 @@ func play_hit_effect(hit_vo: Dictionary, hit_rect: Rect2, facing: int = 1) -> vo
 func play_defense_effect(hit_vo: Dictionary, hit_rect: Rect2, facing: int = 1) -> void:
 	var hit_type: int = int(hit_vo.get("hitType", 0))
 	# 原版 HAND 防御遇到 KAN/KAN_HEAVY 会转成 DA/DA_HEAVY；当前蓝染是刀系，先按 SWOARD 处理。
-	var effect_id: String = String(DEFENSE_EFFECT_BY_TYPE.get(hit_type, "defense_5"))
-	var sound_id: String = String(DEF_SOUND_BY_TYPE.get(hit_type, "snd_def"))
+	var effect_id: String = str(DEFENSE_EFFECT_BY_TYPE.get(hit_type, "defense_5"))
+	var sound_id: String = str(DEF_SOUND_BY_TYPE.get(hit_type, "snd_def"))
 	play_effect(effect_id, hit_rect.get_center(), facing, 1.0, true)
 	AudioManager.play_effect_sfx(sound_id)
 
@@ -118,7 +123,7 @@ func play_steel_hit_effect(hit_vo: Dictionary, hit_rect: Rect2, facing: int = 1)
 	var hit_type: int = int(hit_vo.get("hitType", 0))
 	if hit_type == 0:
 		return
-	var effect_id: String = String(STEEL_EFFECT_BY_TYPE.get(hit_type, "steel_hit_mfdj"))
+	var effect_id: String = str(STEEL_EFFECT_BY_TYPE.get(hit_type, "steel_hit_mfdj"))
 	play_effect(effect_id, hit_rect.get_center(), facing, 1.0, true, true)
 	AudioManager.play_effect_sfx("snd_hit_steel")
 
@@ -138,6 +143,18 @@ func play_dash_effect(pos: Vector2, facing: int = 1, is_air: bool = false) -> vo
 func play_break_defense(hit_rect: Rect2, facing: int = 1) -> void:
 	play_effect("break_def", hit_rect.get_center(), facing, 1.0, true)
 	AudioManager.play_effect_sfx("snd_mfdjx")
+
+
+func play_ko_hit_end(pos: Vector2, facing: int = 1) -> void:
+	# FightUI.playKO: EffectCtrler.doEffectById("hit_end", loser.x, loser.y).
+	# 如果当前资源包尚未导出 xg_hitover/hit_end，则使用已存在的重击魔法效果作为安全 fallback，避免 KO 流程报错。
+	var effects: Dictionary = manifest.get("effects", {}) as Dictionary
+	if effects.has("hit_end"):
+		play_effect("hit_end", pos, facing, 1.0, true)
+	elif effects.has("hit_5"):
+		play_effect("hit_5", pos, facing, 1.0, true)
+	else:
+		print("KO hit_end effect missing; skipped")
 
 
 func play_effect(effect_id: String, pos: Vector2, facing: int = 1, effect_scale: float = 1.0, additive: bool = true, rand_rotate: bool = false) -> void:
@@ -181,7 +198,7 @@ func _process(delta: float) -> void:
 	while i >= 0:
 		var item: Dictionary = active_items[i]
 		var fps: float = float(item.get("fps", 30.0))
-		var timer: float = float(item.get("timer", 0.0)) + delta
+		var timer: float = float(item.get("timer", 0.0)) + delta * original_time_scale
 		var frame_time: float = 1.0 / maxf(1.0, fps)
 		var idx: int = int(item.get("index", 0))
 		while timer >= frame_time:
@@ -212,7 +229,7 @@ func _update_item_frame(item_index: int) -> void:
 	var idx: int = int(item.get("index", 0))
 	if idx < 0 or idx >= frames.size():
 		return
-	var frame_path: String = FRAME_BASE + String(frames[idx])
+	var frame_path: String = FRAME_BASE + str(frames[idx])
 	var tex: Texture2D = load(frame_path)
 	if tex != null:
 		sprite.texture = tex

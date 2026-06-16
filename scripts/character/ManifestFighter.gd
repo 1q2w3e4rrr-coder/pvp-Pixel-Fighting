@@ -77,6 +77,17 @@ var original_hurt_action: String = ""
 var is_steel_body: bool = false
 var is_super_steel_body: bool = false
 var apply_gravity_enabled: bool = true
+var is_cross: bool = false
+var original_air_move_enabled: bool = false
+var original_animation_stopped: bool = false
+var original_time_scale: float = 1.0
+var original_move_target_bound: bool = false
+var original_caught_by_throw: bool = false
+# Step19：原版防御/破防审计状态。
+var original_last_hit_result: String = ""
+var original_last_damage_taken: float = 0.0
+var original_guard_break_timer: float = 0.0
+var original_can_hurt_break_timer: float = 0.0
 
 const ORIGINAL_FPS := 30.0
 const HURT_FRAME_OFFSET := 3
@@ -141,6 +152,7 @@ func play_action(action_name: String) -> void:
 	current_action = action_name
 	frame_index = 0
 	frame_timer = 0.0
+	original_animation_stopped = false
 	fired_event_keys.clear()
 	original_hurt_action = ""
 
@@ -201,17 +213,23 @@ func start_air_attack() -> void:
 
 
 func _process(delta: float) -> void:
-	update_energy(delta)
-	update_defense_hold(delta)
-	update_be_hit_gap(delta)
-	update_hurt_timer(delta)
-	update_hurt_fly_state(delta)
-	update_animation(delta)
-	update_physics(delta)
-	update_horizontal_motion(delta)
+	var scaled_delta: float = delta * original_time_scale
+	update_energy(scaled_delta)
+	update_defense_hold(scaled_delta)
+	update_be_hit_gap(scaled_delta)
+	update_original_guard_break_timer(scaled_delta)
+	update_original_can_hurt_break_timer(scaled_delta)
+	update_hurt_timer(scaled_delta)
+	update_hurt_fly_state(scaled_delta)
+	update_animation(scaled_delta)
+	update_physics(scaled_delta)
+	update_horizontal_motion(scaled_delta)
 
 
 func update_animation(delta: float) -> void:
+	if original_animation_stopped:
+		return
+
 	if not manifest.has("actions"):
 		return
 
@@ -356,6 +374,10 @@ func handle_action_finished() -> void:
 
 
 func update_physics(delta: float) -> void:
+	if original_move_target_bound:
+		velocity_y = 0.0
+		return
+
 	if not in_air:
 		return
 
@@ -406,6 +428,18 @@ func update_be_hit_gap(delta: float) -> void:
 	if be_hit_gap_timer <= 0.0:
 		be_hit_gap_timer = 0.0
 		is_allow_be_hit = true
+
+
+func update_original_guard_break_timer(delta: float) -> void:
+	if original_guard_break_timer <= 0.0:
+		return
+	original_guard_break_timer = maxf(0.0, original_guard_break_timer - delta)
+
+
+func update_original_can_hurt_break_timer(delta: float) -> void:
+	if original_can_hurt_break_timer <= 0.0:
+		return
+	original_can_hurt_break_timer = maxf(0.0, original_can_hurt_break_timer - delta)
 
 
 func _set_be_hit_gap(frames: int) -> void:
@@ -617,11 +651,14 @@ func is_defending() -> bool:
 
 
 func is_can_hurt_break() -> bool:
-	# 对应原版 QiBar.render() 中的 getMcCtrl().isCanHurtBreak()。
-	# 这里只用于 HUD 的 sp 提示，不重新启用 O 支援/换人。
+	# 原版 canHurtBreak 只在受击/击飞可中断窗口且辅助气满时成立；当前项目仍忽略 O 键，只供 HUD/SP 状态读取。
+	if not is_alive:
+		return false
 	if fzqi < fzqi_max:
 		return false
-	return in_hitstun or current_action == "hurt" or current_action.begins_with("knock") or current_action == "hurt_fly"
+	if original_move_target_bound or original_caught_by_throw:
+		return false
+	return in_hitstun or hurt_fly_state != 0 or original_can_hurt_break_timer > 0.0
 
 
 func update_defense_hold(delta: float) -> void:
@@ -637,6 +674,24 @@ func set_apply_gravity_enabled(enabled: bool) -> void:
 	apply_gravity_enabled = enabled
 	if not enabled:
 		velocity_y = 0.0
+
+
+func set_original_time_scale(value: float) -> void:
+	original_time_scale = clampf(value, 0.01, 4.0)
+
+
+func set_cross_enabled(enabled: bool) -> void:
+	is_cross = enabled
+
+
+func set_air_move_enabled(enabled: bool) -> void:
+	original_air_move_enabled = enabled
+
+
+func stop_original_animation() -> void:
+	# MovieClip.stop()：停在当前帧，不继续 advance frame。
+	original_animation_stopped = true
+	action_locked = true
 
 
 func stop_original_motion() -> void:
@@ -681,6 +736,33 @@ func set_air_state_from_position() -> void:
 		velocity_y = 0.0
 
 
+func set_original_move_target_bound(enabled: bool) -> void:
+	# MoveTargetParamVO 绑定 currentTarget 时，目标位置由 FighterMcCtrler.renderMoveTarget() 控制。
+	original_move_target_bound = enabled
+	if enabled:
+		apply_gravity_enabled = false
+		velocity_x = 0.0
+		velocity_y = 0.0
+		damping_x = 0.0
+		in_air = position.y < ground_y - 0.5
+	else:
+		apply_gravity_enabled = true
+		set_air_state_from_position()
+
+
+func set_original_caught_by_throw(enabled: bool) -> void:
+	# HitType.CATCH 命中后目标进入投技控制状态；moveTarget 会进一步绑定位置。
+	original_caught_by_throw = enabled
+	if enabled:
+		in_hitstun = true
+		action_locked = true
+		velocity_x = 0.0
+		velocity_y = 0.0
+		damping_x = 0.0
+	else:
+		original_caught_by_throw = false
+
+
 func get_damage_from_hitvo(hit_vo: Dictionary) -> float:
 	return float(hit_vo.get("power", 0)) * float(hit_vo.get("powerRate", 1.0))
 
@@ -701,10 +783,14 @@ func set_steel_body(enabled: bool, is_super: bool = false) -> void:
 func clear_original_timeline_states() -> void:
 	original_hurt_action = ""
 	set_steel_body(false)
+	if original_move_target_bound:
+		set_original_move_target_bound(false)
+	if original_caught_by_throw:
+		set_original_caught_by_throw(false)
 
 
 func _is_bisha_hit_vo(hit_vo: Dictionary) -> bool:
-	var hit_id: String = String(hit_vo.get("id", ""))
+	var hit_id: String = str(hit_vo.get("id", ""))
 	return hit_id.find("bs") != -1 or hit_id.find("sbs") != -1 or hit_id.find("cbs") != -1 or hit_id.find("kbs") != -1
 
 
@@ -719,7 +805,7 @@ func _apply_original_steel_hit(hit_vo: Dictionary, attacker_facing: int) -> Dict
 		set_steel_body(false)
 		return {}
 
-	var hit_id: String = String(hit_vo.get("id", ""))
+	var hit_id: String = str(hit_vo.get("id", ""))
 	var damage: float = get_damage_from_hitvo(hit_vo)
 	var damage_rate: float = SUPER_STEEL_BODY_DAMAGE_RATE if is_super_steel_body else STEEL_BODY_DAMAGE_RATE
 	var actual_damage: float = damage * damage_rate
@@ -728,6 +814,7 @@ func _apply_original_steel_hit(hit_vo: Dictionary, attacker_facing: int) -> Dict
 		is_alive = false
 		set_steel_body(false)
 		# 原版钢体被打死时仍转入 doHurt，这里返回 dead 让外层走 KO。
+		mark_original_hit_result("dead", actual_damage)
 		return {"result":"dead", "damage":actual_damage, "hit_id":hit_id}
 
 	var energy_cost: float = 0.0
@@ -751,7 +838,36 @@ func _apply_original_steel_hit(hit_vo: Dictionary, attacker_facing: int) -> Dict
 
 	_set_be_hit_gap(10 if int(hit_vo.get("hurtType", 0)) == 1 else 4)
 	print("STEEL HitVO=", hit_id, " damage=", actual_damage, " hp=", hp, "/", hp_max, " energy=", energy, "/", energy_max)
+	mark_original_hit_result("steel", actual_damage)
 	return {"result":"steel", "damage":actual_damage, "hit_id":hit_id}
+
+
+func get_original_defense_energy_cost(hit_vo: Dictionary, damage: float) -> float:
+	# 原版防御的 energy 消耗随攻击类型/破防属性变化；这里保留原先数值但集中到一个入口，便于 HUD/SP 审计。
+	if hit_vo.get("isBreakDef", false) == true:
+		return energy_max * 0.9
+	var hit_type: int = int(hit_vo.get("hitType", 0))
+	if hit_type in [3, 5, 6, 7, 8, 9]:
+		return minf(70.0, maxf(18.0, damage / 4.0))
+	return minf(50.0, maxf(8.0, damage / 5.0))
+
+
+func is_original_hit_guardable(hit_vo: Dictionary, attacker_facing: int) -> bool:
+	if not is_defending():
+		return false
+	if hit_vo.get("isReal", false) == true:
+		return false
+	if int(hit_vo.get("hitType", 0)) == 11:
+		return false
+	# facing 与攻击者方向相反时，代表面向攻击来源。
+	return facing == -attacker_facing
+
+
+func mark_original_hit_result(result: String, damage: float) -> void:
+	original_last_hit_result = result
+	original_last_damage_taken = damage
+	if result in ["hurt", "knock_fly", "break_defense", "catch"]:
+		original_can_hurt_break_timer = maxf(original_can_hurt_break_timer, 12.0 / ORIGINAL_FPS)
 
 
 func apply_original_hit(hit_vo: Dictionary, attacker_facing: int) -> Dictionary:
@@ -768,6 +884,7 @@ func apply_original_hit(hit_vo: Dictionary, attacker_facing: int) -> Dictionary:
 		print("原版 hurtAction 触发：", current_action, " 被打时转入 ", counter_action, "，本次 HitVO 不扣血")
 		_set_be_hit_gap(4)
 		play_action(counter_action)
+		mark_original_hit_result("counter", 0.0)
 		return {"result":"counter", "action":counter_action}
 
 	if is_steel_body:
@@ -775,19 +892,34 @@ func apply_original_hit(hit_vo: Dictionary, attacker_facing: int) -> Dictionary:
 		if not steel_result.is_empty():
 			return steel_result
 
-	var hit_id: String = String(hit_vo.get("id", ""))
+	var hit_id: String = str(hit_vo.get("id", ""))
 	var damage: float = get_damage_from_hitvo(hit_vo)
+	var hit_type: int = int(hit_vo.get("hitType", 0))
 	var is_real: bool = hit_vo.get("isReal", false) == true
 	var is_break_def: bool = hit_vo.get("isBreakDef", false) == true
 	var can_defend_direct: bool = facing == -attacker_facing
 
+	if hit_type == 11:
+		# HitType.CATCH：不可按普通防御处理；原版 doHurt 中使用“被打”不跳到第 7 帧。
+		hp = maxf(0.0, hp - damage)
+		if hp <= 0.0:
+			is_alive = false
+		set_steel_body(false)
+		set_original_caught_by_throw(true)
+		hurt_timer = maxf(0.05, float(hit_vo.get("hurtTime", 1000.0)) / 1000.0)
+		in_hitstun = true
+		action_locked = true
+		velocity_x = 0.0
+		velocity_y = 0.0
+		damping_x = 0.0
+		_set_be_hit_gap(10)
+		play_action("hurt")
+		mark_original_hit_result("catch", damage)
+		return {"result":"catch", "damage":damage, "hit_id":hit_id}
+
 	# 原版防御：真实伤害/抓取不可防；破防招消耗大量 energy，不够则破防。
-	if is_defending() and can_defend_direct and not is_real:
-		var def_energy: float = 0.0
-		if is_break_def:
-			def_energy = int(energy_max * 0.9)
-		else:
-			def_energy = minf(50.0, damage / 5.0)
+	if is_original_hit_guardable(hit_vo, attacker_facing):
+		var def_energy: float = get_original_defense_energy_cost(hit_vo, damage)
 
 		if has_energy(def_energy, false):
 			use_energy(def_energy)
@@ -800,6 +932,7 @@ func apply_original_hit(hit_vo: Dictionary, attacker_facing: int) -> Dictionary:
 			print("DEFENSE HitVO=", hit_id, " guard_damage=", guard_damage, " energy=", energy, "/", energy_max)
 			if hp <= 0.0:
 				is_alive = false
+			mark_original_hit_result("defense", guard_damage)
 			return {"result":"defense", "damage":guard_damage}
 
 		# 原版 doBreakDefense：破防时扣约 1/10 伤害，进入受击硬直。
@@ -817,6 +950,8 @@ func apply_original_hit(hit_vo: Dictionary, attacker_facing: int) -> Dictionary:
 			is_alive = false
 		set_steel_body(false)
 		play_action("hurt")
+		original_guard_break_timer = maxf(original_guard_break_timer, 18.0 / ORIGINAL_FPS)
+		mark_original_hit_result("break_defense", break_damage)
 		return {"result":"break_defense", "damage":break_damage}
 
 	hp = maxf(0.0, hp - damage)
@@ -858,6 +993,7 @@ func apply_original_hit(hit_vo: Dictionary, attacker_facing: int) -> Dictionary:
 
 		_set_be_hit_gap(4)
 		play_action("hurt")
+		mark_original_hit_result("hurt", damage)
 		return {"result":"hurt", "damage":damage}
 
 	# hurtType=1：原版进入 FighterMC.playHurtFly(hitx, hity)，先显示“被打”，下一帧进入“击飞”，落地后“击飞_落/弹/倒/起”。
@@ -866,6 +1002,7 @@ func apply_original_hit(hit_vo: Dictionary, attacker_facing: int) -> Dictionary:
 		hity = -6.0
 	_set_be_hit_gap(10)
 	_start_original_hurt_fly(hitx, hity)
+	mark_original_hit_result("knock_fly", damage)
 	return {"result":"knock_fly", "damage":damage}
 
 
@@ -876,7 +1013,7 @@ func update_frame() -> void:
 	if frame_index < 0 or frame_index >= frames.size():
 		return
 
-	var rel_path: String = String(frames[frame_index])
+	var rel_path: String = str(frames[frame_index])
 	var full_path: String = "res://assets/characters/aizen/" + rel_path
 
 	var tex: Texture2D = load(full_path)
