@@ -54,6 +54,28 @@ func load_manifest() -> void:
 	print("Loaded effect manifest:", manifest_path)
 
 
+func _effect_vector2(effect: Dictionary, key: String, fallback: Vector2 = Vector2.ZERO) -> Vector2:
+	var value: Variant = effect.get(key, null)
+	if typeof(value) == TYPE_VECTOR2:
+		return value
+	if typeof(value) == TYPE_ARRAY and value.size() >= 2:
+		return Vector2(float(value[0]), float(value[1]))
+	if typeof(value) == TYPE_DICTIONARY:
+		return Vector2(float(value.get("x", fallback.x)), float(value.get("y", fallback.y)))
+	return fallback
+
+
+func _apply_effect_registration(effect: Dictionary) -> void:
+	# 原版 Flash MovieClip 有注册点；FFDec 展平 PNG 只有透明画布。
+	# 每个 effect 的 visual_offset 记录“原版 attacker 原点 -> 当前 PNG 画布中心”的补偿，
+	# 由 aizen_effect_manifest.json 提供，避免把 bsmc/zh3mc 的视觉修正硬编码在战斗逻辑中。
+	ensure_sprite()
+	var visual_offset: Vector2 = _effect_vector2(effect, "visual_offset", Vector2.ZERO)
+	if bool(effect.get("visual_offset_mirrors_with_facing", false)):
+		visual_offset.x *= float(facing)
+	sprite.position = visual_offset
+
+
 func play_effect(effect_name: String, pos: Vector2, new_facing: int = 1, effect_scale: float = 1.0, additive: bool = false) -> void:
 	if not manifest.has("effects"):
 		return
@@ -96,6 +118,7 @@ func stop_effect() -> void:
 	if sprite != null:
 		sprite.texture = null
 		sprite.material = null
+		sprite.position = Vector2.ZERO
 
 
 func _process(delta: float) -> void:
@@ -152,3 +175,4 @@ func update_frame() -> void:
 	ensure_sprite()
 	sprite.texture = tex
 	sprite.flip_h = facing < 0
+	_apply_effect_registration(effect)

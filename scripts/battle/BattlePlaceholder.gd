@@ -90,8 +90,10 @@ var prev_t_pressed: bool = false
 #   所以 bsmc 的最终世界原点应来自 raw addAttacker params，而不是 mc_023 的静态 Matrix。
 const BSMC_MC023_INSTANCE_MATRIX := Vector2(149.35, -19.65)
 const BSMC_ORIGINAL_TARGET_OFFSET := Vector2(0.0, -25.0)
-# bsmc 视觉帧来自 FFDec 展平后的 443x377 画布；该修正只用于把导出画布中心对齐回原版注册点，
-# 不参与原版攻击面计算。攻击面仍使用 target + raw addAttacker offset 作为 FighterAttacker 原点。
+# bsmc 视觉帧来自 FFDec 展平后的 443x377 画布。Step8 已确认 EffectPlayer 缺少注册点逻辑，
+# Step9 起视觉注册点不再由 BattlePlaceholder 硬编码，而写入 aizen_effect_manifest.json:
+#   bsmc.visual_offset = [6, -5]
+# 此常量仅作为原版对照记录，不参与运行逻辑。
 const BSMC_FFDEC_CANVAS_TO_ORIGINAL_REGISTRATION := Vector2(6.0, -5.0)
 
 # Step6 报告已确认：
@@ -101,6 +103,9 @@ const BSMC_FFDEC_CANVAS_TO_ORIGINAL_REGISTRATION := Vector2(6.0, -5.0)
 #   所以视觉仍使用 FFDec-rebased offset；攻击面继续用 XFL 合成矩形，不从截图手调。
 const ZH3MC_MC023_INSTANCE_MATRIX := Vector2(28.15, -3466.3)
 const ZH3MC_ZH3ATM_MATRIX_IN_MC015 := Vector2(32.25, 4043.9)
+# Step9 起 zh3mc 视觉注册点也迁移到 aizen_effect_manifest.json:
+#   zh3mc.visual_offset = [118, -118], visual_offset_mirrors_with_facing = true
+# 此常量仅作为 Step6/Step8 报告对照记录，不参与运行逻辑。
 const ZH3MC_FFDEC_REBASED_VISUAL_OFFSET := Vector2(118.0, -118.0)
 var active_attacker_follow_target: bool = false
 var active_attacker_effect_name: String = ""
@@ -1313,7 +1318,7 @@ func handle_aizen_raw_call_event(action_name: String, relative_frame: int, raw_c
 		print("原版 raw addAttacker 触发：zh3mc applyG=false matrix=", ZH3MC_MC023_INSTANCE_MATRIX, " action=", action_name, " frame=", relative_frame)
 		# 视觉 PNG 仍使用当前 FFDec 导出层的锚点；攻击面继续使用 ZH3ATM_RECT，
 		# 该矩形已经由 mc_023 zh3mc Matrix + mc_015 zh3atm Matrix 推导，不手写猜测。
-		play_p1_attacker_at_self("zh3mc", Vector2(ZH3MC_FFDEC_REBASED_VISUAL_OFFSET.x * p1.facing, ZH3MC_FFDEC_REBASED_VISUAL_OFFSET.y), 1.0)
+		play_p1_attacker_at_self("zh3mc", Vector2.ZERO, 1.0)
 		active_original_hitbox = "zh3mc"
 
 
@@ -1471,7 +1476,7 @@ func handle_aizen_semantic_event(action_name: String, relative_frame: int, seman
 				play_p1_attacker_at_target("bsmc", BSMC_ORIGINAL_TARGET_OFFSET, 1.0)
 				active_original_hitbox = "bsmc"
 			elif attacker_name == "zh3mc":
-				play_p1_attacker_at_self("zh3mc", Vector2(ZH3MC_FFDEC_REBASED_VISUAL_OFFSET.x * p1.facing, ZH3MC_FFDEC_REBASED_VISUAL_OFFSET.y), 1.0)
+				play_p1_attacker_at_self("zh3mc", Vector2.ZERO, 1.0)
 				active_original_hitbox = "zh3mc"
 
 		_:
@@ -2430,10 +2435,9 @@ func get_p1_target_ground_pos() -> Vector2:
 
 
 func get_effect_visual_correction(effect_name: String) -> Vector2:
-	# 只处理 FFDec 展平 PNG 的视觉注册点修正，不改变原版 FighterAttacker 的世界原点。
-	# hitbox 计算必须使用 active_attacker_original_origin，不能把视觉修正混进去。
-	if effect_name == "bsmc":
-		return BSMC_FFDEC_CANVAS_TO_ORIGINAL_REGISTRATION
+	# Step9：视觉注册点修正已迁移到 aizen_effect_manifest.json，由 EffectPlayer.gd 读取 visual_offset。
+	# BattlePlaceholder 只保留原版 FighterAttacker 世界原点；hitbox 也只使用 active_attacker_original_origin。
+	# 这里保留函数是为了不破坏调用结构，但始终返回 0，避免把视觉补偿混入战斗逻辑。
 	return Vector2.ZERO
 
 
@@ -2448,6 +2452,8 @@ func _reset_active_attacker_state() -> void:
 
 
 func _attacker_visual_position_from_origin() -> Vector2:
+	# Step9：EffectPlayer 根据 effect manifest 的 visual_offset 自行移动 sprite。
+	# Node2D 位置必须保持为原版 attacker 世界原点。
 	return active_attacker_original_origin + active_attacker_visual_correction
 
 

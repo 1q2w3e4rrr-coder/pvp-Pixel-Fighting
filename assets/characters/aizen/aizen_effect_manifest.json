@@ -429,7 +429,14 @@
       ],
       "fps": 30,
       "loop": false,
-      "source": "aizen_ffdec/sprites/DefineSprite_951; XFL 元件/mc_021 效果/i; used by addAttacker(\"bsmc\")"
+      "source": "aizen_ffdec/sprites/DefineSprite_951; XFL 元件/mc_021 效果/i; used by addAttacker(\"bsmc\")",
+      "visual_offset": [
+        6.0,
+        -5.0
+      ],
+      "visual_offset_mirrors_with_facing": false,
+      "registration_source": "Step8: FFDec canvas -> original registration visual correction; original runtime origin remains currentTarget + raw offset (0,-25).",
+      "sprite_centered": true
     },
     "zh3mc": {
       "frames": [
@@ -457,7 +464,14 @@
       ],
       "fps": 30,
       "loop": false,
-      "source": "aizen_ffdec/sprites/DefineSprite_1020; XFL 元件/mc_015; used by addAttacker(\"zh3mc\", {applyG:false}); pure black background cleared to transparent for Godot preview"
+      "source": "aizen_ffdec/sprites/DefineSprite_1020; XFL 元件/mc_015; used by addAttacker(\"zh3mc\", {applyG:false}); pure black background cleared to transparent for Godot preview",
+      "visual_offset": [
+        118.0,
+        -118.0
+      ],
+      "visual_offset_mirrors_with_facing": true,
+      "registration_source": "Step8: FFDec-rebased visual offset; x mirrors with fighter facing. Original hit area still uses XFL-composed ZH3ATM_RECT.",
+      "sprite_centered": true
     }
   }
 }
