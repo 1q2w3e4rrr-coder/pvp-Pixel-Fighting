@@ -78,6 +78,14 @@ var prev_t_pressed: bool = false
 
 # 原版 FighterAttacker 里 followTargetX / followTargetY 每帧跟随 currentTarget。
 # 当前 Demo 是单目标 P2，因此 currentTarget 按原版语义固定映射到 P2；bsmc 每帧跟随 P2 地面坐标。
+# Aizen mc_023.xml 原版 addAttacker 位置依据：
+#   bsmc  : global frame 804, params={x:{followTarget:true,offset:0}, y:{followTarget:true,offset:-25}, applyG:false}
+#   zh3mc : global frame 680, params={applyG:false}, child Matrix tx=28.15, ty=-3466.3
+# 当前 zh3mc PNG 来自 FFDec 展平导出，已丢失原始 3466px 注册点画布；
+# 因此 visual offset 保持已验证的 FFDec rebased 偏移，攻击面仍使用 XFL 推导出的 ZH3ATM_RECT。
+const BSMC_ORIGINAL_TARGET_OFFSET := Vector2(0.0, -25.0)
+const ZH3MC_ORIGINAL_CHILD_MATRIX := Vector2(28.15, -3466.3)
+const ZH3MC_FFDEC_REBASED_VISUAL_OFFSET := Vector2(118.0, -118.0)
 var active_attacker_follow_target: bool = false
 var active_attacker_effect_name: String = ""
 var active_attacker_offset: Vector2 = Vector2.ZERO
@@ -1227,13 +1235,13 @@ func handle_aizen_raw_call_event(action_name: String, relative_frame: int, raw_c
 
 	if attacker_name == "bsmc":
 		print("原版 raw addAttacker 触发：bsmc followTarget x=0 y=-25 applyG=false action=", action_name, " frame=", relative_frame)
-		play_p1_attacker_at_target("bsmc", Vector2(0, -25), 1.0)
+		play_p1_attacker_at_target("bsmc", BSMC_ORIGINAL_TARGET_OFFSET, 1.0)
 		active_original_hitbox = "bsmc"
 	elif attacker_name == "zh3mc":
 		print("原版 raw addAttacker 触发：zh3mc applyG=false action=", action_name, " frame=", relative_frame)
 		# 视觉 PNG 仍使用当前 FFDec 导出层的锚点；攻击面继续使用 ZH3ATM_RECT，
 		# 该矩形已经由 mc_023 zh3mc Matrix + mc_015 zh3atm Matrix 推导，不手写猜测。
-		play_p1_attacker_at_self("zh3mc", Vector2(118 * p1.facing, -118), 1.0)
+		play_p1_attacker_at_self("zh3mc", Vector2(ZH3MC_FFDEC_REBASED_VISUAL_OFFSET.x * p1.facing, ZH3MC_FFDEC_REBASED_VISUAL_OFFSET.y), 1.0)
 		active_original_hitbox = "zh3mc"
 
 
@@ -1266,9 +1274,10 @@ func handle_aizen_semantic_event(action_name: String, relative_frame: int, seman
 				print("原版 dash effect 触发 action=", action_name, " frame=", relative_frame)
 
 		"end_action":
-			# 原版 endAct() 清空当前动作可输入锁，并把 actionState 转入 FREEZE。
-			# 当前 Demo 仍保留原先的最小实现：空中动作按原版释放输入锁；地面连段窗口由 ManifestFighter action_finished/idle 控制。
+			# 原版 endAct()：_action.clearAction(); actionState=FREEZE; setSteelBody(false)。
 			print("原版 endAct 触发 action=", action_name, " frame=", relative_frame)
+			if p1 != null and p1.has_method("set_steel_body"):
+				p1.set_steel_body(false, false)
 			if action_name == "jump_attack" or action_name == "air_skill" or action_name == "super_air":
 				if p1 != null and p1.has_method("unlock_original_action"):
 					p1.unlock_original_action()
@@ -1279,6 +1288,8 @@ func handle_aizen_semantic_event(action_name: String, relative_frame: int, seman
 			p1_air_bisha_ready = false
 			attack_skill2_1_ready = false
 			attack_skill2_next_attack_ready = false
+			if p1 != null and p1.has_method("clear_original_timeline_states"):
+				p1.clear_original_timeline_states()
 			if p1 != null and p1.has_method("return_to_neutral_from_timeline"):
 				p1.return_to_neutral_from_timeline()
 
@@ -1319,9 +1330,13 @@ func handle_aizen_semantic_event(action_name: String, relative_frame: int, seman
 				p1.add_qi(qi_value)
 
 		"steel_body":
-			# 原版 setSteelBody(true) 会进入钢体/霸体状态。
-			# 当前 ManifestFighter 还没有完整 steelBody 字段，这里只保留原版事件记录，避免伪造完整霸体。
-			print("原版 setSteelBody 触发 action=", action_name, " frame=", relative_frame, " enabled=", semantic.get("enabled", false))
+			# 原版 FighterMcCtrler.setSteelBody(v, isSuper=false)：
+			# 进入钢体后被普通攻击命中不打断当前动作，按 doSteelHurt 结算减伤和 energy 消耗。
+			var steel_enabled: bool = semantic.get("enabled", false) == true
+			var steel_super: bool = semantic.get("is_super", false) == true
+			print("原版 setSteelBody 触发 action=", action_name, " frame=", relative_frame, " enabled=", steel_enabled, " super=", steel_super)
+			if p1 != null and p1.has_method("set_steel_body"):
+				p1.set_steel_body(steel_enabled, steel_super)
 
 		"enable_skill":
 			var enable_method: String = String(semantic.get("method", ""))
@@ -1375,10 +1390,10 @@ func handle_aizen_semantic_event(action_name: String, relative_frame: int, seman
 		"add_attacker":
 			var attacker_name: String = String(semantic.get("attacker", ""))
 			if attacker_name == "bsmc":
-				play_p1_attacker_at_target("bsmc", Vector2(0, -25), 1.0)
+				play_p1_attacker_at_target("bsmc", BSMC_ORIGINAL_TARGET_OFFSET, 1.0)
 				active_original_hitbox = "bsmc"
 			elif attacker_name == "zh3mc":
-				play_p1_attacker_at_self("zh3mc", Vector2(118 * p1.facing, -118), 1.0)
+				play_p1_attacker_at_self("zh3mc", Vector2(ZH3MC_FFDEC_REBASED_VISUAL_OFFSET.x * p1.facing, ZH3MC_FFDEC_REBASED_VISUAL_OFFSET.y), 1.0)
 				active_original_hitbox = "zh3mc"
 
 		_:
@@ -2077,7 +2092,7 @@ func add_score_by_hit(hit_vo: Dictionary, current_hits: int) -> int:
 func after_p1_hit_target(hit_vo: Dictionary, hit_result: Dictionary) -> void:
 	var result: String = String(hit_result.get("result", ""))
 	play_original_hit_feedback(hit_vo, current_attack_world_rect, result, p1.facing)
-	if result == "dead" or result == "counter" or result == "defense":
+	if result == "dead" or result == "counter" or result == "defense" or result == "steel":
 		return
 	add_qi_on_hit(p1, p2, hit_vo)
 	p1_combo_count += 1
@@ -2091,7 +2106,7 @@ func after_p2_hit_target(hit_vo: Dictionary, hit_result: Dictionary) -> void:
 	var result: String = String(hit_result.get("result", ""))
 	var p2_face: int = int(p2.get("facing")) if p2 != null else -1
 	play_original_hit_feedback(hit_vo, current_attack_world_rect, result, p2_face)
-	if result == "dead" or result == "counter" or result == "defense":
+	if result == "dead" or result == "counter" or result == "defense" or result == "steel":
 		return
 	add_qi_on_hit(p2, p1, hit_vo)
 	p2_combo_count += 1
@@ -2111,6 +2126,14 @@ func play_original_hit_feedback(hit_vo: Dictionary, hit_rect: Rect2, result: Str
 		flash_shine(Color(1, 1, 1, 0.12), 0.10)
 		start_original_shake(0.0, 2.0, 0.08)
 		print("原版 doDefenseEffect: hitType=", hit_vo.get("hitType", 0), " rect=", hit_rect)
+		return
+
+	if result == "steel":
+		# 原版 EffectCtrler.doSteelHitEffect 会根据 hitType 选择 steel_hit_kan / steel_hit_qdj / steel_hit_mfdj。
+		# 当前项目 common_effect_manifest 还没有这三组原版 steel_hit 资源，不能用占位图冒充；
+		# 这里只保留轻微 hit-stop，并输出日志，等资源导出后再接 play_steel_hit_effect。
+		hit_stop_timer = maxf(hit_stop_timer, 0.035)
+		print("原版 doSteelHitEffect 待接资源: hitType=", hit_vo.get("hitType", 0), " rect=", hit_rect)
 		return
 
 	if result == "break_defense":

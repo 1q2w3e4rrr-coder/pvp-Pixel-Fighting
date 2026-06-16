@@ -55,12 +55,22 @@ var in_hitstun: bool = false
 
 # 原版 setHurtAction：当前动作被打时不进入普通受击，而是转入指定反击动作。
 var original_hurt_action: String = ""
+# 原版 FighterMcCtrler.setSteelBody(v, isSuper)：钢体/霸体状态。
+# 普通钢体被打时不打断当前动作，按 doSteelHurt 扣 65% 伤害并耗 energy；
+# superSteelBody 扣 30% 伤害。遇到必杀/抓取/energyOverLoad 时普通钢体会退回 doHurt。
+var is_steel_body: bool = false
+var is_super_steel_body: bool = false
 var apply_gravity_enabled: bool = true
 
 const ORIGINAL_FPS := 30.0
 const HURT_FRAME_OFFSET := 3
 const HIT_SPEED_SCALE := 30.0
 const DEFENSE_LOSE_HP_RATE := 0.05
+const STEEL_BODY_DAMAGE_RATE := 0.65
+const SUPER_STEEL_BODY_DAMAGE_RATE := 0.30
+const STEEL_BODY_ENERGY_RATE := 0.40
+const STEEL_BODY_BREAK_DEF_ENERGY_RATE := 1.00
+const SUPER_STEEL_BODY_ENERGY_RATE := 0.20
 const ENERGY_ADD_NORMAL_PER_FRAME := 2.0
 const ENERGY_ADD_DEFENSE_PER_FRAME := 0.8
 const ENERGY_ADD_ATTACKING_PER_FRAME := 1.1
@@ -246,6 +256,7 @@ func return_to_neutral_from_timeline() -> void:
 	# 注意：如果人在空中，原版 idle() 不会硬切站立，而是进入下落/跳跃状态。
 	action_locked = false
 	apply_gravity_enabled = true
+	clear_original_timeline_states()
 	if in_air:
 		if velocity_y < 0:
 			play_action("jump")
@@ -494,6 +505,70 @@ func set_original_hurt_action(action_name: String) -> void:
 	original_hurt_action = action_name
 
 
+func set_steel_body(enabled: bool, is_super: bool = false) -> void:
+	is_steel_body = enabled
+	is_super_steel_body = enabled and is_super
+	# 原版 setSteelBody(false) 同时结束 glow。Godot 当前没有 startGlow/endGlow 资源，
+	# 所以这里只保存战斗状态，不伪造光效。
+	if not enabled:
+		is_super_steel_body = false
+
+
+func clear_original_timeline_states() -> void:
+	original_hurt_action = ""
+	set_steel_body(false)
+
+
+func _is_bisha_hit_vo(hit_vo: Dictionary) -> bool:
+	var hit_id: String = String(hit_vo.get("id", ""))
+	return hit_id.find("bs") != -1 or hit_id.find("sbs") != -1 or hit_id.find("cbs") != -1 or hit_id.find("kbs") != -1
+
+
+func _is_catch_hit_vo(hit_vo: Dictionary) -> bool:
+	return int(hit_vo.get("hitType", 0)) == 11 and hit_vo.get("isBreakDef", false) == true
+
+
+func _apply_original_steel_hit(hit_vo: Dictionary, attacker_facing: int) -> Dictionary:
+	# 对照 FighterMcCtrler.doSteelHurt(hitvo, hitRect)。
+	# 普通钢体遇到 energyOverLoad / 必杀 / 抓取时会退回普通 doHurt。
+	if (not is_super_steel_body) and (energy_overload or _is_bisha_hit_vo(hit_vo) or _is_catch_hit_vo(hit_vo)):
+		set_steel_body(false)
+		return {}
+
+	var hit_id: String = String(hit_vo.get("id", ""))
+	var damage: float = get_damage_from_hitvo(hit_vo)
+	var damage_rate: float = SUPER_STEEL_BODY_DAMAGE_RATE if is_super_steel_body else STEEL_BODY_DAMAGE_RATE
+	var actual_damage: float = damage * damage_rate
+	hp = maxf(0.0, hp - actual_damage)
+	if hp <= 0.0:
+		is_alive = false
+		set_steel_body(false)
+		# 原版钢体被打死时仍转入 doHurt，这里返回 dead 让外层走 KO。
+		return {"result":"dead", "damage":actual_damage, "hit_id":hit_id}
+
+	var energy_cost: float = 0.0
+	if is_super_steel_body:
+		energy_cost = damage * SUPER_STEEL_BODY_ENERGY_RATE
+	elif hit_vo.get("isBreakDef", false) == true:
+		energy_cost = damage * STEEL_BODY_BREAK_DEF_ENERGY_RATE
+	else:
+		energy_cost = damage * STEEL_BODY_ENERGY_RATE
+	use_energy(energy_cost)
+
+	if not is_super_steel_body:
+		var hitx: float = float(hit_vo.get("hitx", 0.0)) * float(attacker_facing)
+		var hity: float = float(hit_vo.get("hity", 0.0))
+		if hit_vo.get("isBreakDef", false) == true:
+			hitx *= 2.0
+			hity *= 2.0
+		velocity_x = hitx * HIT_SPEED_SCALE
+		velocity_y = hity * HIT_SPEED_SCALE
+		damping_x = absf(hitx) * HIT_SPEED_SCALE * 3.0 + 180.0
+
+	print("STEEL HitVO=", hit_id, " damage=", actual_damage, " hp=", hp, "/", hp_max, " energy=", energy, "/", energy_max)
+	return {"result":"steel", "damage":actual_damage, "hit_id":hit_id}
+
+
 func apply_original_hit(hit_vo: Dictionary, attacker_facing: int) -> Dictionary:
 	if not is_alive:
 		return {"result":"dead"}
@@ -504,6 +579,11 @@ func apply_original_hit(hit_vo: Dictionary, attacker_facing: int) -> Dictionary:
 		print("原版 hurtAction 触发：", current_action, " 被打时转入 ", counter_action, "，本次 HitVO 不扣血")
 		play_action(counter_action)
 		return {"result":"counter", "action":counter_action}
+
+	if is_steel_body:
+		var steel_result: Dictionary = _apply_original_steel_hit(hit_vo, attacker_facing)
+		if not steel_result.is_empty():
+			return steel_result
 
 	var hit_id: String = String(hit_vo.get("id", ""))
 	var damage: float = get_damage_from_hitvo(hit_vo)
@@ -543,6 +623,7 @@ func apply_original_hit(hit_vo: Dictionary, attacker_facing: int) -> Dictionary:
 		damping_x = 300.0
 		if hp <= 0.0:
 			is_alive = false
+		set_steel_body(false)
 		play_action("hurt")
 		return {"result":"break_defense", "damage":break_damage}
 
@@ -568,6 +649,9 @@ func apply_original_hit(hit_vo: Dictionary, attacker_facing: int) -> Dictionary:
 
 	velocity_x = hitx * HIT_SPEED_SCALE
 	damping_x = absf(hitx) * HIT_SPEED_SCALE * 3.0 + 180.0
+
+	# 原版 doHurt 会 setSteelBody(false)。
+	set_steel_body(false)
 
 	if hurt_type == 0:
 		# 原版：_hurtHoldFrame = round(hurtTime / 1000 * 30) + 3，最少 4 帧。
