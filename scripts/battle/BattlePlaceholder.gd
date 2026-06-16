@@ -84,11 +84,19 @@ var prev_t_pressed: bool = false
 # 当前 zh3mc PNG 来自 FFDec 展平导出，已丢失原始 3466px 注册点画布；
 # 因此 visual offset 保持已验证的 FFDec rebased 偏移，攻击面仍使用 XFL 推导出的 ZH3ATM_RECT。
 const BSMC_ORIGINAL_TARGET_OFFSET := Vector2(0.0, -25.0)
+# bsmc 视觉帧来自 FFDec 展平后的 443x377 画布；该修正只用于把导出画布中心对齐回原版注册点，
+# 不参与原版攻击面计算。攻击面仍使用 target + (0,-25) 作为 FighterAttacker 原点。
+const BSMC_FFDEC_CANVAS_TO_ORIGINAL_REGISTRATION := Vector2(6.0, -5.0)
 const ZH3MC_ORIGINAL_CHILD_MATRIX := Vector2(28.15, -3466.3)
+# zh3mc 的原版 child Matrix 带有极大的 ty=-3466.3。当前 FFDec 输出已经把有效画面重新裁到 267x228，
+# 所以视觉上必须使用 FFDec-rebased offset；攻击面仍以 addAttacker 当帧的 fighter ground origin + ZH3ATM_RECT 计算。
 const ZH3MC_FFDEC_REBASED_VISUAL_OFFSET := Vector2(118.0, -118.0)
 var active_attacker_follow_target: bool = false
 var active_attacker_effect_name: String = ""
 var active_attacker_offset: Vector2 = Vector2.ZERO
+var active_attacker_visual_correction: Vector2 = Vector2.ZERO
+var active_attacker_original_origin: Vector2 = Vector2.ZERO
+var active_attacker_facing: int = 1
 
 # 第 6 步：原版攻击面调试显示。
 # 已确认：mc_024 是基础攻击面，原始 shape 边界为 1319 x 810 XFL 单位；换算为 Flash 像素约 65.95 x 40.5。
@@ -1256,7 +1264,13 @@ func handle_aizen_semantic_event(action_name: String, relative_frame: int, seman
 			print("Bisha start:", original_face_id, " is_super=", is_super, " action=", action_name, " frame=", relative_frame)
 
 			if bisha_effect != null:
-				bisha_effect.play_bisha(is_super, original_face_id, world_to_screen(p1.position), p1.facing, world_to_screen(get_p1_target_ground_pos()))
+				# 原版 EffectCtrler.bisha(target) 的通用光效位置是 target.x, target.y - 50。
+				# 当前 BishaEffectPlayer 是 HUD/屏幕层节点，所以必须先在世界坐标中加 -50，再转换到屏幕坐标；
+				# 不能在屏幕层直接减 50，否则 camera zoom != 1 时高度会与原版不一致。
+				var bisha_target_screen: Vector2 = world_to_screen(p1.position)
+				var bisha_current_target_screen: Vector2 = world_to_screen(get_p1_target_ground_pos())
+				var bisha_xg_screen: Vector2 = world_to_screen(p1.position + Vector2(0.0, -50.0))
+				bisha_effect.play_bisha(is_super, original_face_id, bisha_target_screen, p1.facing, bisha_current_target_screen, bisha_xg_screen)
 
 		"super_effect_end":
 			print("Bisha end action=", action_name, " frame=", relative_frame)
@@ -1841,8 +1855,8 @@ func update_original_attack_box() -> void:
 			hide_current_attack_box_for_empty_frame()
 			return
 
-		var attacker_origin: Vector2 = get_p1_target_ground_pos() + Vector2(0, -25)
-		var world_rect := make_directed_rect(attacker_origin, local_rect, p1.facing)
+		var attacker_origin: Vector2 = active_attacker_original_origin
+		var world_rect := make_directed_rect(attacker_origin, local_rect, active_attacker_facing)
 		set_current_attack_box(world_rect, label_text, hit_vo_id, "bsmc:" + hit_vo_id)
 		return
 
@@ -1853,7 +1867,7 @@ func update_original_attack_box() -> void:
 
 		# mc_015 内部 zh3atm：根据 main timeline zh3mc Matrix(tx=28.15, ty=-3466.3)
 		# 与内部 mc_024 Matrix 推导出的世界局部矩形。它非常高，这是原版 AI/攻击面，不等于视觉贴图大小。
-		var world_rect := make_directed_rect(p1.position, ZH3ATM_RECT, p1.facing)
+		var world_rect := make_directed_rect(active_attacker_original_origin, ZH3ATM_RECT, active_attacker_facing)
 		set_current_attack_box(world_rect, "zh3mc / zh3atm", "zh3", "zh3mc:zh3")
 		return
 
@@ -2351,17 +2365,26 @@ func get_p1_target_ground_pos() -> Vector2:
 	return get_node_ground_pos(p2, P2_START_POS)
 
 
-func get_effect_anchor_correction(effect_name: String) -> Vector2:
-	# FFDec 导出的 bsmc PNG 是固定 443x377 画布，原版 XFL 中注册点大约在 (215, 194)，
-	# PNG 几何中心约在 (221.5, 188.5)，所以这里补一个很小的 anchor 修正。
-	# 这不是最终渲染管线；最终应直接按 XFL Matrix 渲染 MovieClip。
+func get_effect_visual_correction(effect_name: String) -> Vector2:
+	# 只处理 FFDec 展平 PNG 的视觉注册点修正，不改变原版 FighterAttacker 的世界原点。
+	# hitbox 计算必须使用 active_attacker_original_origin，不能把视觉修正混进去。
 	if effect_name == "bsmc":
-		return Vector2(6, -5)
-	if effect_name == "zh3mc":
-		# DefineSprite_1020 是 FFDec 展平图，黑底已清透明；这里先做最小锚点修正。
-		# 最终仍应回到 XFL Matrix 计算，而不是永久手调。
-		return Vector2(0, 0)
+		return BSMC_FFDEC_CANVAS_TO_ORIGINAL_REGISTRATION
 	return Vector2.ZERO
+
+
+func _reset_active_attacker_state() -> void:
+	active_attacker_follow_target = false
+	active_attacker_effect_name = ""
+	active_attacker_offset = Vector2.ZERO
+	active_attacker_visual_correction = Vector2.ZERO
+	active_attacker_original_origin = Vector2.ZERO
+	active_attacker_facing = 1
+	active_attacker_has_hit = false
+
+
+func _attacker_visual_position_from_origin() -> Vector2:
+	return active_attacker_original_origin + active_attacker_visual_correction
 
 
 func play_p1_attacker_at_target(effect_name: String, target_offset: Vector2, effect_scale: float = 1.0) -> void:
@@ -2371,13 +2394,17 @@ func play_p1_attacker_at_target(effect_name: String, target_offset: Vector2, eff
 	if p1_effect == null:
 		return
 
+	# 对应原版 addAttacker("bsmc", {x:{followTarget:true,offset:0}, y:{followTarget:true,offset:-25}})。
+	# original_origin 是 FighterAttacker 的世界原点，visual_correction 只修正 FFDec PNG 画布中心。
 	active_attacker_follow_target = true
 	active_attacker_effect_name = effect_name
 	active_attacker_offset = target_offset
+	active_attacker_visual_correction = get_effect_visual_correction(effect_name)
+	active_attacker_original_origin = get_p1_target_ground_pos() + target_offset
+	active_attacker_facing = p1.facing
 	active_attacker_has_hit = false
 
-	var pos: Vector2 = get_p1_target_ground_pos() + target_offset + get_effect_anchor_correction(effect_name)
-	p1_effect.play_effect(effect_name, pos, p1.facing, effect_scale)
+	p1_effect.play_effect(effect_name, _attacker_visual_position_from_origin(), active_attacker_facing, effect_scale)
 
 
 func play_p1_attacker_at_self(effect_name: String, self_offset: Vector2, effect_scale: float = 1.0) -> void:
@@ -2387,13 +2414,17 @@ func play_p1_attacker_at_self(effect_name: String, self_offset: Vector2, effect_
 	if p1_effect == null:
 		return
 
+	# 对应原版 addAttacker("zh3mc", {applyG:false})：创建时以当前 fighter 原点为 attacker 原点，
+	# 后续不 follow fighter / currentTarget。视觉偏移只来自当前 FFDec 展平帧的 rebase。
 	active_attacker_follow_target = false
-	active_attacker_effect_name = ""
-	active_attacker_offset = Vector2.ZERO
+	active_attacker_effect_name = effect_name
+	active_attacker_offset = self_offset
+	active_attacker_visual_correction = get_effect_visual_correction(effect_name)
+	active_attacker_original_origin = p1.position
+	active_attacker_facing = p1.facing
 	active_attacker_has_hit = false
 
-	var pos: Vector2 = p1.position + self_offset + get_effect_anchor_correction(effect_name)
-	p1_effect.play_effect(effect_name, pos, p1.facing, effect_scale, true)
+	p1_effect.play_effect(effect_name, active_attacker_original_origin + self_offset + active_attacker_visual_correction, active_attacker_facing, effect_scale, true)
 
 
 func update_attacker_follow_target() -> void:
@@ -2401,15 +2432,15 @@ func update_attacker_follow_target() -> void:
 		return
 
 	if p1_effect == null:
-		active_attacker_follow_target = false
+		_reset_active_attacker_state()
 		return
 
 	if not p1_effect.playing or p1_effect.current_effect != active_attacker_effect_name:
-		active_attacker_follow_target = false
-		active_attacker_effect_name = ""
-		active_attacker_offset = Vector2.ZERO
+		_reset_active_attacker_state()
 		return
 
 	# 对应原版 FighterAttacker.renderFollowTarget():
-	# x = target.x + offsetX * direct; y = target.y + offsetY
-	p1_effect.position = get_p1_target_ground_pos() + active_attacker_offset + get_effect_anchor_correction(active_attacker_effect_name)
+	# x = target.x + offsetX * direct; y = target.y + offsetY。
+	# 这里更新的是 original_origin；视觉修正仍然只作用于 FFDec PNG 画布。
+	active_attacker_original_origin = get_p1_target_ground_pos() + active_attacker_offset
+	p1_effect.position = _attacker_visual_position_from_origin()

@@ -53,7 +53,7 @@ func create_nodes() -> void:
 	add_child(face_rect)
 
 
-func play_bisha(is_super: bool, face_id: String, target_pos: Vector2, facing: int, current_target_pos: Variant = null) -> void:
+func play_bisha(is_super: bool, face_id: String, target_pos: Vector2, facing: int, current_target_pos: Variant = null, xg_effect_pos: Variant = null) -> void:
 	visible = true
 	is_active = true
 
@@ -87,8 +87,12 @@ func play_bisha(is_super: bool, face_id: String, target_pos: Vector2, facing: in
 	face_rect.position = BISHA_FACE_RIGHT_POS if face_on_right else BISHA_FACE_LEFT_POS
 	face_rect.flip_h = face_on_right
 
-	# 原版 EffectCtrler.bisha(target.x, target.y - 50)。XG_bs / XG_cbs 属于发光类特效，显示时使用 ADD 混合更接近 Flash。
+	# 原版 EffectCtrler.bisha(target.x, target.y - 50)。
+	# BishaEffectPlayer 位于屏幕 HUD 层，因此调用方应先用 world_to_screen(target + Vector2(0,-50))
+	# 传入 xg_effect_pos。这样 camera zoom != 1 时，光效与人物的世界相对高度仍和原版一致。
 	var effect_pos: Vector2 = target_pos + Vector2(0, -50)
+	if typeof(xg_effect_pos) == TYPE_VECTOR2:
+		effect_pos = xg_effect_pos
 	xg_effect.play_effect(effect_key, effect_pos, facing, 1.0, true)
 	AudioManager.play_effect_sfx("snd_cbs" if is_super else "snd_bs")
 
