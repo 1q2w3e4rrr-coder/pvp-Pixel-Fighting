@@ -83,6 +83,10 @@ var original_animation_stopped: bool = false
 var original_time_scale: float = 1.0
 var original_move_target_bound: bool = false
 var original_caught_by_throw: bool = false
+# Step27：原版 U/招1 时间轴没有 move / movePercent / dash；为避免 Godot 残留速度或碰撞分离造成“先后撤再回来”，
+# 对地面 skill1/skill2/skill3 做动作期间世界坐标锁定。
+var original_no_world_move_anchor_active: bool = false
+var original_no_world_move_anchor_pos: Vector2 = Vector2.ZERO
 # Step19：原版防御/破防审计状态。
 var original_last_hit_result: String = ""
 var original_last_damage_taken: float = 0.0
@@ -90,6 +94,8 @@ var original_guard_break_timer: float = 0.0
 var original_can_hurt_break_timer: float = 0.0
 
 const ORIGINAL_FPS := 30.0
+const ORIGINAL_GAME_RENDER_FPS := 60.0
+const ORIGINAL_FIGHTER_SPEED_PER_FRAME := 6.0
 const HURT_FRAME_OFFSET := 3
 const HIT_SPEED_SCALE := 30.0
 const DEFENSE_LOSE_HP_RATE := 0.05
@@ -148,6 +154,17 @@ func play_action(action_name: String) -> void:
 	if not manifest["actions"].has(action_name):
 		print("Action not found:", action_name)
 		return
+
+	# Step27：原版 mc_023 的 招1/招2/招3 时间轴没有 move / movePercent / dash / moveToTarget。
+	# 因此这些地面 U 技能不应改变 FighterMain 世界坐标；开始时记录 anchor，并在动作期间持续锁定。
+	original_no_world_move_anchor_active = false
+	if action_name == "skill1" or action_name == "skill2" or action_name == "skill3":
+		velocity_x = 0.0
+		damping_x = 0.0
+		if not in_air:
+			velocity_y = 0.0
+			original_no_world_move_anchor_active = true
+			original_no_world_move_anchor_pos = position
 
 	current_action = action_name
 	frame_index = 0
@@ -224,6 +241,23 @@ func _process(delta: float) -> void:
 	update_animation(scaled_delta)
 	update_physics(scaled_delta)
 	update_horizontal_motion(scaled_delta)
+	apply_original_no_world_move_anchor()
+
+
+func apply_original_no_world_move_anchor() -> void:
+	if not original_no_world_move_anchor_active:
+		return
+	if in_air:
+		original_no_world_move_anchor_active = false
+		return
+	# 只锁地面 U 技能的 FighterMain 世界坐标；动作本身的帧动画仍正常播放。
+	if current_action != "skill1" and current_action != "skill2" and current_action != "skill3":
+		original_no_world_move_anchor_active = false
+		return
+	position = original_no_world_move_anchor_pos
+	velocity_x = 0.0
+	damping_x = 0.0
+	velocity_y = 0.0
 
 
 func update_animation(delta: float) -> void:
@@ -714,17 +748,27 @@ func set_original_damping(damping_value: float) -> void:
 
 
 func apply_original_dash_motion(speed_plus: float = 3.0, base_speed: float = 220.0) -> void:
-	# FighterMcCtrler.dash(speedPlus)：setVelocity(fighter.speed * speedPlus * direct, 0)，damping=0，isAllowBeHit=false。
-	velocity_x = base_speed * speed_plus * float(facing)
+	# FighterMcCtrler.dash(speedPlus)：
+	#   _fighter.setVelocity(_fighter.speed * speedPlus * direct, 0)
+	#   _fighter.speed 原版 FighterMain.as 默认值为 6，单位是“每个 render frame 的像素”。
+	# Godot 这里 velocity_x 使用 px/s，所以需要乘 ORIGINAL_GAME_RENDER_FPS。
+	var original_speed_per_frame: float = ORIGINAL_FIGHTER_SPEED_PER_FRAME
+	velocity_x = original_speed_per_frame * speed_plus * ORIGINAL_GAME_RENDER_FPS * float(facing)
 	velocity_y = 0.0
 	damping_x = 0.0
+	is_cross = true
 	is_allow_be_hit = false
 	be_hit_gap_timer = maxf(be_hit_gap_timer, 2.0 / ORIGINAL_FPS)
 
 
 func apply_original_dash_stop(lose_spd_percent: float = 0.5) -> void:
-	# FighterMcCtrler.dashStop(loseSpdPercent)：damping = abs(vecx) * loseSpdPercent；isAllowBeHit=true。
-	damping_x = absf(velocity_x) * lose_spd_percent
+	# FighterMcCtrler.dashStop(loseSpdPercent)：
+	#   vecx 是原版 px/frame；damping=abs(vecx)*losePercent；BaseGameSprite.setDamping 再按帧衰减。
+	# 当前 velocity_x 是 px/s，因此先转回 px/frame，再换算为 px/s^2，避免旧版出现很长滑行。
+	var vecx_per_frame: float = velocity_x / ORIGINAL_GAME_RENDER_FPS
+	var damping_per_frame: float = absf(vecx_per_frame) * lose_spd_percent
+	damping_x = damping_per_frame * ORIGINAL_GAME_RENDER_FPS * ORIGINAL_GAME_RENDER_FPS
+	is_cross = false
 	is_allow_be_hit = true
 	be_hit_gap_timer = 0.0
 	action_locked = false

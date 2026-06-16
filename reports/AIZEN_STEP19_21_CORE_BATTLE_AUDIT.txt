@@ -1,0 +1,31 @@
+BVN Aizen Step19-21 Core Battle Integration Audit
+=================================================
+
+Step19 - Defense / Break Defense / canHurtBreak
+- Guardable hit requires defend state, front-facing direction, non-real hit, and non-catch hit.
+- HitType.CATCH remains unblockable.
+- isReal remains unblockable.
+- Break-defense energy cost is centralized in get_original_defense_energy_cost().
+- original_last_hit_result / original_last_damage_taken record the most recent defensive/hurt result.
+- is_can_hurt_break() now checks alive, full fzqi, current hitstun/fly/canHurtBreak window, and excludes moveTarget/caught states.
+
+Step20 - Attack Window Audit
+Covered Aizen main windows:
+- atk1/k1, atk2/k2, atk3/k3, atk4_extra/k4, atk5/k5/k52
+- jump_attack/tk, air_skill/tz, super_air/kbs
+- skill1/zh1, skill2_check/zh2, skill3/zh3mc/zh3
+- attack_skill1_extra/kj1, attack_skill2_check/kj21, attack_skill2_1/kj2
+- super/bsmc/bs1/bs, super_up/sbs1, super_up_hit/sbs1/sbs2/sbs3/sbs4/sbs, super_special/cbs2/cbs
+- throw1/sh1/sh12, throw2/sh2/sh22
+
+Step21 - KO / Win / Lose / Round End
+- KO now cleans up slowDown, shadow, and moveTarget binding.
+- KO calls common_effects.play_ko_hit_end() at loser position when available.
+- p2_last_hit_vo_id/action are recorded for score/KO bonus logic.
+- timeover applies win/lose actions according to HP result.
+- round end action is idempotent through original_round_end_actions_applied.
+
+Not changed:
+- No generated images.
+- No HUD / map / QiBar / HITS / texture-quality changes.
+- No screenshot hand-tuning.

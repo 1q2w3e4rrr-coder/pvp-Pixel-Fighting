@@ -63,6 +63,21 @@ const ORIGINAL_CAMERA_MARGIN_RATE: float = 0.8
 const ORIGINAL_FIGHTER_SCALE: float = 1.25
 const ORIGINAL_IDLE_FOOT_FROM_CENTER: float = 111.0
 const ORIGINAL_FIGHTER_FOOT_OFFSET_Y: float = ORIGINAL_IDLE_FOOT_FROM_CENTER * ORIGINAL_FIGHTER_SCALE
+# Step27 Hotfix：
+# Step25 直接对齐视觉脚底 -> 过低；Step26 用 106.125px 仍偏低。
+# 这次把“通用技能/攻击特效”的 SWF 注册点修正为 70px：位于 Godot centered Sprite 原点与脚底之间，
+# 对应原版 hit / addAttacker 通常围绕角色上半身/刀光，而不是压到脚下。
+# L 瞬步烟尘单独用脚底对齐，不复用这个 70px。
+const ORIGINAL_SWF_IDLE_BOTTOM_FROM_REGISTRATION: float = 26.10
+const ORIGINAL_SWF_EFFECT_Y_FROM_GODOT_ORIGIN: float = 70.0
+# hit / defense / steel / break_def 等公共命中特效只修正视觉高度，不改变实际碰撞框。
+const ORIGINAL_HIT_EFFECT_VISUAL_Y_CORRECTION: float = ORIGINAL_SWF_EFFECT_Y_FROM_GODOT_ORIGIN
+# XG_rush / dash 的 PNG bbox 底部比纹理中心低约 7px；为了让灰尘底部贴角色脚底，origin 用 foot - 7。
+const ORIGINAL_DASH_DUST_FRAME_BOTTOM_FROM_CENTER: float = 7.0
+const ORIGINAL_DASH_EFFECT_Y_FROM_GODOT_ORIGIN: float = ORIGINAL_FIGHTER_FOOT_OFFSET_Y - ORIGINAL_DASH_DUST_FRAME_BOTTOM_FROM_CENTER
+# 原版 FighterMain.speed=6；瞬步 timeline 为 dash(4) -> dashStop()，不能再手动瞬移 180px。
+const ORIGINAL_FIGHTER_SPEED_PER_FRAME: float = 6.0
+const ORIGINAL_DASH_INPUT_MANUAL_DISTANCE: float = 0.0
 const GROUND_Y: float = ORIGINAL_PLAYER_BOTTOM - ORIGINAL_FIGHTER_FOOT_OFFSET_Y
 const P1_START_POS := Vector2(370.1, GROUND_Y)
 const P2_START_POS := Vector2(643.55, GROUND_Y)
@@ -1066,6 +1081,8 @@ func start_time_over_sequence() -> void:
 		else:
 			ko_winner_id = 2
 			ko_perfect = p2_hp_now >= get_fighter_hp_max(p2)
+	if bisha_effect != null and bisha_effect.has_method("end_bisha"):
+		bisha_effect.end_bisha()
 	apply_original_round_end_actions("timeover")
 	print("TIME OVER: p1_hp=", p1_hp_now, " p2_hp=", p2_hp_now, " winner=", ko_winner_id, " draw=", ko_draw_game)
 
@@ -1306,9 +1323,14 @@ func handle_dash_input() -> void:
 	if not p1.can_ground_action():
 		return
 
+	# 原版“瞬步”不是直接把角色平移 180px；mc_023 瞬步帧为：
+	# frame 28: parent.$mc_ctrler.dash(4)
+	# frame 33: parent.$mc_ctrler.dashStop()
+	# 所以这里只切动作，让时间轴 dash/dashStop 事件驱动位移，避免“过远 + 滑动”。
 	p1.play_action("dash")
-	p1.position.x += dash_distance * p1.facing
-	clamp_fighter_to_original_map_bounds(p1)
+	if ORIGINAL_DASH_INPUT_MANUAL_DISTANCE != 0.0:
+		p1.position.x += ORIGINAL_DASH_INPUT_MANUAL_DISTANCE * p1.facing
+		clamp_fighter_to_original_map_bounds(p1)
 
 
 func handle_attack_input() -> void:
@@ -1575,6 +1597,7 @@ func handle_aizen_raw_call_event(action_name: String, relative_frame: int, raw_c
 	var attacker_name: String = str(args[0])
 
 	if attacker_name == "bsmc":
+		
 		var args_raw: String = str(raw_call.get("args_raw", ""))
 		var raw_offset: Vector2 = parse_add_attacker_follow_offset(args_raw, BSMC_ORIGINAL_TARGET_OFFSET)
 		print("原版 raw addAttacker 触发：bsmc followTarget offset=", raw_offset, " applyG=false action=", action_name, " frame=", relative_frame)
@@ -1602,9 +1625,13 @@ func handle_aizen_semantic_event(action_name: String, relative_frame: int, seman
 				# 原版 EffectCtrler.bisha(target) 的通用光效位置是 target.x, target.y - 50。
 				# 当前 BishaEffectPlayer 是 HUD/屏幕层节点，所以必须先在世界坐标中加 -50，再转换到屏幕坐标；
 				# 不能在屏幕层直接减 50，否则 camera zoom != 1 时高度会与原版不一致。
-				var bisha_target_screen: Vector2 = world_to_screen(p1.position)
-				var bisha_current_target_screen: Vector2 = world_to_screen(get_p1_target_ground_pos())
-				var bisha_xg_screen: Vector2 = world_to_screen(p1.position + Vector2(0.0, -50.0))
+				# 原版 EffectCtrler.bisha(target)：普通角色特效按 target.x / target.y，XG_bs/XG_cbs 按 target.y - 50。
+				# 这里 target.y 先从 Godot 纹理中心换算为 SWF fighter 注册点，否则必杀光效会整体飘在人物上方。
+				var bisha_caster_origin: Vector2 = get_p1_original_effect_origin()
+				var bisha_target_origin: Vector2 = get_p1_target_original_effect_origin()
+				var bisha_target_screen: Vector2 = world_to_screen(bisha_caster_origin)
+				var bisha_current_target_screen: Vector2 = world_to_screen(bisha_target_origin)
+				var bisha_xg_screen: Vector2 = world_to_screen(bisha_caster_origin + Vector2(0.0, -50.0))
 				bisha_effect.play_bisha(is_super, original_face_id, bisha_target_screen, p1.facing, bisha_current_target_screen, bisha_xg_screen)
 
 		"super_effect_end":
@@ -2566,11 +2593,13 @@ func after_p2_hit_target(hit_vo: Dictionary, hit_result: Dictionary) -> void:
 
 func play_original_hit_feedback(hit_vo: Dictionary, hit_rect: Rect2, result: String, facing: int) -> void:
 	if hit_rect.size == Vector2.ZERO:
-		hit_rect = Rect2(get_node_ground_pos(p2, P2_START_POS) - Vector2(20, 60), Vector2(40, 80))
+		hit_rect = Rect2(get_p2_original_effect_origin() - Vector2(20, 60), Vector2(40, 80))
+
+	var effect_hit_rect: Rect2 = get_original_swf_effect_hit_rect(hit_rect)
 
 	if result == "defense":
 		if common_effects != null:
-			common_effects.play_defense_effect(hit_vo, hit_rect, facing)
+			common_effects.play_defense_effect(hit_vo, effect_hit_rect, facing)
 		flash_shine(Color(1, 1, 1, 0.12), 0.10)
 		start_original_shake(0.0, 2.0, 0.08)
 		print("原版 doDefenseEffect: hitType=", hit_vo.get("hitType", 0), " rect=", hit_rect)
@@ -2583,7 +2612,7 @@ func play_original_hit_feedback(hit_vo: Dictionary, hit_rect: Rect2, result: Str
 		#   其它 hitType    -> steel_hit_mfdj -> XG_mfdj
 		# EffectModel.initSteelHitEffect：sound=snd_hit_steel, freeze=400, blendMode=ADD, shine alpha=0.2, randRotate=true。
 		if common_effects != null and common_effects.has_method("play_steel_hit_effect"):
-			common_effects.play_steel_hit_effect(hit_vo, hit_rect, facing)
+			common_effects.play_steel_hit_effect(hit_vo, effect_hit_rect, facing)
 		flash_shine(Color(1, 1, 1, 0.20), 0.12)
 		# 原版 freeze(400) 会转成 400/1000*FPS_GAME 帧；当前 Godot hit_stop_timer 以秒计，先严格按 0.40s 对齐。
 		hit_stop_timer = maxf(hit_stop_timer, 0.40)
@@ -2593,7 +2622,7 @@ func play_original_hit_feedback(hit_vo: Dictionary, hit_rect: Rect2, result: Str
 	if result == "catch":
 		# EffectModel.initHitEffect: HitType.CATCH -> xg_catch_hit, freeze=400, sound=snd_hit_cache。
 		if common_effects != null:
-			common_effects.play_hit_effect(hit_vo, hit_rect, facing)
+			common_effects.play_hit_effect(hit_vo, effect_hit_rect, facing)
 		hit_stop_timer = maxf(hit_stop_timer, 0.40)
 		flash_shine(Color(1, 1, 1, 0.18), 0.12)
 		print("原版 catch hit: hitType=", hit_vo.get("hitType", 0), " rect=", hit_rect)
@@ -2601,7 +2630,7 @@ func play_original_hit_feedback(hit_vo: Dictionary, hit_rect: Rect2, result: Str
 
 	if result == "break_defense":
 		if common_effects != null:
-			common_effects.play_break_defense(hit_rect, facing)
+			common_effects.play_break_defense(effect_hit_rect, facing)
 		flash_shine(Color(1, 1, 1, 0.22), 0.18)
 		start_original_shake(6.0, 0.0, 0.28)
 		hit_stop_timer = maxf(hit_stop_timer, 0.10)
@@ -2612,7 +2641,7 @@ func play_original_hit_feedback(hit_vo: Dictionary, hit_rect: Rect2, result: Str
 		return
 
 	if common_effects != null:
-		common_effects.play_hit_effect(hit_vo, hit_rect, facing)
+		common_effects.play_hit_effect(hit_vo, effect_hit_rect, facing)
 
 	var hit_type: int = int(hit_vo.get("hitType", 0))
 	if hit_type in [3, 5, 6, 7, 8, 9]:
@@ -2847,6 +2876,8 @@ func apply_original_round_end_actions(reason: String) -> void:
 	resume_original_slow_down()
 	end_p1_shadow()
 	clear_original_move_target_binding(reason)
+	if bisha_effect != null and bisha_effect.has_method("end_bisha"):
+		bisha_effect.end_bisha()
 	if ko_draw_game or ko_winner_id == 0:
 		return
 	if p1 != null and p1.has_method("play_action"):
@@ -2906,13 +2937,15 @@ func check_ko_state() -> void:
 	resume_original_slow_down()
 	end_p1_shadow()
 	clear_original_move_target_binding("ko")
+	if bisha_effect != null and bisha_effect.has_method("end_bisha"):
+		bisha_effect.end_bisha()
 	var ko_loser: Variant = null
 	if p1_hp_now <= 0.0 and p1 != null:
 		ko_loser = p1
 	elif p2_hp_now <= 0.0 and p2 != null:
 		ko_loser = p2
 	if ko_loser != null and common_effects != null and common_effects.has_method("play_ko_hit_end"):
-		common_effects.play_ko_hit_end(get_node_ground_pos(ko_loser, P2_START_POS), get_node_facing(ko_loser))
+		common_effects.play_ko_hit_end(get_original_swf_effect_origin(ko_loser, P2_START_POS), get_node_facing(ko_loser))
 	AudioManager.play_sfx("res://assets/sfx/snd_over_hit.mp3", -2.0)
 	hit_stop_timer = maxf(hit_stop_timer, 0.06)
 	start_original_shake(5.0, 0.0, 1.5)
@@ -3452,11 +3485,12 @@ func play_original_dash_effect(action_name: String, relative_frame: int) -> void
 	# EffectModel.as 中 dash/dash_air 分别对应 XG_rush / XG_rush_air，二者声音均为 snd_dash_air。
 	var is_air: bool = p1 != null and bool(p1.get("in_air"))
 	var effect_id: String = "dash_air" if is_air else "dash"
+	var dash_effect_origin: Vector2 = get_p1_original_dash_dust_origin()
 	if common_effects != null and common_effects.has_method("play_dash_effect"):
-		common_effects.play_dash_effect(p1.position, p1.facing, is_air)
+		common_effects.play_dash_effect(dash_effect_origin, p1.facing, is_air)
 		print("原版 dash effect 触发 action=", action_name, " frame=", relative_frame, " effect=", effect_id)
 	elif _common_effect_exists(effect_id):
-		common_effects.play_effect(effect_id, p1.position, p1.facing, 1.0, false)
+		common_effects.play_effect(effect_id, dash_effect_origin, p1.facing, 1.0, false)
 		AudioManager.play_effect_sfx("snd_dash_air")
 		print("原版 dash effect 触发 action=", action_name, " frame=", relative_frame, " effect=", effect_id)
 	else:
@@ -3537,6 +3571,41 @@ func _apply_original_damping(damping_x: float) -> void:
 		p1.set_original_damping(damping_x)
 
 
+
+func get_original_swf_effect_origin(node: Variant, fallback_pos: Vector2) -> Vector2:
+	# 原版 SWF 的 EffectCtrler / addAttacker 使用 FighterMain.x/y 注册点。
+	# 当前 Godot ManifestFighter.position 不是这个注册点，而是 centered PNG 的节点原点。
+	# Step26 用 mc_023 idle 的真实人物底部 Matrix 反推注册点，避免 Step25 直接对齐脚底导致特效过低。
+	var pos: Vector2 = get_node_ground_pos(node, fallback_pos)
+	return Vector2(pos.x, pos.y + ORIGINAL_SWF_EFFECT_Y_FROM_GODOT_ORIGIN)
+
+
+func get_p1_original_effect_origin() -> Vector2:
+	return get_original_swf_effect_origin(p1, P1_START_POS)
+
+
+func get_p1_original_dash_dust_origin() -> Vector2:
+	# 原版 FighterEffectCtrler.dash() 在 fighter.x / fighter.y 播放 XG_rush；
+	# 当前导出的 XG_rush 是 800x600 画布，烟尘 bbox 底部约为纹理中心 +7px。
+	# 因此用 Godot 人物脚底 -7px 作为 EffectPlayer 节点 y，使烟尘底边与脚底持平。
+	var pos: Vector2 = get_node_ground_pos(p1, P1_START_POS)
+	return Vector2(pos.x, pos.y + ORIGINAL_DASH_EFFECT_Y_FROM_GODOT_ORIGIN)
+
+
+func get_p2_original_effect_origin() -> Vector2:
+	return get_original_swf_effect_origin(p2, P2_START_POS)
+
+
+func get_p1_target_original_effect_origin() -> Vector2:
+	# 当前 Demo 只有 P2 作为 currentTarget。
+	return get_p2_original_effect_origin()
+
+
+func get_original_swf_effect_hit_rect(hit_rect: Rect2) -> Rect2:
+	# 只修正视觉特效高度；不改变 current_attack_world_rect / 碰撞判定。
+	return Rect2(hit_rect.position + Vector2(0.0, ORIGINAL_HIT_EFFECT_VISUAL_Y_CORRECTION), hit_rect.size)
+
+
 func play_p1_effect(effect_name: String, offset: Vector2, effect_scale: float = 1.0) -> void:
 	if p1 == null:
 		return
@@ -3544,7 +3613,7 @@ func play_p1_effect(effect_name: String, offset: Vector2, effect_scale: float = 
 	if p1_effect == null:
 		return
 
-	var pos: Vector2 = align_original_skill_effect_height(effect_name, p1.position + offset, p1.position, offset)
+	var pos: Vector2 = p1.position + offset
 	p1_effect.play_effect(effect_name, pos, p1.facing, effect_scale)
 
 
@@ -3597,7 +3666,8 @@ func play_p1_attacker_at_target(effect_name: String, target_offset: Vector2, eff
 	active_attacker_follow_target = true
 	active_attacker_effect_name = effect_name
 	active_attacker_offset = target_offset
-	active_attacker_original_origin = align_original_skill_effect_height(effect_name, get_p1_target_ground_pos() + target_offset, get_p1_target_ground_pos(), target_offset)
+	var target_origin: Vector2 = get_p1_target_original_effect_origin()
+	active_attacker_original_origin = align_original_skill_effect_height(effect_name, target_origin + target_offset, target_origin, target_offset)
 	active_attacker_facing = p1.facing
 	active_attacker_has_hit = false
 
@@ -3616,11 +3686,12 @@ func play_p1_attacker_at_self(effect_name: String, self_offset: Vector2, effect_
 	active_attacker_follow_target = false
 	active_attacker_effect_name = effect_name
 	active_attacker_offset = self_offset
-	active_attacker_original_origin = align_original_skill_effect_height(effect_name, p1.position + self_offset, p1.position, self_offset)
+	var caster_origin: Vector2 = get_p1_original_effect_origin()
+	active_attacker_original_origin = align_original_skill_effect_height(effect_name, caster_origin + self_offset, caster_origin, self_offset)
 	active_attacker_facing = p1.facing
 	active_attacker_has_hit = false
 
-	p1_effect.play_effect(effect_name, active_attacker_original_origin, active_attacker_facing, effect_scale, true)
+	p1_effect.play_effect(effect_name, active_attacker_original_origin + self_offset, active_attacker_facing, effect_scale, true)
 
 
 func update_attacker_follow_target() -> void:
@@ -3638,5 +3709,6 @@ func update_attacker_follow_target() -> void:
 	# 对应原版 FighterAttacker.renderFollowTarget():
 	# x = target.x + offsetX * direct; y = target.y + offsetY。
 	# 这里更新的是 original_origin；视觉修正仍然只作用于 FFDec PNG 画布。
-	active_attacker_original_origin = align_original_skill_effect_height(active_attacker_effect_name, get_p1_target_ground_pos() + active_attacker_offset, get_p1_target_ground_pos(), active_attacker_offset)
+	var target_origin: Vector2 = get_p1_target_original_effect_origin()
+	active_attacker_original_origin = align_original_skill_effect_height(active_attacker_effect_name, target_origin + active_attacker_offset, target_origin, active_attacker_offset)
 	p1_effect.position = _attacker_visual_position_from_origin()

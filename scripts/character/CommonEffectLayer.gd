@@ -171,7 +171,7 @@ func play_effect(effect_id: String, pos: Vector2, facing: int = 1, effect_scale:
 
 	var sprite := Sprite2D.new()
 	sprite.centered = true
-	sprite.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
+	sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	sprite.position = pos
 	sprite.scale = Vector2(effect_scale, effect_scale)
 	sprite.flip_h = facing < 0

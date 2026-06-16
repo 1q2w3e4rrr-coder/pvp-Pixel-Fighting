@@ -1,0 +1,111 @@
+BVN Aizen Step22-24 Final Audit / Cleanup
+================================================
+
+Scope
+-----
+This package is based on Step19-21 and adds the final Aizen-only cleanup requested by the user:
+1) Step22: character action-state/input responsiveness audit.
+2) Step23: sound / voice / effect trigger mapping audit.
+3) Step24: final Aizen timeline raw-call coverage audit.
+4) Extra requested feature: add the UI hint “按“p”补满怒气” under the battle HP area and implement P to fill both P1/P2 qi.
+5) Extra requested tuning: skill-effect vertical height alignment based on original SWF timeline semantics.
+6) Extra requested tuning: reduce input-to-action delay using a short input buffer.
+
+Added UI / Debug Function
+-------------------------
+- Added a small centered label under the battle HP area:
+  按“p”补满怒气
+- Press P during battle:
+  P1.qi = P1.qi_max
+  P2.qi = P2.qi_max
+- It does not change HP, energy, fzqi, score, KO state, or defense state.
+
+Input Responsiveness
+--------------------
+- Added 0.12 second input buffer for:
+  J / U / I / K / L
+- Purpose:
+  If the player presses a button a few frames before the legal cancel/action window, the action is executed on the first valid frame instead of being lost.
+- This is closer to Flash per-frame polling behavior and makes combos/skill chaining feel more immediate.
+- No action startup frames were deleted; the original action timelines remain intact.
+
+Effect Height Alignment
+-----------------------
+- bsmc vertical anchor:
+  currentTarget.y - 25
+  Source: addAttacker("bsmc", {y:{followTarget:true,offset:-25}, applyG:false})
+- zh3mc vertical anchor:
+  caster fighter origin y at creation time
+  Source: addAttacker("zh3mc", {applyG:false})
+- bisha XG vertical anchor:
+  caster.y - 50, converted through world_to_screen before HUD-layer playback
+  Source: EffectCtrler.bisha(target.x, target.y - 50)
+- These are encoded in BattlePlaceholder and noted in aizen_effect_manifest metadata.
+
+Step22 State Machine Audit
+--------------------------
+Covered and preserved:
+- idle / walk / dash / jump_start / jump / jump_attack / air_skill
+- attack chain atk1-5 and atk4_extra/atk5 chain
+- skill1 / skill2 / skill3
+- attack_skill1 counter preparation and attack_skill1_extra hit path
+- attack_skill2_check / attack_skill2_1 continuation
+- super / super_up / super_up_hit / super_air / super_special
+- throw1 / throw2 with Step17 moveTarget and Step18 catch entry
+- hurt / knock-fly / knock-down / getup path
+- win / lose / KO round end path
+
+Step23 Sound / Effect Mapping Audit
+-----------------------------------
+Covered:
+- se_hit1 / se_hit2 timeline hit sounds
+- se_step1 / se_step2 / se_step3 walk random sound
+- snd_dash_air for dash / dash_air
+- snd_hit_steel for steel body hit effect
+- snd_hit_cache for catch hit effect
+- snd_bs / snd_cbs for bisha / super bisha where available
+- hit / defense / break_defense / steel_hit / catch_hit common effect routes
+- shadow / endShadow runtime shadow system
+- shake / startShake / endShake original shake model
+- slowDown / slowDownResume localized battle-object slow system
+
+Step24 Timeline Coverage Audit
+------------------------------
+Handled raw / semantic groups:
+- effect_ctrler:
+  shine, dash, bisha, endBisha, shadow, endShadow, shake, startShake, endShake,
+  slowDown, slowDownResume, playSoundHit1, playSoundHit2, walk
+- mc_ctrler:
+  addAttacker, setHurtAction, setSteelBody, setSuperSteelBody, setAttack, setSkill2,
+  setZhao1, setBisha, setSkillAIR, setBishaAIR, isApplyG, move, movePercent,
+  damping, dampingPercent, dash, dashStop, stopMove, stop, moveTarget, loop, endAct
+- fighter_ctrler:
+  moveToTarget, moveOnce, setDirectToTarget, setCross
+- hit system:
+  hit_target_check, if_last_hit_play / justHitToPlay, HitType.CATCH, steel, defense, break_defense, KO.
+
+Intentionally not implemented in this Aizen-only package:
+- O assist / swap system, by user requirement O is ignored.
+- Multi-character full roster logic.
+- Netplay/AI.
+- Re-exporting all effect MovieClips with perfect Flash registration metadata; current registration uses the best extracted Step6/Step8 data and manifest metadata.
+
+Files Modified
+--------------
+- scripts/battle/BattlePlaceholder.gd
+- assets/characters/aizen/aizen_effect_manifest.json
+
+Files Included As Dependencies
+------------------------------
+- scripts/character/ManifestFighter.gd
+- scripts/character/CommonEffectLayer.gd
+- scripts/character/EffectPlayer.gd
+- scripts/character/ShadowEffectLayer.gd
+- scripts/character/BishaEffectPlayer.gd
+- assets/effects/common/common_effect_manifest.json
+- dash/dash_air assets
+- effect sounds
+
+No generated images.
+No HUD rewrite beyond the requested text hint.
+No texture-quality changes.
