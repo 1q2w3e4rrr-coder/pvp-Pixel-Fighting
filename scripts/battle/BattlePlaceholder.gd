@@ -2092,7 +2092,7 @@ func add_score_by_hit(hit_vo: Dictionary, current_hits: int) -> int:
 func after_p1_hit_target(hit_vo: Dictionary, hit_result: Dictionary) -> void:
 	var result: String = String(hit_result.get("result", ""))
 	play_original_hit_feedback(hit_vo, current_attack_world_rect, result, p1.facing)
-	if result == "dead" or result == "counter" or result == "defense" or result == "steel":
+	if result == "dead" or result == "counter" or result == "defense" or result == "steel" or result == "ignored":
 		return
 	add_qi_on_hit(p1, p2, hit_vo)
 	p1_combo_count += 1
@@ -2106,7 +2106,7 @@ func after_p2_hit_target(hit_vo: Dictionary, hit_result: Dictionary) -> void:
 	var result: String = String(hit_result.get("result", ""))
 	var p2_face: int = int(p2.get("facing")) if p2 != null else -1
 	play_original_hit_feedback(hit_vo, current_attack_world_rect, result, p2_face)
-	if result == "dead" or result == "counter" or result == "defense" or result == "steel":
+	if result == "dead" or result == "counter" or result == "defense" or result == "steel" or result == "ignored":
 		return
 	add_qi_on_hit(p2, p1, hit_vo)
 	p2_combo_count += 1
