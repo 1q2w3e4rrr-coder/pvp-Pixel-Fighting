@@ -53,40 +53,14 @@ var damping_x: float = 0.0
 var hurt_timer: float = 0.0
 var in_hitstun: bool = false
 
-# 原版 FighterMain.isAllowBeHit / FighterMcCtrler._beHitGap。
-# 受击、防御、钢体命中后会短暂禁止再次被命中，之后按 _beHitGap 恢复。
-var is_allow_be_hit: bool = true
-var be_hit_gap_timer: float = 0.0
-
-# 原版 FighterMC.playHurtFly / renderHurtFly 的最小状态机。
-# 0=无击飞；1=击飞中；2=落地过渡“击飞_落”；3=弹起“击飞_弹”；4=倒地等待起身。
-var hurt_fly_state: int = 0
-var hurt_fly_delay_timer: float = 0.0
-var hurt_fall_timer: float = 0.0
-var hurt_down_timer: float = 0.0
-var hurt_y_min: float = 0.0
-var hurt_is_heavy_down_attack: bool = false
-var hurt_fly_hitx: float = 0.0
-var hurt_fly_hity: float = 0.0
-
 # 原版 setHurtAction：当前动作被打时不进入普通受击，而是转入指定反击动作。
 var original_hurt_action: String = ""
-# 原版 FighterMcCtrler.setSteelBody(v, isSuper)：钢体/霸体状态。
-# 普通钢体被打时不打断当前动作，按 doSteelHurt 扣 65% 伤害并耗 energy；
-# superSteelBody 扣 30% 伤害。遇到必杀/抓取/energyOverLoad 时普通钢体会退回 doHurt。
-var is_steel_body: bool = false
-var is_super_steel_body: bool = false
 var apply_gravity_enabled: bool = true
 
 const ORIGINAL_FPS := 30.0
 const HURT_FRAME_OFFSET := 3
 const HIT_SPEED_SCALE := 30.0
 const DEFENSE_LOSE_HP_RATE := 0.05
-const STEEL_BODY_DAMAGE_RATE := 0.65
-const SUPER_STEEL_BODY_DAMAGE_RATE := 0.30
-const STEEL_BODY_ENERGY_RATE := 0.40
-const STEEL_BODY_BREAK_DEF_ENERGY_RATE := 1.00
-const SUPER_STEEL_BODY_ENERGY_RATE := 0.20
 const ENERGY_ADD_NORMAL_PER_FRAME := 2.0
 const ENERGY_ADD_DEFENSE_PER_FRAME := 0.8
 const ENERGY_ADD_ATTACKING_PER_FRAME := 1.1
@@ -203,9 +177,7 @@ func start_air_attack() -> void:
 func _process(delta: float) -> void:
 	update_energy(delta)
 	update_defense_hold(delta)
-	update_be_hit_gap(delta)
 	update_hurt_timer(delta)
-	update_hurt_fly_state(delta)
 	update_animation(delta)
 	update_physics(delta)
 	update_horizontal_motion(delta)
@@ -274,7 +246,6 @@ func return_to_neutral_from_timeline() -> void:
 	# 注意：如果人在空中，原版 idle() 不会硬切站立，而是进入下落/跳跃状态。
 	action_locked = false
 	apply_gravity_enabled = true
-	clear_original_timeline_states()
 	if in_air:
 		if velocity_y < 0:
 			play_action("jump")
@@ -320,25 +291,26 @@ func handle_action_finished() -> void:
 		return
 
 	if finished_action == "knock_fly":
-		# 击飞动画由 update_hurt_fly_state() 按原版 playHurtFly/renderHurtFly 状态机驱动。
-		_hold_last_frame()
+		if in_air:
+			play_action("knock_fall")
+		else:
+			play_action("knock_down")
 		return
 
 	if finished_action == "knock_fall":
-		_hold_last_frame()
-		return
-
-	if finished_action == "knock_bounce":
-		_hold_last_frame()
+		if in_air:
+			play_action("knock_fall")
+		else:
+			play_action("knock_down")
 		return
 
 	if finished_action == "knock_down":
-		# 原版倒地会保留一段 _hurtDownFrame 后才播放“击飞_起”。
-		_hold_last_frame()
+		play_action("getup")
 		return
 
 	if finished_action == "getup":
-		_clear_hurt_state()
+		in_hitstun = false
+		action_locked = false
 		play_action("idle")
 		return
 
@@ -371,12 +343,8 @@ func update_physics(delta: float) -> void:
 		velocity_y = 0.0
 		in_air = false
 
-		if hurt_fly_state == 1:
-			# 原版 renderHurtFly state1：落地后进入“击飞_落”。
-			_start_hurt_fall_stage()
-		elif hurt_fly_state == 3:
-			# 原版 state3：弹起后再次落地进入“击飞_倒”。
-			_start_hurt_down_stage(15)
+		if current_action == "knock_fly" or current_action == "knock_fall":
+			play_action("knock_down")
 		elif current_action != "land" and not in_hitstun:
 			play_action("land")
 
@@ -390,147 +358,14 @@ func update_hurt_timer(delta: float) -> void:
 		if hurt_timer > 0.0:
 			return
 
-	# hurtType=0 的普通硬直结束后恢复；击飞流程由 update_hurt_fly_state() 处理。
-	if current_action == "hurt" and hurt_fly_state == 0:
-		_clear_hurt_state()
+	# hurtType=0 的普通硬直结束后恢复；击飞流程由 knock_fly/knock_down/getup 处理。
+	if current_action == "hurt":
+		in_hitstun = false
+		action_locked = false
 		if in_air:
 			play_action("fall")
 		else:
 			play_action("idle")
-
-
-func update_be_hit_gap(delta: float) -> void:
-	if be_hit_gap_timer <= 0.0:
-		return
-	be_hit_gap_timer -= delta
-	if be_hit_gap_timer <= 0.0:
-		be_hit_gap_timer = 0.0
-		is_allow_be_hit = true
-
-
-func _set_be_hit_gap(frames: int) -> void:
-	is_allow_be_hit = false
-	be_hit_gap_timer = maxf(be_hit_gap_timer, float(frames) / ORIGINAL_FPS)
-
-
-func _hold_last_frame() -> void:
-	if not manifest.has("actions") or not manifest["actions"].has(current_action):
-		return
-	var action: Dictionary = manifest["actions"].get(current_action, {})
-	var frames: Array = action.get("frames", [])
-	if frames.is_empty():
-		return
-	frame_index = max(0, frames.size() - 1)
-	frame_timer = 0.0
-	update_frame()
-
-
-func _clear_hurt_state() -> void:
-	in_hitstun = false
-	action_locked = false
-	hurt_timer = 0.0
-	hurt_fly_state = 0
-	hurt_fly_delay_timer = 0.0
-	hurt_fall_timer = 0.0
-	hurt_down_timer = 0.0
-	is_allow_be_hit = true
-	be_hit_gap_timer = 0.0
-	velocity_x = 0.0
-	damping_x = 0.0
-	if not in_air:
-		velocity_y = 0.0
-
-
-func _start_original_hurt_fly(hitx: float, hity: float) -> void:
-	# 对照 FighterMC.playHurtFly(hitx, hity, showBeHit=true)：
-	# 先显示“被打”，延迟 1 帧后进入“击飞”；hity>5 时为重下砸，落地后直接倒地。
-	if hitx != 0.0:
-		set_facing(-1 if hitx > 0.0 else 1)
-
-	hurt_fly_state = 1
-	hurt_fly_delay_timer = 1.0 / ORIGINAL_FPS
-	hurt_fall_timer = 0.0
-	hurt_down_timer = 0.0
-	hurt_y_min = position.y
-	hurt_fly_hitx = hitx
-	hurt_fly_hity = hity
-	hurt_is_heavy_down_attack = hity > 5.0
-
-	velocity_x = hitx * HIT_SPEED_SCALE
-	velocity_y = hity * HIT_SPEED_SCALE
-	damping_x = 0.0
-	in_air = true
-	in_hitstun = true
-	action_locked = true
-	apply_gravity_enabled = true
-	play_action("hurt")
-
-
-func _start_hurt_fall_stage() -> void:
-	# 原版 state2 先 goFrame("击飞_落")，至少渲染 2 帧再弹起/倒地。
-	hurt_fly_state = 2
-	hurt_fall_timer = 2.0 / ORIGINAL_FPS
-	in_hitstun = true
-	action_locked = true
-	play_action("knock_fall")
-
-
-func _start_hurt_bounce_stage() -> void:
-	# 原版非重下砸：goFrame("击飞_弹") 后按高度差给一个反弹速度。
-	var y_diff: float = maxf(0.0, ground_y - hurt_y_min)
-	var bounce_v: float = clampf(y_diff / 25.0, 3.0, 8.0)
-	hurt_fly_state = 3
-	in_air = true
-	velocity_y = -bounce_v * HIT_SPEED_SCALE
-	# 落地时仍保留一部分横向滑行。
-	damping_x = 2.0 * HIT_SPEED_SCALE
-	play_action("knock_bounce")
-
-
-func _start_hurt_down_stage(frames: int) -> void:
-	# 原版 playHurtDown2 / renderHurtFly state4：goFrame("击飞_倒")，等待 _hurtDownFrame 后进入“击飞_起”。
-	hurt_fly_state = 4
-	hurt_down_timer = float(frames) / ORIGINAL_FPS
-	in_air = false
-	position.y = ground_y
-	velocity_y = 0.0
-	damping_x = 2.0 * HIT_SPEED_SCALE
-	play_action("knock_down")
-
-
-func update_hurt_fly_state(delta: float) -> void:
-	if hurt_fly_state == 0:
-		return
-
-	if hurt_fly_state == 1:
-		if hurt_fly_delay_timer > 0.0:
-			hurt_fly_delay_timer -= delta
-			if hurt_fly_delay_timer <= 0.0 and current_action == "hurt":
-				play_action("knock_fly")
-		if hurt_y_min > position.y:
-			hurt_y_min = position.y
-		return
-
-	if hurt_fly_state == 2:
-		hurt_fall_timer -= delta
-		if hurt_fall_timer > 0.0:
-			return
-		if hurt_is_heavy_down_attack:
-			_start_hurt_down_stage(30)
-		else:
-			_start_hurt_bounce_stage()
-		return
-
-	if hurt_fly_state == 3:
-		# 落地切换在 update_physics() 里处理。
-		return
-
-	if hurt_fly_state == 4:
-		hurt_down_timer -= delta
-		if hurt_down_timer <= 0.0:
-			hurt_fly_state = 0
-			play_action("getup")
-		return
 
 
 func update_horizontal_motion(delta: float) -> void:
@@ -645,36 +480,6 @@ func stop_original_motion() -> void:
 		velocity_y = 0.0
 
 
-func set_original_velocity(vx: float, vy: float) -> void:
-	velocity_x = vx
-	if absf(vy) > 0.001:
-		velocity_y = vy
-		if position.y < ground_y - 0.5 or vy < 0.0:
-			in_air = true
-		apply_gravity_enabled = true
-
-
-func set_original_damping(damping_value: float) -> void:
-	damping_x = maxf(0.0, damping_value)
-
-
-func apply_original_dash_motion(speed_plus: float = 3.0, base_speed: float = 220.0) -> void:
-	# FighterMcCtrler.dash(speedPlus)：setVelocity(fighter.speed * speedPlus * direct, 0)，damping=0，isAllowBeHit=false。
-	velocity_x = base_speed * speed_plus * float(facing)
-	velocity_y = 0.0
-	damping_x = 0.0
-	is_allow_be_hit = false
-	be_hit_gap_timer = maxf(be_hit_gap_timer, 2.0 / ORIGINAL_FPS)
-
-
-func apply_original_dash_stop(lose_spd_percent: float = 0.5) -> void:
-	# FighterMcCtrler.dashStop(loseSpdPercent)：damping = abs(vecx) * loseSpdPercent；isAllowBeHit=true。
-	damping_x = absf(velocity_x) * lose_spd_percent
-	is_allow_be_hit = true
-	be_hit_gap_timer = 0.0
-	action_locked = false
-
-
 func set_air_state_from_position() -> void:
 	in_air = position.y < ground_y - 0.5
 	if in_air:
@@ -689,91 +494,16 @@ func set_original_hurt_action(action_name: String) -> void:
 	original_hurt_action = action_name
 
 
-func set_steel_body(enabled: bool, is_super: bool = false) -> void:
-	is_steel_body = enabled
-	is_super_steel_body = enabled and is_super
-	# 原版 setSteelBody(false) 同时结束 glow。Godot 当前没有 startGlow/endGlow 资源，
-	# 所以这里只保存战斗状态，不伪造光效。
-	if not enabled:
-		is_super_steel_body = false
-
-
-func clear_original_timeline_states() -> void:
-	original_hurt_action = ""
-	set_steel_body(false)
-
-
-func _is_bisha_hit_vo(hit_vo: Dictionary) -> bool:
-	var hit_id: String = String(hit_vo.get("id", ""))
-	return hit_id.find("bs") != -1 or hit_id.find("sbs") != -1 or hit_id.find("cbs") != -1 or hit_id.find("kbs") != -1
-
-
-func _is_catch_hit_vo(hit_vo: Dictionary) -> bool:
-	return int(hit_vo.get("hitType", 0)) == 11 and hit_vo.get("isBreakDef", false) == true
-
-
-func _apply_original_steel_hit(hit_vo: Dictionary, attacker_facing: int) -> Dictionary:
-	# 对照 FighterMcCtrler.doSteelHurt(hitvo, hitRect)。
-	# 普通钢体遇到 energyOverLoad / 必杀 / 抓取时会退回普通 doHurt。
-	if (not is_super_steel_body) and (energy_overload or _is_bisha_hit_vo(hit_vo) or _is_catch_hit_vo(hit_vo)):
-		set_steel_body(false)
-		return {}
-
-	var hit_id: String = String(hit_vo.get("id", ""))
-	var damage: float = get_damage_from_hitvo(hit_vo)
-	var damage_rate: float = SUPER_STEEL_BODY_DAMAGE_RATE if is_super_steel_body else STEEL_BODY_DAMAGE_RATE
-	var actual_damage: float = damage * damage_rate
-	hp = maxf(0.0, hp - actual_damage)
-	if hp <= 0.0:
-		is_alive = false
-		set_steel_body(false)
-		# 原版钢体被打死时仍转入 doHurt，这里返回 dead 让外层走 KO。
-		return {"result":"dead", "damage":actual_damage, "hit_id":hit_id}
-
-	var energy_cost: float = 0.0
-	if is_super_steel_body:
-		energy_cost = damage * SUPER_STEEL_BODY_ENERGY_RATE
-	elif hit_vo.get("isBreakDef", false) == true:
-		energy_cost = damage * STEEL_BODY_BREAK_DEF_ENERGY_RATE
-	else:
-		energy_cost = damage * STEEL_BODY_ENERGY_RATE
-	use_energy(energy_cost)
-
-	if not is_super_steel_body:
-		var hitx: float = float(hit_vo.get("hitx", 0.0)) * float(attacker_facing)
-		var hity: float = float(hit_vo.get("hity", 0.0))
-		if hit_vo.get("isBreakDef", false) == true:
-			hitx *= 2.0
-			hity *= 2.0
-		velocity_x = hitx * HIT_SPEED_SCALE
-		velocity_y = hity * HIT_SPEED_SCALE
-		damping_x = absf(hitx) * HIT_SPEED_SCALE * 3.0 + 180.0
-
-	_set_be_hit_gap(10 if int(hit_vo.get("hurtType", 0)) == 1 else 4)
-	print("STEEL HitVO=", hit_id, " damage=", actual_damage, " hp=", hp, "/", hp_max, " energy=", energy, "/", energy_max)
-	return {"result":"steel", "damage":actual_damage, "hit_id":hit_id}
-
-
 func apply_original_hit(hit_vo: Dictionary, attacker_facing: int) -> Dictionary:
 	if not is_alive:
 		return {"result":"dead"}
-
-	# 原版 FighterMain.beHit：isAllowBeHit=false 时直接忽略本次受击。
-	if not is_allow_be_hit:
-		return {"result":"ignored"}
 
 	# 原版 FighterMcCtrler.beHit：若 _action.hurtAction 存在，先 doAction(hurtAction)，不走普通受击伤害。
 	if original_hurt_action != "":
 		var counter_action: String = original_hurt_action
 		print("原版 hurtAction 触发：", current_action, " 被打时转入 ", counter_action, "，本次 HitVO 不扣血")
-		_set_be_hit_gap(4)
 		play_action(counter_action)
 		return {"result":"counter", "action":counter_action}
-
-	if is_steel_body:
-		var steel_result: Dictionary = _apply_original_steel_hit(hit_vo, attacker_facing)
-		if not steel_result.is_empty():
-			return steel_result
 
 	var hit_id: String = String(hit_vo.get("id", ""))
 	var damage: float = get_damage_from_hitvo(hit_vo)
@@ -794,7 +524,6 @@ func apply_original_hit(hit_vo: Dictionary, attacker_facing: int) -> Dictionary:
 			var guard_damage: float = damage * DEFENSE_LOSE_HP_RATE
 			hp = maxf(0.0, hp - guard_damage)
 			defense_hit_timer = 10.0 / ORIGINAL_FPS
-			_set_be_hit_gap(8 if int(hit_vo.get("hurtType", 0)) == 1 else 4)
 			velocity_x = float(attacker_facing) * float(hit_vo.get("hitx", 0.0)) * HIT_SPEED_SCALE
 			damping_x = 500.0
 			print("DEFENSE HitVO=", hit_id, " guard_damage=", guard_damage, " energy=", energy, "/", energy_max)
@@ -810,12 +539,10 @@ func apply_original_hit(hit_vo: Dictionary, attacker_facing: int) -> Dictionary:
 		in_hitstun = true
 		action_locked = true
 		hurt_timer = 42.0 / ORIGINAL_FPS
-		_set_be_hit_gap(10 if int(hit_vo.get("hurtType", 0)) == 1 else 4)
 		velocity_x = float(attacker_facing) * clampf(float(hit_vo.get("hitx", 5.0)), 5.0, 10.0) * HIT_SPEED_SCALE
 		damping_x = 300.0
 		if hp <= 0.0:
 			is_alive = false
-		set_steel_body(false)
 		play_action("hurt")
 		return {"result":"break_defense", "damage":break_damage}
 
@@ -842,9 +569,6 @@ func apply_original_hit(hit_vo: Dictionary, attacker_facing: int) -> Dictionary:
 	velocity_x = hitx * HIT_SPEED_SCALE
 	damping_x = absf(hitx) * HIT_SPEED_SCALE * 3.0 + 180.0
 
-	# 原版 doHurt 会 setSteelBody(false)。
-	set_steel_body(false)
-
 	if hurt_type == 0:
 		# 原版：_hurtHoldFrame = round(hurtTime / 1000 * 30) + 3，最少 4 帧。
 		var hurt_hold_frame: int = maxi(4, int(round(hurt_time_ms / 1000.0 * ORIGINAL_FPS)) + HURT_FRAME_OFFSET)
@@ -856,16 +580,19 @@ func apply_original_hit(hit_vo: Dictionary, attacker_facing: int) -> Dictionary:
 			in_air = true
 			velocity_y = hity * HIT_SPEED_SCALE
 
-		_set_be_hit_gap(4)
 		play_action("hurt")
 		return {"result":"hurt", "damage":damage}
 
-	# hurtType=1：原版进入 FighterMC.playHurtFly(hitx, hity)，先显示“被打”，下一帧进入“击飞”，落地后“击飞_落/弹/倒/起”。
+	# hurtType=1：原版进入击飞流程 playHurtFly(hitx, hity)。
+	in_hitstun = true
+	action_locked = true
+	hurt_timer = 0.0
+	in_air = true
 	if hity == 0.0:
-		# HitVO 未给 hity 时保留一个最小上抛，避免击飞状态停在地面。
+		# 原版 playHurtFly 内部还有倒地流程；这里给一个最小上抛，方便验证击飞。
 		hity = -6.0
-	_set_be_hit_gap(10)
-	_start_original_hurt_fly(hitx, hity)
+	velocity_y = hity * HIT_SPEED_SCALE
+	play_action("knock_fly")
 	return {"result":"knock_fly", "damage":damage}
 
 

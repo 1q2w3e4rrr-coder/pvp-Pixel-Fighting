@@ -24,6 +24,15 @@ var camera_rect: Rect2 = Rect2(Vector2.ZERO, Vector2(800, 600))
 var move_speed: float = 220.0
 var dash_distance: float = 180.0
 
+# Step11 原版时间轴控制事件：shine / dash / moveToTarget / movePercent / isApplyG。
+# FighterEffectCtrler.shine(color=0xFFFFFF) 会传 alpha=0.3 到 EffectCtrler.shine；
+# EffectCtrler.shine 默认 alpha=0.2，但蓝染时间轴使用的是 fighter effect ctrler。
+const ORIGINAL_SHINE_WHITE_ALPHA: float = 0.30
+const ORIGINAL_SHINE_COLORED_ALPHA: float = 0.20
+const ORIGINAL_SHINE_DURATION: float = 0.12
+# 原版 Flash 战斗时间轴按 30 fps 计算。move / movePercent / hurtTime 等帧制换算都以此为基准。
+
+
 # 原版 GenSe.xfl / MapMain.as / GameStage.as / GameCamera.as 依据：
 # line_bottom.y=395，line_player_bottom.y=365，GameConfig.GAME_SIZE=800x600，
 # MapMain.initlize() offsetY=600-395=205，所以 playerBottom=570，bottom=600。
@@ -1350,10 +1359,13 @@ func handle_aizen_semantic_event(action_name: String, relative_frame: int, seman
 			var effect_method: String = String(semantic.get("effect_method", ""))
 
 			if effect_method == "shine":
-				print("原版 shine 触发 action=", action_name, " frame=", relative_frame)
+				play_original_shine_event(action_name, relative_frame, semantic)
 
 			elif effect_method == "dash":
-				print("原版 dash effect 触发 action=", action_name, " frame=", relative_frame)
+				play_original_dash_effect(action_name, relative_frame)
+
+			else:
+				print("原版 effect 事件暂未接入 action=", action_name, " frame=", relative_frame, " method=", effect_method)
 
 		"end_action":
 			# 原版 endAct()：_action.clearAction(); actionState=FREEZE; setSteelBody(false)。
@@ -1449,10 +1461,10 @@ func handle_aizen_semantic_event(action_name: String, relative_frame: int, seman
 				print("原版 setBishaAIR 触发：跳砍后允许接空中 I / 空中必杀")
 
 		"teleport_or_move_to_target":
-			var offset_x: float = _nullable_number_to_float(semantic.get("x", 0.0), 0.0)
-			var offset_y: float = _nullable_number_to_float(semantic.get("y", 0.0), 0.0)
+			var offset_x_value: Variant = semantic.get("x", null)
+			var offset_y_value: Variant = semantic.get("y", null)
 			var auto_turn: bool = semantic.get("auto_turn", false) == true
-			move_p1_to_current_target(offset_x, offset_y, auto_turn)
+			move_p1_to_current_target(offset_x_value, offset_y_value, auto_turn)
 
 		"apply_gravity":
 			var apply_g: bool = semantic.get("enabled", true) == true
@@ -1461,13 +1473,10 @@ func handle_aizen_semantic_event(action_name: String, relative_frame: int, seman
 			print("原版 isApplyG 触发 action=", action_name, " frame=", relative_frame, " enabled=", apply_g)
 
 		"movement":
-			print("原版移动事件 action=", action_name, " frame=", relative_frame, " data=", semantic)
+			handle_original_movement_event(action_name, relative_frame, semantic)
 
 		"dash_or_stop":
-			var stop_method: String = String(semantic.get("method", ""))
-			if stop_method == "stopMove" and p1 != null and p1.has_method("stop_original_motion"):
-				p1.stop_original_motion()
-			print("原版 stopMove 触发 action=", action_name, " frame=", relative_frame)
+			handle_original_dash_or_stop_event(action_name, relative_frame, semantic)
 
 		"add_attacker":
 			var attacker_name: String = String(semantic.get("attacker", ""))
@@ -2399,22 +2408,159 @@ func check_ko_state() -> void:
 
 
 
-func move_p1_to_current_target(offset_x: float, offset_y: float, auto_turn: bool) -> void:
+func move_p1_to_current_target(offset_x_value: Variant, offset_y_value: Variant, auto_turn: bool) -> void:
 	if p1 == null:
 		return
 	if p2 == null:
 		return
 
 	var target_pos: Vector2 = get_p1_target_ground_pos()
-	# 对应 FighterCtrler.moveToTarget：fighter.x = target.x + x * fighter.direct; fighter.y = target.y + y。
-	p1.position = Vector2(target_pos.x + offset_x * float(p1.facing), target_pos.y + offset_y)
+	var has_x: bool = _original_number_is_present(offset_x_value)
+	var has_y: bool = _original_number_is_present(offset_y_value)
+	var offset_x: float = _nullable_number_to_float(offset_x_value, 0.0)
+	var offset_y: float = _nullable_number_to_float(offset_y_value, 0.0)
+
+	# 对应 FighterCtrler.moveToTarget(x, y, setDirect)：
+	# if x != null: fighter.x = target.x + Number(x) * fighter.direct
+	#   但当 x > 0 且目标接近地图左右边缘时，原版会改到目标另一侧，避免越界。
+	# if y != null: fighter.y = target.y + Number(y)
+	if has_x:
+		var fx: float = target_pos.x + offset_x * float(p1.facing)
+		if offset_x > 0.0:
+			if target_pos.x < offset_x:
+				fx = target_pos.x + offset_x
+			elif target_pos.x > ORIGINAL_MAP_RIGHT - offset_x:
+				fx = target_pos.x - offset_x
+		p1.position.x = fx
+
+	if has_y:
+		p1.position.y = target_pos.y + offset_y
+
 	clamp_fighter_to_original_map_bounds(p1)
 	if p1.has_method("set_air_state_from_position"):
 		p1.set_air_state_from_position()
 	if auto_turn and p1.has_method("set_facing"):
 		var new_direct: int = 1 if p1.position.x < target_pos.x else -1
 		p1.set_facing(new_direct)
-	print("原版 moveToTarget 触发：offset=(", offset_x, ",", offset_y, ") autoTurn=", auto_turn, " new_pos=", p1.position)
+	print("原版 moveToTarget 触发：x=", offset_x_value, " y=", offset_y_value, " autoTurn=", auto_turn, " has_x=", has_x, " has_y=", has_y, " new_pos=", p1.position)
+
+
+func _original_number_is_present(value: Variant) -> bool:
+	if value == null:
+		return false
+	if typeof(value) == TYPE_STRING:
+		var s: String = String(value).strip_edges().to_lower()
+		return s != "" and s != "null" and s != "nan"
+	return true
+
+
+func _original_args_number(args: Array, index: int, fallback: float = 0.0) -> float:
+	if index < 0 or index >= args.size():
+		return fallback
+	return _nullable_number_to_float(args[index], fallback)
+
+
+func play_original_shine_event(action_name: String, relative_frame: int, semantic: Dictionary) -> void:
+	# FighterEffectCtrler.shine(color=0xFFFFFF)：白色 alpha=0.3；非白色 alpha=0.2。
+	# Aizen 时间轴中当前解析到的是 shine()，没有显式 color，因此使用白色 0.3。
+	var color_value: int = int(semantic.get("color", 0xFFFFFF))
+	var alpha: float = ORIGINAL_SHINE_WHITE_ALPHA if color_value == 0xFFFFFF else ORIGINAL_SHINE_COLORED_ALPHA
+	var r: float = float((color_value >> 16) & 0xFF) / 255.0
+	var g: float = float((color_value >> 8) & 0xFF) / 255.0
+	var b: float = float(color_value & 0xFF) / 255.0
+	flash_shine(Color(r, g, b, alpha), ORIGINAL_SHINE_DURATION)
+	print("原版 shine 触发 action=", action_name, " frame=", relative_frame, " color=", color_value, " alpha=", alpha)
+
+
+func play_original_dash_effect(action_name: String, relative_frame: int) -> void:
+	# FighterEffectCtrler.dash()：地面 doEffectById("dash", fighter.x, fighter.y, direct)，空中用 dash_air。
+	# EffectModel.as 中 dash/dash_air 分别对应 XG_rush / XG_rush_air，二者声音均为 snd_dash_air。
+	var is_air: bool = p1 != null and bool(p1.get("in_air"))
+	var effect_id: String = "dash_air" if is_air else "dash"
+	if common_effects != null and common_effects.has_method("play_dash_effect"):
+		common_effects.play_dash_effect(p1.position, p1.facing, is_air)
+		print("原版 dash effect 触发 action=", action_name, " frame=", relative_frame, " effect=", effect_id)
+	elif _common_effect_exists(effect_id):
+		common_effects.play_effect(effect_id, p1.position, p1.facing, 1.0, false)
+		AudioManager.play_effect_sfx("snd_dash_air")
+		print("原版 dash effect 触发 action=", action_name, " frame=", relative_frame, " effect=", effect_id)
+	else:
+		print("原版 dash effect 触发但资源未接入：", effect_id, " action=", action_name, " frame=", relative_frame)
+
+func _common_effect_exists(effect_id: String) -> bool:
+	if common_effects == null:
+		return false
+	var manifest_value: Variant = common_effects.get("manifest")
+	if typeof(manifest_value) != TYPE_DICTIONARY:
+		return false
+	var effects: Dictionary = (manifest_value as Dictionary).get("effects", {}) as Dictionary
+	return effects.has(effect_id)
+
+
+func handle_original_movement_event(action_name: String, relative_frame: int, semantic: Dictionary) -> void:
+	var method_name: String = String(semantic.get("method", ""))
+	var args: Array = semantic.get("args", []) as Array
+	match method_name:
+		"move":
+			# FighterMcCtrler.move(x,y)：x *= direct；setVelocity(x,y)。原版 velocity 是按帧推进，Godot 这里换算成每秒。
+			var vx: float = _original_args_number(args, 0, 0.0) * float(p1.facing) * 30.0
+			var vy: float = _original_args_number(args, 1, 0.0) * 30.0
+			_apply_original_velocity(vx, vy)
+			print("原版 move 触发 action=", action_name, " frame=", relative_frame, " velocity=", Vector2(vx, vy))
+		"movePercent":
+			# movePercent(x,y)：move(fighter.speed*x, fighter.speed*y)。当前 Godot 的 fighter.speed 等价使用 move_speed。
+			var vx_percent: float = move_speed * _original_args_number(args, 0, 0.0) * float(p1.facing)
+			var vy_percent: float = move_speed * _original_args_number(args, 1, 0.0)
+			_apply_original_velocity(vx_percent, vy_percent)
+			print("原版 movePercent 触发 action=", action_name, " frame=", relative_frame, " velocity=", Vector2(vx_percent, vy_percent))
+		"damping":
+			# FighterMcCtrler.damping(x,y)：当前 ManifestFighter 只实现水平阻尼；y 阻尼暂不冒充。
+			var damping_x: float = absf(_original_args_number(args, 0, 0.0)) * 30.0 * 30.0
+			_apply_original_damping(damping_x)
+			print("原版 damping 触发 action=", action_name, " frame=", relative_frame, " damping_x=", damping_x)
+		"dampingPercent":
+			var damping_percent_x: float = absf(move_speed * _original_args_number(args, 0, 0.0)) * 30.0
+			_apply_original_damping(damping_percent_x)
+			print("原版 dampingPercent 触发 action=", action_name, " frame=", relative_frame, " damping_x=", damping_percent_x)
+		_:
+			print("原版 movement 事件暂未接入 action=", action_name, " frame=", relative_frame, " data=", semantic)
+
+
+func handle_original_dash_or_stop_event(action_name: String, relative_frame: int, semantic: Dictionary) -> void:
+	var method_name: String = String(semantic.get("method", ""))
+	var args: Array = semantic.get("args", []) as Array
+	match method_name:
+		"dash":
+			var speed_plus: float = _original_args_number(args, 0, 3.0)
+			if p1 != null and p1.has_method("apply_original_dash_motion"):
+				p1.apply_original_dash_motion(speed_plus, move_speed)
+			print("原版 mc_ctrler.dash 触发 action=", action_name, " frame=", relative_frame, " speedPlus=", speed_plus)
+		"dashStop":
+			var lose_percent: float = _original_args_number(args, 0, 0.5)
+			if p1 != null and p1.has_method("apply_original_dash_stop"):
+				p1.apply_original_dash_stop(lose_percent)
+			print("原版 mc_ctrler.dashStop 触发 action=", action_name, " frame=", relative_frame, " losePercent=", lose_percent)
+		"stopMove":
+			if p1 != null and p1.has_method("stop_original_motion"):
+				p1.stop_original_motion()
+			print("原版 stopMove 触发 action=", action_name, " frame=", relative_frame)
+		_:
+			print("原版 dash_or_stop 事件暂未接入 action=", action_name, " frame=", relative_frame, " data=", semantic)
+
+
+func _apply_original_velocity(vx: float, vy: float) -> void:
+	if p1 == null:
+		return
+	if p1.has_method("set_original_velocity"):
+		p1.set_original_velocity(vx, vy)
+
+
+func _apply_original_damping(damping_x: float) -> void:
+	if p1 == null:
+		return
+	if p1.has_method("set_original_damping"):
+		p1.set_original_damping(damping_x)
+
 
 func play_p1_effect(effect_name: String, offset: Vector2, effect_scale: float = 1.0) -> void:
 	if p1 == null:

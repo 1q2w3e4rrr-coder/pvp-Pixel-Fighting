@@ -123,6 +123,18 @@ func play_steel_hit_effect(hit_vo: Dictionary, hit_rect: Rect2, facing: int = 1)
 	AudioManager.play_effect_sfx("snd_hit_steel")
 
 
+func play_dash_effect(pos: Vector2, facing: int = 1, is_air: bool = false) -> void:
+	# 原版 EffectModel.as:
+	#   dash     -> EffectVO("XG_rush",     {sound:"snd_dash_air"})
+	#   dash_air -> EffectVO("XG_rush_air", {sound:"snd_dash_air"})
+	# 原版 FighterEffectCtrler.dash():
+	#   空中 doEffectById("dash_air", x, y, direct)
+	#   地面 doEffectById("dash",     x, y, direct)
+	var effect_id: String = "dash_air" if is_air else "dash"
+	play_effect(effect_id, pos, facing, 1.0, false, false)
+	AudioManager.play_effect_sfx("snd_dash_air")
+
+
 func play_break_defense(hit_rect: Rect2, facing: int = 1) -> void:
 	play_effect("break_def", hit_rect.get_center(), facing, 1.0, true)
 	AudioManager.play_effect_sfx("snd_mfdjx")
