@@ -779,6 +779,8 @@ func _process(delta: float) -> void:
 	update_original_visual_feedback(delta)
 	update_round_intro(delta)
 	update_ko_sequence(delta)
+	if ko_finished or original_round_end_actions_applied:
+		force_clear_bisha_after_round_end()
 	# 原版 EffectCtrler.renderAnimate() 每帧 render ShadowEffectView。
 	# 即使当前 hit-stop 锁住战斗输入，残影自身仍继续衰减。
 	# ShadowEffectLayer 是 Node2D 子节点，会自动 _process；这里不需要手动 tick。
@@ -1081,8 +1083,7 @@ func start_time_over_sequence() -> void:
 		else:
 			ko_winner_id = 2
 			ko_perfect = p2_hp_now >= get_fighter_hp_max(p2)
-	if bisha_effect != null and bisha_effect.has_method("end_bisha"):
-		bisha_effect.end_bisha()
+	force_clear_bisha_after_round_end()
 	apply_original_round_end_actions("timeover")
 	print("TIME OVER: p1_hp=", p1_hp_now, " p2_hp=", p2_hp_now, " winner=", ko_winner_id, " draw=", ko_draw_game)
 
@@ -1597,7 +1598,6 @@ func handle_aizen_raw_call_event(action_name: String, relative_frame: int, raw_c
 	var attacker_name: String = str(args[0])
 
 	if attacker_name == "bsmc":
-		
 		var args_raw: String = str(raw_call.get("args_raw", ""))
 		var raw_offset: Vector2 = parse_add_attacker_follow_offset(args_raw, BSMC_ORIGINAL_TARGET_OFFSET)
 		print("原版 raw addAttacker 触发：bsmc followTarget offset=", raw_offset, " applyG=false action=", action_name, " frame=", relative_frame)
@@ -1616,6 +1616,11 @@ func handle_aizen_semantic_event(action_name: String, relative_frame: int, seman
 
 	match event_type:
 		"super_effect_start":
+			if ko_finished or original_round_end_actions_applied:
+				force_clear_bisha_after_round_end()
+				print("Bisha start ignored after round end action=", action_name, " frame=", relative_frame)
+				return
+
 			var original_face_id: String = str(semantic.get("effect_name", ""))
 			var is_super: bool = semantic.get("is_super", false) == true
 
@@ -2867,6 +2872,22 @@ func audit_original_final_stage_once() -> void:
 	print("Step20 attack windows covered: atk1-5, jump_attack, air_skill, skill1/2/3, attack_skill1/2, super/super_up/super_air/super_special, throw1/throw2, bsmc, zh3mc")
 
 
+
+func force_clear_bisha_after_round_end() -> void:
+	# Step28：KO 后如果 BishaEffectPlayer 的黑底层残留，会表现为角色后方大块全黑矩形。
+	# KO / timeover / round end 期间每帧兜底清理，并禁止后续 super_effect_start 再打开它。
+	if bisha_effect == null:
+		return
+	if bisha_effect.has_method("force_clear_bisha_visuals"):
+		bisha_effect.force_clear_bisha_visuals()
+	elif bisha_effect.has_method("end_bisha"):
+		bisha_effect.end_bisha()
+	if bisha_effect is CanvasItem:
+		var item := bisha_effect as CanvasItem
+		item.visible = false
+		item.modulate.a = 0.0
+
+
 func apply_original_round_end_actions(reason: String) -> void:
 	# 原版 FightUI.playKO / timeover 进入结算后，角色动作进入 win / lose，战斗输入锁住。
 	if original_round_end_actions_applied:
@@ -2876,8 +2897,7 @@ func apply_original_round_end_actions(reason: String) -> void:
 	resume_original_slow_down()
 	end_p1_shadow()
 	clear_original_move_target_binding(reason)
-	if bisha_effect != null and bisha_effect.has_method("end_bisha"):
-		bisha_effect.end_bisha()
+	force_clear_bisha_after_round_end()
 	if ko_draw_game or ko_winner_id == 0:
 		return
 	if p1 != null and p1.has_method("play_action"):
@@ -2937,8 +2957,7 @@ func check_ko_state() -> void:
 	resume_original_slow_down()
 	end_p1_shadow()
 	clear_original_move_target_binding("ko")
-	if bisha_effect != null and bisha_effect.has_method("end_bisha"):
-		bisha_effect.end_bisha()
+	force_clear_bisha_after_round_end()
 	var ko_loser: Variant = null
 	if p1_hp_now <= 0.0 and p1 != null:
 		ko_loser = p1
@@ -3138,6 +3157,21 @@ func clear_original_move_target_binding(reason: String = "") -> void:
 	print("原版 moveTarget 关闭 reason=", reason)
 
 
+
+func is_original_world_position_locked(node) -> bool:
+	# Step29：原版 U/招1 没有后撤位移。
+	# Godot 里地面 skill1/skill2/skill3 会用 original_no_world_move_anchor_active 锁定 FighterMain 世界坐标；
+	# 身体分离逻辑不能再把这个角色推出去，否则就会出现“先后撤再回位”的假后撤步。
+	if node == null:
+		return false
+	if node.has_method("is_original_world_position_locked"):
+		return bool(node.is_original_world_position_locked())
+	var locked_value: Variant = node.get("original_no_world_move_anchor_active")
+	if locked_value != null:
+		return bool(locked_value)
+	return false
+
+
 func resolve_original_cross_collision() -> void:
 	# 原版 FighterMain.isCross=false 时角色身体不能互相穿过；setCross(true) / moveTarget 抓取期间允许穿身。
 	if p1 == null or p2 == null:
@@ -3149,6 +3183,11 @@ func resolve_original_cross_collision() -> void:
 	var p1_cross: bool = bool(p1.get("is_cross")) if p1.get("is_cross") != null else false
 	var p2_cross: bool = bool(p2.get("is_cross")) if p2.get("is_cross") != null else false
 	if p1_cross or p2_cross:
+		return
+
+	# Step29：如果任一方正在执行“原版世界坐标锁定”的动作，禁止身体分离推开该角色。
+	# 主要修复 U/招1：原版没有 move/movePercent/dash/moveToTarget，不能出现后撤再回位。
+	if is_original_world_position_locked(p1) or is_original_world_position_locked(p2):
 		return
 	var n1 := p1 as Node2D
 	var n2 := p2 as Node2D

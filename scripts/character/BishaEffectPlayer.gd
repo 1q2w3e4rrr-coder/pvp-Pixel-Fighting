@@ -38,7 +38,9 @@ func create_nodes() -> void:
 	dark_layer = ColorRect.new()
 	# 原版黑背景实际在场景底层，并且地图会隐藏；当前 demo 还没做“地图隐藏 + 只渲染必杀对象”，
 	# 所以先保留半透明黑层，避免把角色完全盖死。后续再把这个结构改成原版层级。
-	dark_layer.color = Color(0, 0, 0, 0.70)
+	dark_layer.color = Color(0, 0, 0, 0.0)
+	dark_layer.visible = false
+	dark_layer.modulate.a = 0.0
 	dark_layer.set_anchors_preset(Control.PRESET_FULL_RECT)
 	dark_layer.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	dark_layer.z_index = 0
@@ -64,6 +66,17 @@ func create_nodes() -> void:
 func play_bisha(is_super: bool, face_id: String, target_pos: Vector2, facing: int, current_target_pos: Variant = null, xg_effect_pos: Variant = null) -> void:
 	visible = true
 	is_active = true
+	modulate.a = 1.0
+	if dark_layer != null:
+		dark_layer.visible = true
+		dark_layer.modulate.a = 1.0
+		dark_layer.color = Color(0, 0, 0, 0.70)
+	if face_rect != null:
+		face_rect.visible = true
+		face_rect.modulate.a = 1.0
+	if xg_effect != null:
+		xg_effect.visible = true
+		xg_effect.modulate.a = 1.0
 
 	var effect_key: String = "xg_cbs" if is_super else "xg_bs"
 	var face_path: String = "res://assets/characters/aizen/face/" + face_id + ".png"
@@ -108,12 +121,35 @@ func play_bisha(is_super: bool, face_id: String, target_pos: Vector2, facing: in
 
 
 func end_bisha() -> void:
+	# Step28：KO / round end 后黑色矩形残留来自 bisha 黑底层没有被彻底隐藏。
+	# 这里同时关 parent visible、dark_layer visible/alpha、face 和 xg_effect，避免任意一个子节点残留。
 	is_active = false
 	visible = false
+	modulate.a = 0.0
+
+	if dark_layer != null:
+		dark_layer.visible = false
+		dark_layer.modulate.a = 0.0
+		dark_layer.color = Color(0, 0, 0, 0.0)
 
 	if xg_effect != null:
 		xg_effect.stop_effect()
+		xg_effect.visible = false
+		xg_effect.modulate.a = 0.0
 
 	if face_rect != null:
 		face_rect.texture = null
 		face_rect.flip_h = false
+		face_rect.visible = false
+		face_rect.modulate.a = 0.0
+
+
+func force_clear_bisha_visuals() -> void:
+	# 比 end_bisha 更强的 round-end 安全清理；用于 KO 后每帧兜底。
+	end_bisha()
+	for child in get_children():
+		if child is CanvasItem:
+			var item := child as CanvasItem
+			item.visible = false
+			item.modulate.a = 0.0
+

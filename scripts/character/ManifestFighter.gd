@@ -260,6 +260,10 @@ func apply_original_no_world_move_anchor() -> void:
 	velocity_y = 0.0
 
 
+func is_original_world_position_locked() -> bool:
+	return original_no_world_move_anchor_active
+
+
 func update_animation(delta: float) -> void:
 	if original_animation_stopped:
 		return
