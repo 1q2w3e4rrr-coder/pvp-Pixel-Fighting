@@ -35,6 +35,16 @@ const DEFENSE_EFFECT_BY_TYPE := {
 	11: "defense_2"
 }
 
+# 原版 EffectCtrler.doSteelHitEffect：钢体命中特效不是新贴图，
+# 而是 EffectModel.initSteelHitEffect 中复用 XG_kan / XG_qdj / XG_mfdj 三个 linkage，
+# 但声音、freeze、shine、randRotate 与普通 hit effect 不同。
+const STEEL_EFFECT_BY_TYPE := {
+	1: "steel_hit_kan",
+	6: "steel_hit_kan",
+	2: "steel_hit_qdj",
+	3: "steel_hit_qdj"
+}
+
 const HIT_SOUND_BY_TYPE := {
 	1: "snd_kan1",
 	2: "snd_hit2",
@@ -102,12 +112,23 @@ func play_defense_effect(hit_vo: Dictionary, hit_rect: Rect2, facing: int = 1) -
 	AudioManager.play_effect_sfx(sound_id)
 
 
+func play_steel_hit_effect(hit_vo: Dictionary, hit_rect: Rect2, facing: int = 1) -> void:
+	# 对照 EffectCtrler.doSteelHitEffect + EffectModel.initSteelHitEffect。
+	# hitType=0 原版直接 return，不播放特效。
+	var hit_type: int = int(hit_vo.get("hitType", 0))
+	if hit_type == 0:
+		return
+	var effect_id: String = String(STEEL_EFFECT_BY_TYPE.get(hit_type, "steel_hit_mfdj"))
+	play_effect(effect_id, hit_rect.get_center(), facing, 1.0, true, true)
+	AudioManager.play_effect_sfx("snd_hit_steel")
+
+
 func play_break_defense(hit_rect: Rect2, facing: int = 1) -> void:
 	play_effect("break_def", hit_rect.get_center(), facing, 1.0, true)
 	AudioManager.play_effect_sfx("snd_mfdjx")
 
 
-func play_effect(effect_id: String, pos: Vector2, facing: int = 1, effect_scale: float = 1.0, additive: bool = true) -> void:
+func play_effect(effect_id: String, pos: Vector2, facing: int = 1, effect_scale: float = 1.0, additive: bool = true, rand_rotate: bool = false) -> void:
 	if not manifest.has("effects"):
 		return
 	var effects: Dictionary = manifest.get("effects", {}) as Dictionary
@@ -125,6 +146,8 @@ func play_effect(effect_id: String, pos: Vector2, facing: int = 1, effect_scale:
 	sprite.position = pos
 	sprite.scale = Vector2(effect_scale, effect_scale)
 	sprite.flip_h = facing < 0
+	if rand_rotate or bool(data.get("rand_rotate", false)) or bool(data.get("randRotate", false)):
+		sprite.rotation = randf_range(-PI, PI)
 	if additive or bool(data.get("additive", true)):
 		sprite.material = additive_material
 	add_child(sprite)

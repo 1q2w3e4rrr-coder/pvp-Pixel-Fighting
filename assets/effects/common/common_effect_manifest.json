@@ -210,6 +210,89 @@
       ],
       "additive": true,
       "fallback_shape_render": true
+    },
+    "steel_hit_kan": {
+      "linkage": "XG_kan",
+      "fps": 30,
+      "loop": false,
+      "frames": [
+        "hit_1/0000.png",
+        "hit_1/0001.png",
+        "hit_1/0002.png",
+        "hit_1/0003.png",
+        "hit_1/0004.png",
+        "hit_1/0005.png",
+        "hit_1/0006.png",
+        "hit_1/0007.png",
+        "hit_1/0008.png",
+        "hit_1/0009.png"
+      ],
+      "additive": true,
+      "sound": "snd_hit_steel",
+      "freeze": 400,
+      "shine": {
+        "color": "0xFFFFFF",
+        "alpha": 0.2
+      },
+      "rand_rotate": true,
+      "is_steel_hit": true,
+      "source_alias": "hit_1"
+    },
+    "steel_hit_qdj": {
+      "linkage": "XG_qdj",
+      "fps": 30,
+      "loop": false,
+      "frames": [
+        "hit_2/0000.png",
+        "hit_2/0001.png",
+        "hit_2/0002.png",
+        "hit_2/0003.png",
+        "hit_2/0004.png",
+        "hit_2/0005.png",
+        "hit_2/0006.png",
+        "hit_2/0007.png",
+        "hit_2/0008.png",
+        "hit_2/0009.png",
+        "hit_2/0010.png"
+      ],
+      "additive": true,
+      "sound": "snd_hit_steel",
+      "freeze": 400,
+      "shine": {
+        "color": "0xFFFFFF",
+        "alpha": 0.2
+      },
+      "rand_rotate": true,
+      "is_steel_hit": true,
+      "source_alias": "hit_2"
+    },
+    "steel_hit_mfdj": {
+      "linkage": "XG_mfdj",
+      "fps": 30,
+      "loop": false,
+      "frames": [
+        "hit_4/0000.png",
+        "hit_4/0001.png",
+        "hit_4/0002.png",
+        "hit_4/0003.png",
+        "hit_4/0004.png",
+        "hit_4/0005.png",
+        "hit_4/0006.png",
+        "hit_4/0007.png",
+        "hit_4/0008.png",
+        "hit_4/0009.png",
+        "hit_4/0010.png"
+      ],
+      "additive": true,
+      "sound": "snd_hit_steel",
+      "freeze": 400,
+      "shine": {
+        "color": "0xFFFFFF",
+        "alpha": 0.2
+      },
+      "rand_rotate": true,
+      "is_steel_hit": true,
+      "source_alias": "hit_4"
     }
   }
 }

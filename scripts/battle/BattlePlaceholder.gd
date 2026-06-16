@@ -2129,11 +2129,17 @@ func play_original_hit_feedback(hit_vo: Dictionary, hit_rect: Rect2, result: Str
 		return
 
 	if result == "steel":
-		# 原版 EffectCtrler.doSteelHitEffect 会根据 hitType 选择 steel_hit_kan / steel_hit_qdj / steel_hit_mfdj。
-		# 当前项目 common_effect_manifest 还没有这三组原版 steel_hit 资源，不能用占位图冒充；
-		# 这里只保留轻微 hit-stop，并输出日志，等资源导出后再接 play_steel_hit_effect。
-		hit_stop_timer = maxf(hit_stop_timer, 0.035)
-		print("原版 doSteelHitEffect 待接资源: hitType=", hit_vo.get("hitType", 0), " rect=", hit_rect)
+		# 原版 EffectCtrler.doSteelHitEffect(hitvo, hitRect, target)：
+		#   KAN / KAN_HEAVY -> steel_hit_kan  -> XG_kan
+		#   DA  / DA_HEAVY  -> steel_hit_qdj  -> XG_qdj
+		#   其它 hitType    -> steel_hit_mfdj -> XG_mfdj
+		# EffectModel.initSteelHitEffect：sound=snd_hit_steel, freeze=400, blendMode=ADD, shine alpha=0.2, randRotate=true。
+		if common_effects != null and common_effects.has_method("play_steel_hit_effect"):
+			common_effects.play_steel_hit_effect(hit_vo, hit_rect, facing)
+		flash_shine(Color(1, 1, 1, 0.20), 0.12)
+		# 原版 freeze(400) 会转成 400/1000*FPS_GAME 帧；当前 Godot hit_stop_timer 以秒计，先严格按 0.40s 对齐。
+		hit_stop_timer = maxf(hit_stop_timer, 0.40)
+		print("原版 doSteelHitEffect: hitType=", hit_vo.get("hitType", 0), " rect=", hit_rect)
 		return
 
 	if result == "break_defense":
