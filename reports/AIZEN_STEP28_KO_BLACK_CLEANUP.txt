@@ -1,0 +1,29 @@
+AIZEN Step28 KO Black Cleanup
+
+Problem:
+- After KO, a large black rectangle can remain behind the characters.
+- Based on the screenshot and current layer structure, this is the BishaEffectPlayer black background layer staying visible after KO / round end.
+
+Fix:
+1. BishaEffectPlayer.end_bisha() now hides:
+   - parent Control visible/modulate
+   - dark_layer visible/alpha/color
+   - face_rect texture/visible/alpha
+   - xg_effect visible/alpha/playing state
+
+2. New BishaEffectPlayer.force_clear_bisha_visuals():
+   - calls end_bisha()
+   - hides all CanvasItem children as an extra safety pass.
+
+3. BattlePlaceholder now calls force_clear_bisha_after_round_end() every frame while:
+   - ko_finished == true
+   - or original_round_end_actions_applied == true
+
+4. BattlePlaceholder blocks super_effect_start after round end:
+   - prevents pending timeline events from reopening the black bisha layer after KO.
+
+Not changed:
+- No map change.
+- No HUD / QiBar / HITS change.
+- No attack hitbox change.
+- No texture quality change.

@@ -1,0 +1,28 @@
+AIZEN Step32 - remove U visual backstep offset
+
+Why U still had a backstep:
+- Step29 already locked FighterMain / Node2D world position and blocked body separation.
+- Step31 added a local Sprite2D offset for skill1 using a measurement from the full-size source export.
+- That was the wrong reference for the actual battle scene, because the battle scene uses actions_game/skill1 360x260 frames.
+- In actions_game/skill1, the visible root/foot x is already aligned well enough; applying the Step31 offset moved the sprite backward visually.
+- Therefore the remaining backstep was introduced by the local sprite offset, not by original SWF logic.
+
+Fix:
+- Remove get_original_sprite_local_visual_offset().
+- Force sprite.position = Vector2.ZERO in update_frame().
+- Keep the existing world-position lock from Step29.
+
+Result:
+- U / skill1 no longer gets a manual visual backward offset.
+- FighterMain position remains locked during ground skill1/skill2/skill3.
+- Body separation still ignores world-position locked actions.
+
+Not changed:
+- hitboxes
+- damage
+- timing
+- qi / shine
+- effects
+- KO cleanup
+- L dash
+- HUD / map / QiBar / HITS

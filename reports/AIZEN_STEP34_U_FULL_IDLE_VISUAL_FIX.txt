@@ -1,0 +1,30 @@
+AIZEN Step34 - U full idle visual fix
+
+Reason:
+- Original Aizen U / 招1 has no root movement:
+  no move, movePercent, dash, or moveToTarget.
+- Step33 only replaced skill1 frame_index < 12 with idle display.
+- User still observed a backstep, so the visible offset is not limited to the first 12 frames; later skill1 frames also have exported pose/canvas movement that reads as a step.
+- Because the requirement is "no backstep at all", the strict solution is to keep the character display on idle for the whole skill1 action while still running the skill1 logic/timeline.
+
+Fix:
+- get_original_strict_visual_frame_path():
+  if current_action == "skill1": return "actions_game/idle/0000.png"
+
+Preserved:
+- skill1 frame_index
+- skill1 hitboxes
+- addQi(10)
+- shine(0xFFFF00)
+- endAct / idle
+- U damage and timing
+- P1 world position lock
+- body separation bypass
+
+Not changed:
+- skill2 / skill3
+- hitboxes
+- effects
+- KO cleanup
+- dash
+- HUD / map / QiBar / HITS

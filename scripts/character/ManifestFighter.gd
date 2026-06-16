@@ -1054,6 +1054,33 @@ func apply_original_hit(hit_vo: Dictionary, attacker_facing: int) -> Dictionary:
 	return {"result":"knock_fly", "damage":damage}
 
 
+
+func get_original_strict_visual_frame_path(rel_path: String) -> String:
+	# Step35：恢复 U/招1 的角色抬手动作和闪电特效。
+	# 不再把整个 skill1 显示替换成 idle；仍显示原始 skill1 帧。
+	# 后撤观感改由 get_original_skill1_visual_offset() 的逐帧注册点补偿解决。
+	return rel_path
+
+
+
+const ORIGINAL_SKILL1_VISUAL_OFFSET_X: Array[float] = [-13.0, -13.0, -13.0, -13.0, -13.0, -13.0, -13.0, -13.0, -13.0, -13.0, -13.0, -13.0, 0.0, 0.0, 0.0, 0.0, 3.0, 57.0, 57.0, 110.0, 109.0, 160.0, 160.0, 153.0, 153.0, 159.0, 158.0, 140.0, 141.0, 95.0, 95.0, 3.0, 2.0, 2.0, 3.0, 3.0, 3.0, 3.0, 2.0, 2.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+
+func get_original_skill1_visual_offset() -> Vector2:
+	# Step35：基于当前 actions_game/skill1 实战帧逐帧计算的“脚部锚点”补偿。
+	# 原版 U/招1 无根移动；这里只移动 Sprite2D 的本地显示位置，不改 Node2D.position / hitbox / timing。
+	# facing=1 时使用 target_anchor - frame_anchor；facing=-1 时反向。
+	if current_action != "skill1":
+		return Vector2.ZERO
+	var idx: int = clampi(frame_index, 0, ORIGINAL_SKILL1_VISUAL_OFFSET_X.size() - 1)
+	return Vector2(ORIGINAL_SKILL1_VISUAL_OFFSET_X[idx] * float(facing), 0.0)
+
+
+func force_reapply_original_no_world_move_anchor() -> void:
+	# BattlePlaceholder 在自己 _process 末尾再调用一次，防止任何父级逻辑在本帧最后又改变 skill1 的世界坐标。
+	apply_original_no_world_move_anchor()
+
+
 func update_frame() -> void:
 	var action: Dictionary = manifest["actions"][current_action]
 	var frames: Array = action.get("frames", [])
@@ -1062,7 +1089,8 @@ func update_frame() -> void:
 		return
 
 	var rel_path: String = str(frames[frame_index])
-	var full_path: String = "res://assets/characters/aizen/" + rel_path
+	var visual_rel_path: String = get_original_strict_visual_frame_path(rel_path)
+	var full_path: String = "res://assets/characters/aizen/" + visual_rel_path
 
 	var tex: Texture2D = load(full_path)
 
@@ -1073,3 +1101,4 @@ func update_frame() -> void:
 	ensure_sprite()
 	sprite.texture = tex
 	sprite.flip_h = facing < 0
+	sprite.position = get_original_skill1_visual_offset()

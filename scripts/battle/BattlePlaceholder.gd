@@ -818,10 +818,20 @@ func _process(delta: float) -> void:
 	handle_p1_input(delta * get_original_slow_time_scale())
 	resolve_original_cross_collision()
 	clamp_fighters_to_original_map_bounds()
+	force_reapply_original_world_locked_positions()
 	if ORIGINAL_DEV_KEYS_ENABLED:
 		handle_p2_debug_input()
 	update_original_camera(delta)
 
+
+
+
+func force_reapply_original_world_locked_positions() -> void:
+	# Step33：本帧最后兜底，确保 U/招1 这类原版无根移动动作不会被父级逻辑或碰撞分离再次移动。
+	if p1 != null and p1.has_method("force_reapply_original_no_world_move_anchor"):
+		p1.force_reapply_original_no_world_move_anchor()
+	if p2 != null and p2.has_method("force_reapply_original_no_world_move_anchor"):
+		p2.force_reapply_original_no_world_move_anchor()
 
 
 func update_original_camera(_delta: float, immediate: bool = false) -> void:
@@ -2182,16 +2192,23 @@ func get_main_attack_hit_window(action_name: String, frame: int) -> Dictionary:
 		if frame >= 17 and frame <= 19:
 			return {"rect": SH22ATM_RECT, "label": "throw2 / sh22atm", "hit": "sh22", "key": "throw2:sh22"}
 
-	# 招1 start=506，zh1atm global=511/513/515/517 -> relative 5-12。
+	# Step36：招1 / U 的视觉闪电距离与命中判定对齐。
+	# 原版 SWF 的解决方式不是按“雷电图片”另写一套范围，而是在同一个 FighterMain 时间轴里放 zh1atm：
+	#   global 511/513/515/517 四组 zh1atm Matrix 逐段变长，和可见雷电同用 FighterMain 注册点/facing。
+	# 当前 Godot actions_game/skill1 导出帧中，真正可见的雷电从 frame 17 左右开始；
+	# 旧逻辑仍用 relative 5-12，导致“判定距离”和“看到的雷电距离”错位。
+	# 这里保留原版 ZH1ATM_RECT_A/B/C/D 的距离矩阵，只把激活帧映射到当前导出帧里的可见雷电阶段。
 	if action_name == "skill1":
-		if frame >= 5 and frame <= 6:
-			return {"rect": ZH1ATM_RECT_A, "label": "skill1 / zh1atm", "hit": "zh1", "key": "skill1:zh1"}
-		if frame >= 7 and frame <= 8:
-			return {"rect": ZH1ATM_RECT_B, "label": "skill1 / zh1atm", "hit": "zh1", "key": "skill1:zh1"}
-		if frame >= 9 and frame <= 10:
-			return {"rect": ZH1ATM_RECT_C, "label": "skill1 / zh1atm", "hit": "zh1", "key": "skill1:zh1"}
-		if frame >= 11 and frame <= 12:
-			return {"rect": ZH1ATM_RECT_D, "label": "skill1 / zh1atm", "hit": "zh1", "key": "skill1:zh1"}
+		if frame >= 17 and frame <= 18:
+			return {"rect": ZH1ATM_RECT_A, "label": "skill1 / zh1atm visual-phase A", "hit": "zh1", "key": "skill1:zh1"}
+		if frame >= 19 and frame <= 20:
+			return {"rect": ZH1ATM_RECT_B, "label": "skill1 / zh1atm visual-phase B", "hit": "zh1", "key": "skill1:zh1"}
+		if frame >= 21 and frame <= 24:
+			return {"rect": ZH1ATM_RECT_C, "label": "skill1 / zh1atm visual-phase C", "hit": "zh1", "key": "skill1:zh1"}
+		if frame >= 25 and frame <= 28:
+			return {"rect": ZH1ATM_RECT_D, "label": "skill1 / zh1atm visual-phase D", "hit": "zh1", "key": "skill1:zh1"}
+		if frame >= 29 and frame <= 30:
+			return {"rect": ZH1ATM_RECT_B, "label": "skill1 / zh1atm visual-phase shrink", "hit": "zh1", "key": "skill1:zh1"}
 
 	# 招2_CHK start=362，zh2atm global=362-367 -> relative 0-5。
 	if action_name == "skill2_check" and frame >= 0 and frame <= 5:

@@ -1,0 +1,36 @@
+AIZEN Step33 - strict U no-backstep fix
+
+Why previous fixes did not remove the visible backstep:
+- Original SWF Aizen U / 招1 has no root movement:
+  no move, movePercent, dash, or moveToTarget.
+- Step29 locked FighterMain world position and prevented body separation from pushing P1.
+- Step31/32 dealt with local sprite offsets, but the user still saw a visual backstep because the first 12 exported actions_game/skill1 frames are a prepared sword pose.
+- In the current Godot renderer, those first 12 frames are shown with centered Sprite2D and look like a backstep even though FighterMain/Node2D does not move.
+
+Strict fix:
+1. Keep original skill1 timeline logic intact:
+   - frame_index stays skill1
+   - hitboxes still fire from skill1
+   - addQi(10), shine(0xFFFF00), endAct(), idle() still run as before
+2. Only override the DISPLAY texture for skill1 frame_index < 12:
+   - display actions_game/idle/0000.png
+   - do not change damage/timing/hitbox/world position
+3. Add final BattlePlaceholder end-of-frame reapply:
+   - force_reapply_original_world_locked_positions()
+   - calls ManifestFighter.force_reapply_original_no_world_move_anchor()
+
+Result:
+- Ground U appears as “standing in place and releasing the attack/lightning”.
+- No visible preparatory backstep.
+- No root/world movement.
+- The original event timing remains unchanged.
+
+Not changed:
+- hitbox
+- damage
+- qi / shine
+- skill timing
+- KO / bisha cleanup
+- effect height
+- L dash
+- HUD / map / QiBar / HITS

@@ -152,4 +152,3 @@ func force_clear_bisha_visuals() -> void:
 			var item := child as CanvasItem
 			item.visible = false
 			item.modulate.a = 0.0
-

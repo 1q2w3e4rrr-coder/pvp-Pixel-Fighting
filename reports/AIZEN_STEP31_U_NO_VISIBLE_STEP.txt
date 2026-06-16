@@ -1,0 +1,31 @@
+AIZEN Step31 - U skill no visible step
+
+Diagnosis:
+- Original Aizen U / 招1 has no FighterMain root movement:
+  no move, movePercent, dash, or moveToTarget.
+- Step29 already prevents world-position movement and body-separation push.
+- The remaining perceived step comes from the pre-rendered skill1 visual frames:
+  idle bottom-foot center x ≈ 179.5
+  skill1 frame 0-11 bottom-foot center x ≈ 191.0
+  difference ≈ 11.5px
+- With a centered Sprite2D renderer, this frame-local difference looks like a small step/backstep even when Node2D.position is stable.
+
+Fix:
+- Add get_original_sprite_local_visual_offset().
+- For skill1 frame_index < 12:
+  Sprite2D local offset = Vector2(-11.5 * facing, 0)
+- This stabilizes the visible foot anchor for the early U frames.
+
+Changed:
+- scripts/character/ManifestFighter.gd only.
+
+Not changed:
+- Node2D.position / FighterMain world coordinate
+- hitboxes
+- damage
+- timing
+- qi / shine / endAct
+- KO / bisha
+- effect height
+- L dash
+- HUD / map / QiBar / HITS

@@ -1,0 +1,38 @@
+BVN Aizen Step26 - Effect height + U skill retreat hotfix
+
+1) Effect vertical alignment
+Problem after Step25:
+- Effects were moved to the visible foot/bottom y and became too low.
+
+Original SWF/XFL reference:
+- aizen mc_023 idle character layer places 元件/mc_009 at tx=-33.25, ty=-30.75.
+- mc_009 places picture_276 at tx=16.6, ty=-8.15.
+- DOMDocument picture_276 frameBottom=1300 twips = 65 px.
+- Therefore the visible character bottom is about -30.75 - 8.15 + 65 = +26.10 px below FighterMain registration y.
+
+Current Godot reference:
+- normalized idle PNG visible bottom is 111 px below centered Sprite2D origin.
+- character scale is 1.25.
+- Correct Godot node origin -> original FighterMain registration y offset:
+  (111 - 26.10) * 1.25 = 106.125 px.
+
+Fix:
+- ORIGINAL_SWF_EFFECT_Y_FROM_GODOT_ORIGIN changed from 138.75 to 106.125.
+- ORIGINAL_HIT_EFFECT_VISUAL_Y_CORRECTION uses the same 106.125 value.
+- This moves all bsmc / zh3mc / bisha / dash / hit / defense / steel / catch / hit_end effects upward by 32.625 px compared with Step25.
+
+2) U skill retreat
+Original SWF/XFL reference:
+- 招1 frames 506-558 only have addQi(10), shine(0xFFFF00), endAct(), idle().
+- 招1 has no move, movePercent, dash, or moveToTarget event.
+- 招2 and 招3 also have no world-coordinate retreat event.
+
+Fix:
+- ManifestFighter.play_action() clears residual horizontal velocity/damping only for skill1/skill2/skill3.
+- This prevents U / S+U / W+U from inheriting movement from the previous action and sliding/retreating.
+- Air skill, hurt knockback, dash, attack_skill2 movement, and throw/moveTarget are not changed.
+
+Not changed:
+- No generated images.
+- No HUD / map / QiBar / HITS / texture quality changes.
+- No attack hitbox collision changes.
