@@ -110,7 +110,6 @@ const ZH3MC_FFDEC_REBASED_VISUAL_OFFSET := Vector2(118.0, -118.0)
 var active_attacker_follow_target: bool = false
 var active_attacker_effect_name: String = ""
 var active_attacker_offset: Vector2 = Vector2.ZERO
-var active_attacker_visual_correction: Vector2 = Vector2.ZERO
 var active_attacker_original_origin: Vector2 = Vector2.ZERO
 var active_attacker_facing: int = 1
 
@@ -2434,27 +2433,19 @@ func get_p1_target_ground_pos() -> Vector2:
 	return get_node_ground_pos(p2, P2_START_POS)
 
 
-func get_effect_visual_correction(effect_name: String) -> Vector2:
-	# Step9：视觉注册点修正已迁移到 aizen_effect_manifest.json，由 EffectPlayer.gd 读取 visual_offset。
-	# BattlePlaceholder 只保留原版 FighterAttacker 世界原点；hitbox 也只使用 active_attacker_original_origin。
-	# 这里保留函数是为了不破坏调用结构，但始终返回 0，避免把视觉补偿混入战斗逻辑。
-	return Vector2.ZERO
-
-
 func _reset_active_attacker_state() -> void:
 	active_attacker_follow_target = false
 	active_attacker_effect_name = ""
 	active_attacker_offset = Vector2.ZERO
-	active_attacker_visual_correction = Vector2.ZERO
 	active_attacker_original_origin = Vector2.ZERO
 	active_attacker_facing = 1
 	active_attacker_has_hit = false
 
 
 func _attacker_visual_position_from_origin() -> Vector2:
-	# Step9：EffectPlayer 根据 effect manifest 的 visual_offset 自行移动 sprite。
-	# Node2D 位置必须保持为原版 attacker 世界原点。
-	return active_attacker_original_origin + active_attacker_visual_correction
+	# Step10：EffectPlayer 根据 aizen_effect_manifest.json 的 visual_offset 移动 Sprite2D。
+	# BattlePlaceholder 中的 EffectPlayer Node2D 位置必须保持为原版 FighterAttacker 世界原点。
+	return active_attacker_original_origin
 
 
 func play_p1_attacker_at_target(effect_name: String, target_offset: Vector2, effect_scale: float = 1.0) -> void:
@@ -2465,11 +2456,10 @@ func play_p1_attacker_at_target(effect_name: String, target_offset: Vector2, eff
 		return
 
 	# 对应原版 addAttacker("bsmc", {x:{followTarget:true,offset:0}, y:{followTarget:true,offset:-25}})。
-	# original_origin 是 FighterAttacker 的世界原点，visual_correction 只修正 FFDec PNG 画布中心。
+	# original_origin 是 FighterAttacker 的世界原点；FFDec PNG 视觉注册点由 EffectPlayer / manifest 处理。
 	active_attacker_follow_target = true
 	active_attacker_effect_name = effect_name
 	active_attacker_offset = target_offset
-	active_attacker_visual_correction = get_effect_visual_correction(effect_name)
 	active_attacker_original_origin = get_p1_target_ground_pos() + target_offset
 	active_attacker_facing = p1.facing
 	active_attacker_has_hit = false
@@ -2485,16 +2475,15 @@ func play_p1_attacker_at_self(effect_name: String, self_offset: Vector2, effect_
 		return
 
 	# 对应原版 addAttacker("zh3mc", {applyG:false})：创建时以当前 fighter 原点为 attacker 原点，
-	# 后续不 follow fighter / currentTarget。视觉偏移只来自当前 FFDec 展平帧的 rebase。
+	# 后续不 follow fighter / currentTarget。视觉偏移由 EffectPlayer / manifest 处理。
 	active_attacker_follow_target = false
 	active_attacker_effect_name = effect_name
 	active_attacker_offset = self_offset
-	active_attacker_visual_correction = get_effect_visual_correction(effect_name)
 	active_attacker_original_origin = p1.position
 	active_attacker_facing = p1.facing
 	active_attacker_has_hit = false
 
-	p1_effect.play_effect(effect_name, active_attacker_original_origin + self_offset + active_attacker_visual_correction, active_attacker_facing, effect_scale, true)
+	p1_effect.play_effect(effect_name, active_attacker_original_origin + self_offset, active_attacker_facing, effect_scale, true)
 
 
 func update_attacker_follow_target() -> void:
