@@ -289,6 +289,7 @@ var pending_hit_target_checker: String = ""
 var pending_hit_target_action: String = ""
 var pending_hit_target_enabled: bool = false
 var attack_skill2_1_ready: bool = false
+var attack_skill2_next_attack_ready: bool = false
 
 # 第 13 步：空中 J / U / I 的原版衔接窗口。
 # 跳砍第 9 帧 setBishaAIR + setSkillAIR 后，原版允许继续接空中 U 或空中 I。
@@ -1075,12 +1076,23 @@ func handle_attack_input() -> void:
 		p1.start_air_attack()
 		return
 
-	# 原版“砍技2_CHK”在全局帧 608 调用 setSkill2("砍技2_1")。
-	# 这里按原逻辑：只有进入 CHK 后，且到达可衔接窗口，再次 W+J 才能进“砍技2_1”。
-	if up_pressed and attack_skill2_1_ready and p1.current_action == "attack_skill2_check" and p1.frame_index >= 11 and p1.frame_index < 18:
-		p1.play_action("attack_skill2_1")
-		attack_skill2_1_ready = false
-		return
+	# 原版“砍技2_CHK”在全局帧 608 同时调用：
+	#   setAttack("砍4_QK")
+	#   setSkill2("砍技2_1")
+	# 因此进入 CHK 且到达原版衔接窗口后：
+	#   再按 J 进入 砍4_QK / atk4_extra
+	#   再按 W+J 进入 砍技2_1 / attack_skill2_1
+	if p1.current_action == "attack_skill2_check" and p1.frame_index >= 11 and p1.frame_index < 18:
+		if up_pressed and attack_skill2_1_ready:
+			p1.play_action("attack_skill2_1")
+			attack_skill2_1_ready = false
+			attack_skill2_next_attack_ready = false
+			return
+
+		if not up_pressed and not down_pressed and attack_skill2_next_attack_ready:
+			p1.play_action("atk4_extra")
+			attack_skill2_next_attack_ready = false
+			return
 
 	# 地面 S+J：原版 skill1() = down + attack，对应“砍技1”。
 	# 注意：砍技1本体是反击准备，真正攻击动作是被打时转入“砍技1_HA”。
@@ -1090,6 +1102,8 @@ func handle_attack_input() -> void:
 
 	# 地面 W+J：原版 skill2() = up + attack，对应“砍技2”。
 	if up_pressed and p1.can_ground_action():
+		attack_skill2_1_ready = false
+		attack_skill2_next_attack_ready = false
 		p1.play_action("attack_skill2")
 		return
 
@@ -1252,8 +1266,8 @@ func handle_aizen_semantic_event(action_name: String, relative_frame: int, seman
 				print("原版 dash effect 触发 action=", action_name, " frame=", relative_frame)
 
 		"end_action":
-			# 原版 endAct() 不是立刻回 idle，而是清空当前动作可输入锁。
-			# 地面招式暂时仍不主动解锁，避免覆盖前面已经校准过的连段窗口；空中动作按原版释放输入锁。
+			# 原版 endAct() 清空当前动作可输入锁，并把 actionState 转入 FREEZE。
+			# 当前 Demo 仍保留原先的最小实现：空中动作按原版释放输入锁；地面连段窗口由 ManifestFighter action_finished/idle 控制。
 			print("原版 endAct 触发 action=", action_name, " frame=", relative_frame)
 			if action_name == "jump_attack" or action_name == "air_skill" or action_name == "super_air":
 				if p1 != null and p1.has_method("unlock_original_action"):
@@ -1263,40 +1277,73 @@ func handle_aizen_semantic_event(action_name: String, relative_frame: int, seman
 			print("原版 idle() 触发 action=", action_name, " frame=", relative_frame)
 			p1_air_skill_ready = false
 			p1_air_bisha_ready = false
+			attack_skill2_1_ready = false
+			attack_skill2_next_attack_ready = false
 			if p1 != null and p1.has_method("return_to_neutral_from_timeline"):
 				p1.return_to_neutral_from_timeline()
 
 		"hit_target_check":
-			var checker_name: String = String(semantic.get("checker", ""))
-			var target_action: String = String(semantic.get("target_action", ""))
-			print("原版 setHitTarget 触发 action=", action_name, " frame=", relative_frame, " checker=", checker_name, " target=", target_action)
+			# 原版 FighterMcCtrler.setHitTarget(checker, action)：
+			#   _action.hitTargetChecker = checker
+			#   _action.hitTarget = action
+			# 当前 manifest 里事件字段来自解析器，常见键名是 hit_mc / success_label；
+			# 老补丁曾经只读取 checker / target_action，导致必须靠硬编码兜底。
+			var checker_name: String = String(semantic.get("checker", semantic.get("hit_mc", "")))
+			var target_label: String = String(semantic.get("target_action", semantic.get("success_label", "")))
+			var target_action: String = map_original_label_to_action(target_label)
+			if target_action == "":
+				target_action = target_label
+
+			print("原版 setHitTarget 触发 action=", action_name, " frame=", relative_frame, " checker=", checker_name, " target=", target_label, " -> ", target_action)
 			if checker_name != "" and target_action != "":
 				pending_hit_target_checker = checker_name
 				pending_hit_target_action = target_action
 				pending_hit_target_enabled = true
 
-		"if_last_hit_play":
-			var required_attack_id: String = String(semantic.get("attack_id", ""))
-			var target_label: String = String(semantic.get("target_label", ""))
-			var target_action_name: String = map_original_label_to_action(target_label)
-			if required_attack_id != "" and p1_last_hit_action == action_name and p1_last_hit_vo_id == required_attack_id and target_action_name != "":
-				print("原版 justHitToPlay 命中：", required_attack_id, " -> ", target_action_name)
-				p1_last_hit_vo_id = ""
-				p1_last_hit_action = ""
-				p1.play_action(target_action_name)
-			else:
-				print("原版 justHitToPlay 未触发 action=", action_name, " need=", required_attack_id, " last=", p1_last_hit_vo_id, " last_action=", p1_last_hit_action)
-				if semantic.get("return_idle_on_fail", false) == true and p1 != null and p1.has_method("return_to_neutral_from_timeline"):
-					p1.return_to_neutral_from_timeline()
+		"set_hurt_action":
+			# 原版 FighterMcCtrler.setHurtAction(action)：
+			# 被打时不扣血，优先 doAction(hurtAction)。蓝染 S+J 砍技1 在这里转入 砍技1_HA。
+			var hurt_label: String = String(semantic.get("target_label", ""))
+			var hurt_action: String = map_original_label_to_action(hurt_label)
+			if hurt_action == "":
+				hurt_action = hurt_label
+			print("原版 setHurtAction 触发 action=", action_name, " frame=", relative_frame, " target=", hurt_label, " -> ", hurt_action)
+			if hurt_action != "" and p1 != null and p1.has_method("set_original_hurt_action"):
+				p1.set_original_hurt_action(hurt_action)
 
 		"add_qi":
-			print("原版 addQi 触发 action=", action_name, " frame=", relative_frame, " value=", semantic.get("value", 0))
+			# 原版 FighterMcCtrler.addQi(qi) 直接调用 fighter.addQi(qi)。
+			var qi_value: float = float(semantic.get("value", 0.0))
+			print("原版 addQi 触发 action=", action_name, " frame=", relative_frame, " value=", qi_value)
+			if qi_value > 0.0 and p1 != null and p1.has_method("add_qi"):
+				p1.add_qi(qi_value)
+
+		"steel_body":
+			# 原版 setSteelBody(true) 会进入钢体/霸体状态。
+			# 当前 ManifestFighter 还没有完整 steelBody 字段，这里只保留原版事件记录，避免伪造完整霸体。
+			print("原版 setSteelBody 触发 action=", action_name, " frame=", relative_frame, " enabled=", semantic.get("enabled", false))
 
 		"enable_skill":
 			var enable_method: String = String(semantic.get("method", ""))
+
 			if enable_method == "setSkillAIR":
 				p1_air_skill_ready = true
 				print("原版 setSkillAIR 触发：跳砍后允许接空中 U / 跳招")
+
+			elif enable_method == "setSkill2":
+				var skill2_label: String = String(semantic.get("target_label", ""))
+				var skill2_action: String = map_original_label_to_action(skill2_label)
+				print("原版 setSkill2 触发 action=", action_name, " frame=", relative_frame, " target=", skill2_label, " -> ", skill2_action)
+				if skill2_action == "attack_skill2_1":
+					attack_skill2_1_ready = true
+
+		"enable_next_attack":
+			# 原版 setAttack("砍4_QK")：把下一次 J 的 attack 动作改为 砍4_QK。
+			var attack_label: String = String(semantic.get("target_label", ""))
+			var attack_action: String = map_original_label_to_action(attack_label)
+			print("原版 setAttack 触发 action=", action_name, " frame=", relative_frame, " target=", attack_label, " -> ", attack_action)
+			if attack_action == "atk4_extra":
+				attack_skill2_next_attack_ready = true
 
 		"enable_super":
 			var enable_method_super: String = String(semantic.get("method", ""))
@@ -1337,37 +1384,9 @@ func handle_aizen_semantic_event(action_name: String, relative_frame: int, seman
 		_:
 			pass
 
-	# addAttacker 已在 handle_aizen_raw_call_event() 按原始 XFL calls 处理；
-	# 这里不再使用 action_name + relative_frame 的硬编码兜底，避免同帧多层事件时重复生成 attacker。
-
-	# 招2：全局帧 326 setHitTarget("zh2_chkm", "招2_CHK")。
-	if action_name == "skill2" and relative_frame == 4:
-		print("原版 setHitTarget 触发：zh2_chkm -> skill2_check")
-		pending_hit_target_checker = "zh2_chkm"
-		pending_hit_target_action = "skill2_check"
-		pending_hit_target_enabled = true
-
-	# 招2：全局帧 323 setSteelBody(true)。目前先记录，不临时伪造完整霸体系统。
-	if action_name == "skill2" and relative_frame == 1:
-		print("原版 setSteelBody(true) 触发：skill2 当前只记录，后续接防御/霸体系统")
-
-	# 砍技1：全局帧 418 setHurtAction("砍技1_HA")。
-	if action_name == "attack_skill1" and relative_frame == 1:
-		print("原版 setHurtAction 触发：attack_skill1 被打时转入 attack_skill1_extra")
-		if p1 != null and p1.has_method("set_original_hurt_action"):
-			p1.set_original_hurt_action("attack_skill1_extra")
-
-	# 砍技2：全局帧 558 setHitTarget("kj2_chkm", "砍技2_CHK")。
-	if action_name == "attack_skill2" and relative_frame == 0:
-		print("原版 setHitTarget 触发：kj2_chkm -> attack_skill2_check")
-		pending_hit_target_checker = "kj2_chkm"
-		pending_hit_target_action = "attack_skill2_check"
-		pending_hit_target_enabled = true
-
-	# 砍技2_CHK：全局帧 608 setAttack("砍4_QK") / setSkill2("砍技2_1")。
-	if action_name == "attack_skill2_check" and relative_frame == 11:
-		print("原版 setSkill2 触发：attack_skill2_1 进入可衔接窗口；再次 W+J 可释放")
-		attack_skill2_1_ready = true
+	# addAttacker 仍在 handle_aizen_raw_call_event() 按原始 XFL raw call 处理；
+	# 这里不再用 action_name + relative_frame 硬编码 setHitTarget / setHurtAction / setSkill2。
+	# 这些事件已经由上面的 semantic 分支直接读取 manifest 中的原始 XFL 解析字段。
 
 
 func map_original_label_to_action(label_name: String) -> String:
