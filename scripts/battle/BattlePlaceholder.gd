@@ -83,13 +83,24 @@ var prev_t_pressed: bool = false
 #   zh3mc : global frame 680, params={applyG:false}, child Matrix tx=28.15, ty=-3466.3
 # 当前 zh3mc PNG 来自 FFDec 展平导出，已丢失原始 3466px 注册点画布；
 # 因此 visual offset 保持已验证的 FFDec rebased 偏移，攻击面仍使用 XFL 推导出的 ZH3ATM_RECT。
+# Step6 报告已确认：
+#   mc_023 frame804 bsmc instance Matrix = tx=149.35, ty=-19.65
+#   但 FighterAttacker.as 在 params.x/y 为 object 且 offset 存在时，会把 _startX/_startY 改为 offset，
+#   renderFollowTarget() 每帧使用 target.x + _startX * direct / target.y + _startY。
+#   所以 bsmc 的最终世界原点应来自 raw addAttacker params，而不是 mc_023 的静态 Matrix。
+const BSMC_MC023_INSTANCE_MATRIX := Vector2(149.35, -19.65)
 const BSMC_ORIGINAL_TARGET_OFFSET := Vector2(0.0, -25.0)
 # bsmc 视觉帧来自 FFDec 展平后的 443x377 画布；该修正只用于把导出画布中心对齐回原版注册点，
-# 不参与原版攻击面计算。攻击面仍使用 target + (0,-25) 作为 FighterAttacker 原点。
+# 不参与原版攻击面计算。攻击面仍使用 target + raw addAttacker offset 作为 FighterAttacker 原点。
 const BSMC_FFDEC_CANVAS_TO_ORIGINAL_REGISTRATION := Vector2(6.0, -5.0)
-const ZH3MC_ORIGINAL_CHILD_MATRIX := Vector2(28.15, -3466.3)
-# zh3mc 的原版 child Matrix 带有极大的 ty=-3466.3。当前 FFDec 输出已经把有效画面重新裁到 267x228，
-# 所以视觉上必须使用 FFDec-rebased offset；攻击面仍以 addAttacker 当帧的 fighter ground origin + ZH3ATM_RECT 计算。
+
+# Step6 报告已确认：
+#   mc_023 frame680 zh3mc instance Matrix = tx=28.15, ty=-3466.3
+#   mc_015 内 zh3atm Matrix = tx=32.25, ty=4043.9, a=-0.367..., d=-27.270...
+#   合成后得到当前 ZH3ATM_RECT 的超高攻击区域。当前 FFDec 视觉 PNG 已丢失原始 -3466 注册点画布，
+#   所以视觉仍使用 FFDec-rebased offset；攻击面继续用 XFL 合成矩形，不从截图手调。
+const ZH3MC_MC023_INSTANCE_MATRIX := Vector2(28.15, -3466.3)
+const ZH3MC_ZH3ATM_MATRIX_IN_MC015 := Vector2(32.25, 4043.9)
 const ZH3MC_FFDEC_REBASED_VISUAL_OFFSET := Vector2(118.0, -118.0)
 var active_attacker_follow_target: bool = false
 var active_attacker_effect_name: String = ""
@@ -1223,6 +1234,57 @@ func _on_p1_frame_event(action_name: String, event_data: Dictionary) -> void:
 		handle_aizen_semantic_event(action_name, relative_frame, semantic)
 
 
+
+
+func _nullable_number_to_float(value: Variant, fallback: float = 0.0) -> float:
+	if value == null:
+		return fallback
+	if typeof(value) == TYPE_INT or typeof(value) == TYPE_FLOAT:
+		return float(value)
+	var text: String = String(value).strip_edges()
+	if text == "" or text.to_lower() == "null" or text.to_lower() == "nan":
+		return fallback
+	return float(text)
+
+
+func parse_add_attacker_follow_offset(args_raw: String, fallback: Vector2) -> Vector2:
+	# 原版 addAttacker params 直接来自 mc_023.xml，例如：
+	# addAttacker("bsmc",{x:{followTarget:true,offset:0},y:{followTarget:true,offset:-25},applyG:false})
+	# 旧解析器会把 object 参数按逗号切碎，所以这里直接从 args_raw 重新读取 x/y offset。
+	return Vector2(
+		parse_axis_offset_from_add_attacker_args(args_raw, "x", fallback.x),
+		parse_axis_offset_from_add_attacker_args(args_raw, "y", fallback.y)
+	)
+
+
+func parse_axis_offset_from_add_attacker_args(args_raw: String, axis: String, fallback: float) -> float:
+	var marker_text: String = axis + ":{"
+	var start: int = args_raw.find(marker_text)
+	if start < 0:
+		return fallback
+
+	var end: int = args_raw.find("}", start)
+	if end < 0:
+		return fallback
+
+	var block: String = args_raw.substr(start, end - start)
+	var offset_marker: String = "offset:"
+	var offset_pos: int = block.find(offset_marker)
+	if offset_pos < 0:
+		return fallback
+
+	var number_start: int = offset_pos + offset_marker.length()
+	var number_end: int = block.find(",", number_start)
+	if number_end < 0:
+		number_end = block.length()
+
+	var value_text: String = block.substr(number_start, number_end - number_start).strip_edges()
+	if value_text == "":
+		return fallback
+
+	return float(value_text)
+
+
 func handle_aizen_raw_call_event(action_name: String, relative_frame: int, raw_call: Dictionary) -> void:
 	# 原版 XFL 时间轴里 addAttacker 脚本目前保留在 calls 的 raw method 中，
 	# 不再只靠 action_name + relative_frame 硬编码兜底。
@@ -1242,11 +1304,13 @@ func handle_aizen_raw_call_event(action_name: String, relative_frame: int, raw_c
 	var attacker_name: String = String(args[0])
 
 	if attacker_name == "bsmc":
-		print("原版 raw addAttacker 触发：bsmc followTarget x=0 y=-25 applyG=false action=", action_name, " frame=", relative_frame)
-		play_p1_attacker_at_target("bsmc", BSMC_ORIGINAL_TARGET_OFFSET, 1.0)
+		var args_raw: String = String(raw_call.get("args_raw", ""))
+		var raw_offset: Vector2 = parse_add_attacker_follow_offset(args_raw, BSMC_ORIGINAL_TARGET_OFFSET)
+		print("原版 raw addAttacker 触发：bsmc followTarget offset=", raw_offset, " applyG=false action=", action_name, " frame=", relative_frame)
+		play_p1_attacker_at_target("bsmc", raw_offset, 1.0)
 		active_original_hitbox = "bsmc"
 	elif attacker_name == "zh3mc":
-		print("原版 raw addAttacker 触发：zh3mc applyG=false action=", action_name, " frame=", relative_frame)
+		print("原版 raw addAttacker 触发：zh3mc applyG=false matrix=", ZH3MC_MC023_INSTANCE_MATRIX, " action=", action_name, " frame=", relative_frame)
 		# 视觉 PNG 仍使用当前 FFDec 导出层的锚点；攻击面继续使用 ZH3ATM_RECT，
 		# 该矩形已经由 mc_023 zh3mc Matrix + mc_015 zh3atm Matrix 推导，不手写猜测。
 		play_p1_attacker_at_self("zh3mc", Vector2(ZH3MC_FFDEC_REBASED_VISUAL_OFFSET.x * p1.facing, ZH3MC_FFDEC_REBASED_VISUAL_OFFSET.y), 1.0)
@@ -1381,8 +1445,8 @@ func handle_aizen_semantic_event(action_name: String, relative_frame: int, seman
 				print("原版 setBishaAIR 触发：跳砍后允许接空中 I / 空中必杀")
 
 		"teleport_or_move_to_target":
-			var offset_x: float = float(semantic.get("x", 0.0))
-			var offset_y: float = float(semantic.get("y", 0.0))
+			var offset_x: float = _nullable_number_to_float(semantic.get("x", 0.0), 0.0)
+			var offset_y: float = _nullable_number_to_float(semantic.get("y", 0.0), 0.0)
 			var auto_turn: bool = semantic.get("auto_turn", false) == true
 			move_p1_to_current_target(offset_x, offset_y, auto_turn)
 
