@@ -1,0 +1,52 @@
+AIZEN STEP44 - qibar 回退 + I 必杀原版多段伤害修复
+
+基线：Step43 修复后的 BattlePlaceholder.gd / ManifestFighter.gd。
+
+一、修复怒气条多余部分
+
+现象：Step43 后，底部 qibar 头像附近出现额外 fzqi/readymc/辅助气条部件。
+
+原因：Step43 将 ManifestFighter.fzqi 默认值改为 100，并且 BattlePlaceholder.apply_original_default_battle_stats() 也把 fzqi 初始化为 100。
+当前 Demo 按用户要求暂不实现 O 支援/换人，因此 FightHud 会读取 fzqi=100 并显示辅助气条/READY/SP 相关层，视觉上就是截图中的“多余部分”。
+
+处理：
+1. ManifestFighter.gd: fzqi 默认值回退为 0.0。
+2. BattlePlaceholder.gd: ORIGINAL_START_FZQI 回退为 0.0。
+3. debug_fill_qi_energy() 只补 qi 和 energy，不再补 fzqi。
+4. 保留 Step43 的 hp/qi/energy、伤害公式、怒气公式，不回退这些战斗数值。
+
+说明：原版 FighterMain.as 确有 fzqi/renderFzQi，但当前项目 O 支援/换人系统未接入，先回退到上个可用显示状态，避免辅助气条错误露出。后续恢复 assist/swap 系统时，再按 QiBar.as/FighterMain.as 完整接回 fzqi。
+
+二、修复 I 普通必杀伤害偏低
+
+原版依据：
+1. Aizen DOMDocument.xml defineAction:
+   bs1 power=20
+   bs  power=80
+2. aizen/LIBRARY/元件/mc_021.xml:
+   bsmc 内部 bs1atm 持续多帧，后段 bsatm 结束击飞。
+3. FighterAttacker.as:getCurrentHits(): 每帧从当前 MovieClip 帧读取攻击面。
+4. GameConfig.as:HURT_GAP_FRAME = 4。
+5. FighterMcCtrler.as:doHurt(): 普通受击后 _beHitGap = GameConfig.HURT_GAP_FRAME。
+
+Step43 问题：
+当前 Godot 只用 attack_key = "bsmc:bs1"，所以整个 bs1atm 持续段只会命中一次，I 的总伤害约为 20 + 80，明显低于原版多段命中体感。
+
+Step44 处理：
+1. bsmc 的 bs1atm 改为每 4 帧一个 attack_key：bsmc:bs1:0, bsmc:bs1:1 ...
+2. 如果 target 仍在 beHitGap 内返回 ignored，不再锁死 active_attacker_has_hit，下一帧继续检测。
+3. bsmc 的 bsatm 保持独立结尾 key，可在受击间隔结束后补上最后一击。
+4. super_special/cbs2 的持续攻击 key 从每 10 帧改为每 4 帧，靠近原版 HURT_GAP_FRAME。
+5. ManifestFighter 普通 hurtType=1 的 beHitGap 从 10 帧改为 4 帧；钢体击飞仍保留原版 STEEL_HURT_DOWN_GAP_FRAME=10 的逻辑。
+
+预期变化：
+- I 普通必杀不再只打 bs1 一次 + bs 一次；会按原版持续攻击面多段扣血。
+- S+I 的 cbs2 持续段也更接近原版节奏。
+- U/S+U/W+U 的 HitVO power、I/W+I/S+I 的消耗值不回退。
+
+三、未修改
+
+1. 没有修改 FightHud.gd。
+2. 没有修改 HPBar/QiBar/time_mc/spiritual_text 坐标。
+3. 没有回退 KO 黑底修复。
+4. 没有改 U 技能后撤步修复和判定同步逻辑。

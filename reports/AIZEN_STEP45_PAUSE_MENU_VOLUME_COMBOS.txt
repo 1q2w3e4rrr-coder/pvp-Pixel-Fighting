@@ -1,0 +1,27 @@
+Step45：战斗暂停菜单 / 音量界面 / 技能连招表
+
+基线：Step44 bvn_aizen_step44_qibar_revert_and_original_i_damage。
+
+修改文件：
+- scripts/battle/BattlePlaceholder.gd
+- scripts/core/AudioManager.gd
+
+实现内容：
+1. 战斗场景按 Esc 不再直接返回标题，而是暂停战斗并打开 BattlePauseRoot 半透明菜单。
+2. 界面1：显示“继续游戏 / 重新开始本局 / 返回选人 / 返回标题 / 音量 / 技能连招表”，按钮左对齐、竖直排列。
+3. 点击“音量”进入界面2：左上角返回箭头、扬声器符号、0-100 HSlider，可拖动调整整体 Master 音量。
+4. 点击“技能连招表”进入界面3：左上角返回箭头，左右两栏显示 P1/P2 默认键位连招表。
+5. 鼠标悬停按钮调用 AudioManager.snd_select()，点击按钮调用 AudioManager.snd_confirm()，打开暂停菜单调用 snd_menu_open()。
+6. 暂停时禁用 game_layer / fight_hud / effect layers 的 process，根 BattlePlaceholder 保持运行以处理暂停 UI。
+
+原版依据：
+- OpenBleachVsNaruto/swf_source/#FighterTester/src/net/play5d/game/obvn/vo/ConfigVO.as
+  P1 默认：W/S/A/D + J/K/L/U/I/O
+  P2 默认：方向键 + Num1/Num2/Num3/Num4/Num5/Num6
+- 已有菜单音效沿用：snd_menu1.mp3 / snd_menu2.mp3 / snd_menu5.mp3。
+
+说明：
+- 本次只实现暂停界面和音量控制，不接入 O/Num6 支援/换人系统。
+- 技能表中 P2 键位按原版 ConfigVO 默认键位显示；当前项目战斗输入主逻辑仍以 P1 为主。
+- 未修改 FightHud.gd，未改 HUD / HPBar / QiBar / time_mc / SPIRITUAL 位置。
+- 未改蓝染动作 PNG，KO 黑底修复不应回退。

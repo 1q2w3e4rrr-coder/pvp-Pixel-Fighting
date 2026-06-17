@@ -1,0 +1,21 @@
+AIZEN STEP47 - 标题页鼠标左键任意处开始
+
+基线：Step46 的 MainMenu.gd。
+
+修改文件：
+- scripts/ui/MainMenu.gd
+
+修改内容：
+1. 保留 Step46 的标题提示文字：点击屏幕任意处开始。
+2. 明确实现鼠标左键点击标题页任意位置开始：
+   - 在 _gui_input 中监听 MOUSE_BUTTON_LEFT。
+   - 额外在 _input 中增加兜底监听，避免点击被子节点/焦点影响时无响应。
+3. 鼠标左键点击和 Enter 使用同一个 start_menu_transition()。
+4. start_menu_transition() 内仍调用 AudioManager.snd_menu_open()，因此保留原来的进入菜单音效 snd_menu5.mp3。
+5. 没有修改 AudioManager.gd、BattlePlaceholder.gd、FightHud.gd、战斗逻辑、HUD、KO 修复、怒气条、伤害逻辑。
+
+测试：
+- 打开游戏到标题页。
+- 不按 Enter，直接鼠标左键点击屏幕任意位置。
+- 应进入菜单过渡动画，并播放 snd_menu5.mp3。
+- 菜单页三个选项仍为：经典2p对战、音量、技能连招表。

@@ -1,0 +1,168 @@
+AIZEN_STEP43_ORIGINAL_HP_DAMAGE_QI_FIX
+
+目标：
+根据原版 SWF / XFL / ActionScript，把当前 Godot Demo 中蓝染相关的 HP、HitVO 伤害、必杀怒气消耗、命中/受击怒气累计、辅助气与体力恢复逻辑调整为原版逻辑。
+
+本次修改文件：
+1. scripts/battle/BattlePlaceholder.gd
+2. scripts/character/ManifestFighter.gd
+
+没有修改：
+- FightHud.gd
+- qibar / hpbar / time_mc / spiritual_text 坐标
+- 地图、音效、角色 PNG、胜利/失败清理后的 PNG
+- U 技能后撤步修复与 U 判定同步逻辑
+
+原版依据：
+
+一、角色血量
+1. BleachVsNaruto-master/CORE_KernelLogic/src/net/play5d/game/bvn/GameConfig.as
+   FIGHTER_HP_MAX = 1000
+2. BleachVsNaruto-master/CORE_KernelLogic/src/net/play5d/game/bvn/ctrler/GameLogic.as
+   resetFighterHP: hp = hpMax = GameConfig.FIGHTER_HP_MAX * GameData.I.config.fighterHP * messionRate
+3. OpenBleachVsNaruto-master/swf_source/#FighterTester/src/FighterTester.as
+   GameData.I.config.fighterHP = 2
+
+所以当前 FighterTester / Demo 基准为：
+- 单角色初始 HP = 1000 * 2 = 2000
+
+二、怒气与辅助气默认值
+依据 FighterMain.as：
+- qi = 0
+- qiMax = 300
+- energy = 100
+- energyMax = 100
+- fzqi = 100
+- fzqiMax = 100
+
+三、伤害公式
+依据 HitVO.as / FighterMain.as：
+- HitVO.getDamage():
+  damage = (power + power * powerAdd / 100) * powerRate
+
+当前 AIZEN_HIT_VO 已经对齐 DOMDocument.xml defineAction。本次没有手写改 power，而是保留原 defineAction 值，并把 ManifestFighter.gd 中伤害公式改为原版 HitVO.getDamage 公式。
+
+四、蓝染 HitVO power 核心表
+来源：OpenBleachVsNaruto-master/swf_source/f_fighter/aizen/DOMDocument.xml defineAction(...)
+
+空中：
+- tk = 50
+- tz = 80
+- kbs = 200
+
+J 普攻：
+- k1 = 30
+- k2 = 30
+- k3 = 50
+- k4 = 50
+- k5 = 30
+- k52 = 30
+
+S+J / W+J：
+- kj1 = 100
+- kj12 = 110
+- kj21 = 40
+- kj2 = 120
+- kj22 = 50
+
+U / S+U / W+U：
+- zh1 = 100
+- zh2 = 110
+- zh3 = 100
+- zh31 = 100
+
+I / W+I / S+I：
+- bs1 = 20
+- bs = 80
+- sbs = 150
+- sbs1 = 30
+- sbs2 = 30
+- sbs3 = 30
+- sbs4 = 50
+- cbs2 = 15
+- cbs = 150
+
+投技：
+- sh1 = 0
+- sh12 = 50
+- sh2 = 0
+- sh22 = 150
+
+五、必杀怒气消耗
+来源：FighterMcCtrler.as
+- setBisha(qi=100)      -> I 普通必杀消耗 100
+- setBishaUP(qi=100)    -> W+I 上必杀消耗 100
+- setBishaAIR(qi=100)   -> 空中 I 消耗 100
+- setBishaSUPER(qi=300) -> S+I 超必杀消耗 300
+
+普通 U / S+U / W+U 在原版不是消耗 qi 的必杀；它们通过时间轴 addQi 事件和命中结算获得 qi。
+
+六、命中/受击怒气累计
+来源：GameConfig.as + FighterMain.as + FighterAttacker.as + Bullet.as + Assister.as
+
+常量：
+- QI_ADD_HIT_BISHA_RATE = 0
+- QI_ADD_HIT_RATE = 0.17
+- QI_ADD_HIT_BULLET_RATE = 0.1
+- QI_ADD_HIT_ATTACKER_RATE = 0.13
+- QI_ADD_HIT_ASSISTER_RATE = 0.15
+- QI_ADD_HIT_MAX = 15
+- QI_ADD_HURT_RATE = 0.08
+- QI_ADD_HURT_MAX = 20
+
+主攻击命中：
+- 攻击者：非必杀 power * 0.17，单次最多 15；必杀 power * 0 = 0
+- 被打者：power * 0.08，单次最多 20
+
+独立 attacker / 子弹 / 支援命中：
+- FighterAttacker: power * 0.13
+- Bullet: power * 0.1
+- Assister: power * 0.15
+
+当前接入：
+- bsmc / zh3mc 走 FighterAttacker 0.13 逻辑。
+- 主体攻击窗口走 FighterMain 0.17 / 必杀 0 逻辑。
+- 被打方统一走 0.08，上限 20。
+
+七、角色时间轴 addQi
+来源：蓝染 mc_023 时间轴事件 / Manifest 解析
+当前保留并继续使用原版 timeline addQi：
+- air_skill: +5
+- skill2: +5
+- skill2_check: +5
+- attack_skill1: +5
+- skill1: +10
+- attack_skill2: +5
+- attack_skill2_1: +5
+- skill3: +10
+- throw1: +5
+- throw2: +10
+
+八、体力 / 瞬步
+来源：FighterMcCtrler.as
+- 地面 dash: hasEnergy(20, true) 后 useEnergy(20)
+- 空中 dash: hasEnergy(30, true) 后 useEnergy(30)
+- GhostStep: qi 60 + energy 80
+
+当前 Demo 已把地面 L / dash 改为消耗 energy 20，不消耗 qi。
+空中 dash / GhostStep 当前项目没有完整绑定，暂只记录原版逻辑，不硬接未完成系统。
+
+九、辅助气恢复
+来源：GameConfig.FUZHU_QI_ADD_PERFRAME = 0.2；FighterMain.renderFzQi 每帧增加 0.2，到 100 停。
+当前 ManifestFighter.gd 按 30 FPS 等价换算为 delta 更新：fzqi += 0.2 * 30 * delta，上限 100。
+
+验证重点：
+1. 进入战斗时 P1/P2 HP 应为 2000/2000，qi 初始 0，energy 100，fzqi 100。
+2. P 键补气后 I / W+I / 空中 I 消耗 100；S+I 消耗 300。
+3. U / S+U / W+U 不消耗 qi。
+4. J 命中后攻击者按 power*0.17 加气，最多 15；被打方按 power*0.08 加气，最多 20。
+   例如 k1 power=30：攻击者 +5.1，被打方 +2.4。
+   k3 power=50：攻击者 +8.5，被打方 +4。
+5. 主体攻击窗口里的必杀类 HitVO（例如 kbs/sbs/cbs）命中时，攻击者因 isBisha 走 0 倍命中加气；被打方仍按 0.08 获得受击气。
+6. bsmc / zh3mc 独立 attacker 命中时，包括 bs/bs1/zh3，攻击者按 0.13 获得 qi。
+7. L 地面瞬步会消耗 energy 20。
+
+注意：
+- 本次没有重导出 SWF 素材，也没有生成新贴图。
+- 本次只调整数值和结算逻辑，不改变 UI 布局。
+- 如果后续要完全恢复 O 支援/换人，需要接入完整 Assister/Tag 系统；本次只恢复 fzqi 默认值与自然恢复。
