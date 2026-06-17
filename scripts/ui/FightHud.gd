@@ -482,6 +482,58 @@ func show_drawgame() -> void:
 		show_center_message("DRAW GAME", 50, Color(1.0, 0.86, 0.12, 1.0))
 
 
+func stop_all_round_end_animators() -> void:
+	if startko_animator != null:
+		if startko_animator.has_method("stop_anim"):
+			startko_animator.call("stop_anim")
+		if startko_animator is CanvasItem:
+			var item := startko_animator as CanvasItem
+			item.visible = false
+			item.modulate.a = 0.0
+		_force_hide_round_end_nodes(startko_animator)
+
+
+func hide_ko() -> void:
+	stop_all_round_end_animators()
+
+
+func hide_timeover() -> void:
+	stop_all_round_end_animators()
+
+
+func hide_winner() -> void:
+	stop_all_round_end_animators()
+
+
+func hide_drawgame() -> void:
+	stop_all_round_end_animators()
+
+
+func clear_center_message() -> void:
+	hide_center_message()
+	stop_all_round_end_animators()
+
+
+func _force_hide_round_end_nodes(node: Node) -> void:
+	if node == null:
+		return
+	var lower_name: String = node.name.to_lower()
+	var should_hide: bool = lower_name.find("winner") >= 0 or lower_name.find("ko") >= 0 or lower_name.find("draw") >= 0 or lower_name.find("timeover") >= 0 or lower_name.find("startko") >= 0 or lower_name.find("sequence") >= 0
+	if should_hide and node is CanvasItem:
+		var item := node as CanvasItem
+		item.visible = false
+		item.modulate.a = 0.0
+	if node is ColorRect:
+		var rect := node as ColorRect
+		var c: Color = rect.color
+		if c.r <= 0.08 and c.g <= 0.08 and c.b <= 0.08 and rect.size.x >= 160.0 and rect.size.y >= 80.0:
+			rect.visible = false
+			rect.modulate.a = 0.0
+			rect.color = Color(c.r, c.g, c.b, 0.0)
+	for child in node.get_children():
+		_force_hide_round_end_nodes(child)
+
+
 func set_time_left(time_left: int, is_infinite: bool = false) -> void:
 	# 原版 FightTimeUI.as 在 gameTimeMax == -1 时 _renderTime=false，
 	# 不刷新 MCNumber。当前 FFDec 原版 time_mc 背景已带无限符号，
@@ -1354,7 +1406,7 @@ func _apply_qi_side_positions(is_p1: bool, delta: Vector2) -> void:
 	var num: TextureRect = p1_qi_num if is_p1 else p2_qi_num
 	var num_mask: ColorRect = p1_qi_num_mask if is_p1 else p2_qi_num_mask
 	var track_mask: ColorRect = p1_qi_track_mask if is_p1 else p2_qi_track_mask
-	var bars: Array[TextureRect] = p1_qi_bars if is_p1 else p2_qi_bars
+	var _bars: Array[TextureRect] = p1_qi_bars if is_p1 else p2_qi_bars
 	_set_pos_if_valid(frame, base + delta)
 	_set_pos_if_valid(track_mask, _qi_fill_base_position(is_p1, base) + Vector2(-1.0, -0.5) + delta)
 	_set_pos_if_valid(num_mask, _qi_num_mask_position(is_p1, base) + delta)
@@ -2041,11 +2093,11 @@ void fragment() {
 	COLOR = col;
 }
 """
-	var material := ShaderMaterial.new()
-	material.shader = shader
-	material.set_shader_parameter("face_size", FACE_BAR_SIZE)
-	material.set_shader_parameter("mirror_mask", mirror_mask)
-	return material
+	var shader_material := ShaderMaterial.new()
+	shader_material.shader = shader
+	shader_material.set_shader_parameter("face_size", FACE_BAR_SIZE)
+	shader_material.set_shader_parameter("mirror_mask", mirror_mask)
+	return shader_material
 
 
 func _make_face_frame_overlay_material(mirror_mask: bool = false) -> ShaderMaterial:
@@ -2083,11 +2135,11 @@ void fragment() {
 	COLOR = col;
 }
 """
-	var material := ShaderMaterial.new()
-	material.shader = shader
-	material.set_shader_parameter("frame_size", FACE_FRAME_SIZE)
-	material.set_shader_parameter("mirror_mask", mirror_mask)
-	return material
+	var shader_material := ShaderMaterial.new()
+	shader_material.shader = shader
+	shader_material.set_shader_parameter("frame_size", FACE_FRAME_SIZE)
+	shader_material.set_shader_parameter("mirror_mask", mirror_mask)
+	return shader_material
 
 
 func _make_label(text_value: String, pos: Vector2, rect_size: Vector2, font_size: int, color: Color, align: HorizontalAlignment) -> Label:

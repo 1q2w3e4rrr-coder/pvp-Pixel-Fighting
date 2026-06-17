@@ -1,0 +1,38 @@
+AIZEN Step38 - KO black rectangle cleanup v2 + winner text change
+
+User issue:
+1. The black rectangle still remained after KO even after Step37.
+2. The result subtitle should be changed from "P1 WINNER PERFECT" to "Winner：P1/P2".
+
+Diagnosis:
+- The remaining black rectangle is not only BishaEffectPlayer.
+- It is very likely the old FightHud KO/Winner/StartKO visual layer. Step37 stopped show_winner(), but update_ko_sequence still called fight_hud.show_ko()/show_timeover(), which can leave a black-backed legacy layer.
+
+Fixes:
+1. update_ko_sequence no longer calls:
+   fight_hud.show_ko()
+   fight_hud.show_timeover()
+2. show_round_end_menu() hides the old fight_hud entirely after the round ends.
+   The new RoundEndMenu is now the only result UI.
+3. hide_fight_hud_center_message() now also calls optional hide_ko/hide_timeover if those methods exist.
+4. force_hide_fight_hud_round_end_layers() recursively hides FightHud children named:
+   winner / ko / draw / timeover / startko / start_ko
+   and large black ColorRect nodes.
+5. force_hide_legacy_blackout_layers() also hides named winner/ko/draw/timeover black layers.
+6. Result subtitle now returns:
+   Winner：P1
+   Winner：P2
+   Draw Game
+   No PERFECT suffix is appended.
+
+Changed:
+- scripts/battle/BattlePlaceholder.gd
+
+Not changed:
+- U no-backstep and U hitbox/visual sync
+- battle hitboxes
+- damage
+- map
+- character logic
+- QiBar/HITS logic
+- texture quality

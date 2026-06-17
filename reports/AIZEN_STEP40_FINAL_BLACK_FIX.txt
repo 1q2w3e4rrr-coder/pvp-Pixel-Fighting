@@ -1,0 +1,44 @@
+AIZEN Step40 - final black screen fix
+
+Observed:
+- The black rectangle still appears behind the result menu.
+- It persists even after hiding Bisha, which means the remaining source is either:
+  1. the legacy FightHud / FightStartKOAnimator KO/Winner sequence texture, or
+  2. a camera/map transparent void exposing the root black clear color.
+
+Fixes:
+1. BattlePlaceholder.update_ko_sequence no longer calls old:
+   fight_hud.show_ko()
+   fight_hud.show_timeover()
+   fight_hud.show_winner()
+   fight_hud.show_drawgame()
+
+2. FightHud.gd is patched so even if another path calls those methods, they only stop/hide old round-end animator instead of playing it.
+
+3. BattlePlaceholder adds RoundEndMenu:
+   - 再来一局 -> reload_current_scene()
+   - 返回选人 -> CharacterSelect.tscn
+   - 返回标题 -> MainMenu.tscn
+   - subtitle: Winner：P1 / Winner：P2 / Draw Game
+
+4. BattlePlaceholder aggressively hides legacy black layers named:
+   startko / start_ko / sequence / winner / ko / draw / timeover / black / dark / bisha
+
+5. BattlePlaceholder adds WorldBackfillBgStage behind the game layer.
+   This fills any camera/map void with bg_stage instead of black.
+
+Changed:
+- scripts/battle/BattlePlaceholder.gd
+- scripts/ui/FightHud.gd
+
+Based on:
+- user uploaded scripts(6).zip
+- preserves current ManifestFighter / U no-backstep / U hitbox sync from the uploaded scripts
+
+Not changed:
+- character hitboxes
+- damage
+- U skill logic
+- map data files
+- QiBar/HITS logic
+- texture quality

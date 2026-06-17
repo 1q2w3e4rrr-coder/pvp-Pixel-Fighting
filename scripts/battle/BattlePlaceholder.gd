@@ -403,6 +403,11 @@ var ko_sequence_timer: float = 0.0
 var ko_winner_id: int = 0
 var ko_perfect: bool = false
 var ko_winner_shown: bool = false
+# Step40：禁用旧 KO/Winner 黑底序列，使用自建结算菜单。
+var round_end_menu: Control
+var round_end_menu_title: Label
+var round_end_menu_subtitle: Label
+var round_end_menu_shown: bool = false
 var ko_anim_phase: int = 0 # 0 none, 1 pre-delay, 2 ko/timeover anim, 3 winner delay, 4 done
 var ko_draw_game: bool = false
 var ko_timeover: bool = false
@@ -492,6 +497,8 @@ func create_background() -> void:
 	game_layer.z_index = 1
 	add_child(game_layer)
 
+	create_world_backfill_background()
+
 	map_sprite = Sprite2D.new()
 	map_sprite.name = "XianshiOriginalMapLayer"
 	map_sprite.texture = load("res://assets/maps/xianshi_layers/map_layer.png")
@@ -550,6 +557,8 @@ func create_ui() -> void:
 	ko_label.visible = false
 	ko_label.z_index = 210
 	add_child(ko_label)
+
+	create_round_end_menu()
 
 func create_hp_ui() -> void:
 	var p1_back := ColorRect.new()
@@ -781,6 +790,9 @@ func _process(delta: float) -> void:
 	update_ko_sequence(delta)
 	if ko_finished or original_round_end_actions_applied:
 		force_clear_bisha_after_round_end()
+		force_hide_legacy_blackout_layers()
+		if ko_anim_phase == 4 and not round_end_menu_shown:
+			show_round_end_menu()
 	# 原版 EffectCtrler.renderAnimate() 每帧 render ShadowEffectView。
 	# 即使当前 hit-stop 锁住战斗输入，残影自身仍继续衰减。
 	# ShadowEffectLayer 是 Node2D 子节点，会自动 _process；这里不需要手动 tick。
@@ -1023,53 +1035,50 @@ func update_fight_timer(delta: float) -> void:
 func update_ko_sequence(delta: float) -> void:
 	if not ko_finished:
 		return
+
+	# Step40：旧 startKO / winner 序列会留下 663x466 黑底贴图。
+	# KO 流程只保留音效和短延迟，然后显示自建菜单，不再调用 FightHud.show_ko/show_winner/show_timeover/show_drawgame。
+	force_clear_bisha_after_round_end()
+	force_hide_legacy_blackout_layers()
+
 	if ko_winner_shown:
+		if not round_end_menu_shown:
+			show_round_end_menu()
 		return
+
 	if ko_sequence_timer > 0.0:
 		ko_sequence_timer = maxf(0.0, ko_sequence_timer - delta)
 		return
 
-	# phase 1 -> phase 2: 原版 500ms 后播放 ko / timeover / drawgame。 
 	if ko_anim_phase == 1:
 		ko_anim_phase = 2
-		if ko_timeover:
-			ko_sequence_timer = TIMEOVER_ANIM_TIME
-			if fight_hud != null and fight_hud.has_method("show_timeover"):
-				fight_hud.call("show_timeover")
-		else:
-			ko_sequence_timer = KO_ANIM_TIME
-			if fight_hud != null and fight_hud.has_method("show_ko"):
-				fight_hud.call("show_ko")
+		ko_sequence_timer = 0.45 if ko_timeover else 0.55
+		hide_fight_hud_center_message()
+
+		if not ko_timeover:
 			var ko_sound: String = "res://assets/sfx/snd_ko.mp3"
 			if _is_currently_bisha_ko():
 				ko_sound = "res://assets/sfx/snd_ko_bs.mp3"
 			AudioManager.play_sfx(ko_sound, -2.0)
+
 		if fight_hud != null and fight_hud.has_method("qibar_fad_out"):
 			fight_hud.call("qibar_fad_out", true)
 		return
 
-	# phase 2 -> draw/winner delay: 对应 Event.COMPLETE 后 _playOver=true。
 	if ko_anim_phase == 2:
-		if ko_draw_game:
-			ko_anim_phase = 3
-			ko_sequence_timer = DRAWGAME_ANIM_TIME
-			if fight_hud != null and fight_hud.has_method("show_drawgame"):
-				fight_hud.call("show_drawgame")
-			return
 		ko_anim_phase = 3
-		ko_sequence_timer = WINNER_DELAY_AFTER_TIMEOVER if ko_timeover else WINNER_DELAY_AFTER_KO
+		ko_sequence_timer = 0.25
+		hide_fight_hud_center_message()
 		return
 
-	# phase 3 -> winner/done。
 	if ko_anim_phase == 3:
 		ko_winner_shown = true
 		ko_anim_phase = 4
-		if ko_draw_game or ko_winner_id == 0:
-			if fight_hud != null and fight_hud.has_method("show_drawgame"):
-				fight_hud.call("show_drawgame")
-			return
-		if fight_hud != null and fight_hud.has_method("show_winner"):
-			fight_hud.call("show_winner", ko_winner_id, ko_perfect)
+		hide_fight_hud_center_message()
+		force_hide_legacy_blackout_layers()
+		show_round_end_menu()
+		return
+
 
 
 func start_time_over_sequence() -> void:
@@ -2888,6 +2897,256 @@ func audit_original_final_stage_once() -> void:
 	print("Step22-24 final audit: input buffer/P-fill/effect-height/sound-state timeline cleanup enabled.")
 	print("Step20 attack windows covered: atk1-5, jump_attack, air_skill, skill1/2/3, attack_skill1/2, super/super_up/super_air/super_special, throw1/throw2, bsmc, zh3mc")
 
+
+
+
+func create_world_backfill_background() -> void:
+	# Step42：兜底填充世界背景。
+	# Step40 曾把 z_index 设为 -10000，低于 Godot 4 的 CANVAS_ITEM_Z_MIN，导致调试器连续报错。
+	# 这里只需要放在 map_sprite / player / front 下面，-100 已足够，且不会触发 RenderingServer 报错。
+	if game_layer == null:
+		return
+	var tex: Texture2D = load("res://assets/maps/xianshi_layers/bg_stage.png")
+	if tex == null:
+		tex = load("res://assets/maps/xianshi.png")
+	if tex == null:
+		return
+
+	var backfill := Node2D.new()
+	backfill.name = "WorldBackfillBgStage"
+	backfill.z_index = -100
+	backfill.set_meta("keep_background_backfill", true)
+	game_layer.add_child(backfill)
+
+	for ix: int in range(-2, 4):
+		for iy: int in range(-1, 2):
+			var sp := Sprite2D.new()
+			sp.name = "WorldBackfillBgTile"
+			sp.texture = tex
+			sp.centered = false
+			sp.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+			sp.position = Vector2(float(ix) * 800.0, float(iy) * 600.0)
+			sp.z_index = 0
+			backfill.add_child(sp)
+
+
+func create_round_end_menu() -> void:
+	if round_end_menu != null:
+		return
+
+	round_end_menu = Control.new()
+	round_end_menu.name = "RoundEndMenu"
+	round_end_menu.set_anchors_preset(Control.PRESET_FULL_RECT)
+	round_end_menu.mouse_filter = Control.MOUSE_FILTER_STOP
+	round_end_menu.z_index = 1000
+	round_end_menu.visible = false
+	round_end_menu.set_meta("keep_round_end_ui", true)
+	add_child(round_end_menu)
+
+	var panel := Panel.new()
+	panel.name = "RoundEndPanel"
+	panel.position = Vector2(230, 180)
+	panel.size = Vector2(340, 240)
+	panel.mouse_filter = Control.MOUSE_FILTER_STOP
+	panel.set_meta("keep_round_end_ui", true)
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color(0.03, 0.04, 0.06, 0.88)
+	style.border_color = Color(0.85, 0.78, 0.38, 1.0)
+	style.border_width_left = 3
+	style.border_width_right = 3
+	style.border_width_top = 3
+	style.border_width_bottom = 3
+	style.corner_radius_top_left = 8
+	style.corner_radius_top_right = 8
+	style.corner_radius_bottom_left = 8
+	style.corner_radius_bottom_right = 8
+	panel.add_theme_stylebox_override("panel", style)
+	round_end_menu.add_child(panel)
+
+	round_end_menu_title = Label.new()
+	round_end_menu_title.name = "RoundEndTitle"
+	round_end_menu_title.position = Vector2(20, 18)
+	round_end_menu_title.size = Vector2(300, 34)
+	round_end_menu_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	round_end_menu_title.add_theme_font_size_override("font_size", 28)
+	round_end_menu_title.add_theme_color_override("font_color", Color(1.0, 0.92, 0.36, 1.0))
+	round_end_menu_title.text = "战斗结束"
+	panel.add_child(round_end_menu_title)
+
+	round_end_menu_subtitle = Label.new()
+	round_end_menu_subtitle.name = "RoundEndSubtitle"
+	round_end_menu_subtitle.position = Vector2(20, 55)
+	round_end_menu_subtitle.size = Vector2(300, 24)
+	round_end_menu_subtitle.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	round_end_menu_subtitle.add_theme_font_size_override("font_size", 16)
+	round_end_menu_subtitle.add_theme_color_override("font_color", Color(0.9, 0.95, 1.0, 1.0))
+	round_end_menu_subtitle.text = ""
+	panel.add_child(round_end_menu_subtitle)
+
+	var btn_retry := create_round_end_button("再来一局", Vector2(70, 94))
+	btn_retry.pressed.connect(Callable(self, "_on_round_end_retry_pressed"))
+	panel.add_child(btn_retry)
+
+	var btn_select := create_round_end_button("返回选人", Vector2(70, 140))
+	btn_select.pressed.connect(Callable(self, "_on_round_end_character_select_pressed"))
+	panel.add_child(btn_select)
+
+	var btn_title := create_round_end_button("返回标题", Vector2(70, 186))
+	btn_title.pressed.connect(Callable(self, "_on_round_end_main_menu_pressed"))
+	panel.add_child(btn_title)
+
+
+func create_round_end_button(text_value: String, pos: Vector2) -> Button:
+	var btn := Button.new()
+	btn.text = text_value
+	btn.position = pos
+	btn.size = Vector2(200, 34)
+	btn.focus_mode = Control.FOCUS_ALL
+	btn.add_theme_font_size_override("font_size", 18)
+	return btn
+
+
+func get_round_end_result_text() -> String:
+	if ko_draw_game or ko_winner_id == 0:
+		return "Draw Game"
+	if ko_winner_id == 1:
+		return "Winner：P1"
+	return "Winner：P2"
+
+
+func show_round_end_menu() -> void:
+	if round_end_menu == null:
+		create_round_end_menu()
+	if round_end_menu == null:
+		return
+
+	round_end_menu_shown = true
+	hide_fight_hud_center_message()
+	if fight_hud != null:
+		fight_hud.visible = false
+
+	round_end_menu.visible = true
+	round_end_menu.modulate.a = 1.0
+	if round_end_menu_title != null:
+		round_end_menu_title.text = "战斗结束"
+	if round_end_menu_subtitle != null:
+		round_end_menu_subtitle.text = get_round_end_result_text()
+
+	if round_end_menu.get_child_count() > 0:
+		var panel_node: Node = round_end_menu.get_child(0)
+		if panel_node is Control:
+			var panel := panel_node as Control
+			for child in panel.get_children():
+				if child is Button:
+					(child as Button).grab_focus()
+					break
+
+
+func hide_fight_hud_center_message() -> void:
+	if fight_hud == null:
+		return
+	if fight_hud.has_method("stop_all_round_end_animators"):
+		fight_hud.call("stop_all_round_end_animators")
+	if fight_hud.has_method("hide_center_message"):
+		fight_hud.call("hide_center_message")
+	if fight_hud.has_method("hide_winner"):
+		fight_hud.call("hide_winner")
+	if fight_hud.has_method("hide_drawgame"):
+		fight_hud.call("hide_drawgame")
+	if fight_hud.has_method("hide_ko"):
+		fight_hud.call("hide_ko")
+	if fight_hud.has_method("hide_timeover"):
+		fight_hud.call("hide_timeover")
+	if fight_hud.has_method("clear_center_message"):
+		fight_hud.call("clear_center_message")
+	force_hide_fight_hud_round_end_layers(fight_hud)
+
+
+func force_hide_fight_hud_round_end_layers(node: Node) -> void:
+	if node == null:
+		return
+	var lower_name: String = node.name.to_lower()
+	var is_round_end_layer: bool = lower_name.find("winner") >= 0 or lower_name.find("ko") >= 0 or lower_name.find("draw") >= 0 or lower_name.find("timeover") >= 0 or lower_name.find("startko") >= 0 or lower_name.find("start_ko") >= 0 or lower_name.find("sequence") >= 0
+	if is_round_end_layer and node is CanvasItem:
+		var item := node as CanvasItem
+		item.visible = false
+		item.modulate.a = 0.0
+	if node is ColorRect:
+		var rect := node as ColorRect
+		var c: Color = rect.color
+		if c.r <= 0.08 and c.g <= 0.08 and c.b <= 0.08 and rect.size.x >= 160.0 and rect.size.y >= 80.0:
+			rect.visible = false
+			rect.modulate.a = 0.0
+			rect.color = Color(c.r, c.g, c.b, 0.0)
+	for child in node.get_children():
+		force_hide_fight_hud_round_end_layers(child)
+
+
+func force_hide_legacy_blackout_layers() -> void:
+	force_clear_action_effects_after_round_end()
+	if round_end_menu_shown and fight_hud != null:
+		fight_hud.visible = false
+	force_hide_fight_hud_round_end_layers(fight_hud)
+	force_hide_legacy_blackout_layers_recursive(self)
+
+
+func force_hide_legacy_blackout_layers_recursive(node: Node) -> void:
+	if node == null:
+		return
+	if node.has_meta("keep_round_end_ui") and bool(node.get_meta("keep_round_end_ui")):
+		return
+	if node.has_meta("keep_background_backfill") and bool(node.get_meta("keep_background_backfill")):
+		return
+
+	var lower_name: String = node.name.to_lower()
+	if node is ColorRect:
+		var rect := node as ColorRect
+		var c: Color = rect.color
+		var black_like: bool = c.r <= 0.08 and c.g <= 0.08 and c.b <= 0.08
+		var big_like: bool = rect.size.x >= 160.0 and rect.size.y >= 80.0
+		var named_black: bool = lower_name.find("black") >= 0 or lower_name.find("dark") >= 0 or lower_name.find("bisha") >= 0 or lower_name.find("winner") >= 0 or lower_name.find("ko") >= 0 or lower_name.find("draw") >= 0 or lower_name.find("timeover") >= 0 or lower_name.find("startko") >= 0 or lower_name.find("sequence") >= 0
+		if black_like and (big_like or named_black):
+			rect.visible = false
+			rect.modulate.a = 0.0
+			rect.color = Color(c.r, c.g, c.b, 0.0)
+
+	if node is CanvasItem:
+		var canvas_item := node as CanvasItem
+		var named_black_item: bool = lower_name.find("black") >= 0 or lower_name.find("dark") >= 0 or lower_name.find("bisha") >= 0 or lower_name.find("winner") >= 0 or lower_name.find("ko") >= 0 or lower_name.find("draw") >= 0 or lower_name.find("timeover") >= 0 or lower_name.find("startko") >= 0 or lower_name.find("start_ko") >= 0 or lower_name.find("sequence") >= 0
+		if named_black_item and (ko_finished or original_round_end_actions_applied):
+			canvas_item.visible = false
+			canvas_item.modulate.a = 0.0
+
+	for child in node.get_children():
+		force_hide_legacy_blackout_layers_recursive(child)
+
+
+func _on_round_end_retry_pressed() -> void:
+	get_tree().reload_current_scene()
+
+
+func _on_round_end_character_select_pressed() -> void:
+	get_tree().change_scene_to_file("res://scenes/ui/CharacterSelect.tscn")
+
+
+func _on_round_end_main_menu_pressed() -> void:
+	get_tree().change_scene_to_file("res://scenes/ui/MainMenu.tscn")
+
+
+func force_clear_action_effects_after_round_end() -> void:
+	# Step42：KO 结算后停止普通 attacker/effect 层。
+	# 黑底问题的主因已确认是 win/lose 动作 PNG 中误烘焙的黑色背景层，
+	# 但这里仍兜底关闭 bsmc / zh3mc 等未播放完的特效，避免结算菜单后残留旧技能帧。
+	if p1_effect != null:
+		if p1_effect.has_method("stop_effect"):
+			p1_effect.stop_effect()
+		if p1_effect is CanvasItem:
+			var item := p1_effect as CanvasItem
+			item.visible = false
+			item.modulate.a = 0.0
+	_reset_active_attacker_state()
+	active_original_hitbox = ""
+	clear_original_attack_box()
 
 
 func force_clear_bisha_after_round_end() -> void:

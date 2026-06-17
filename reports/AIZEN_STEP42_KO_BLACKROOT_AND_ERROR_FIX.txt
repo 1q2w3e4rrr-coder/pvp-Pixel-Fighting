@@ -1,0 +1,75 @@
+AIZEN_STEP42_KO_BLACKROOT_AND_ERROR_FIX
+
+已确认的黑底根因：
+1. KO 后 Step39/40 已经禁用了旧 FightHud.show_ko/show_winner 序列，但黑色矩形仍存在，说明它不是 startKO / winner UI 残留。
+2. 继续检查当前 actions_game 发现：
+   - assets/characters/aizen/actions_game/win/0034.png 等帧含 172x138 左右的实心黑色矩形；
+   - assets/characters/aizen/actions_game/lose/0000.png 起也含同类黑底。
+3. 原版 XFL 依据：
+   - OpenBleachVsNaruto/swf_source/f_fighter/aizen/LIBRARY/元件/mc_023.xml
+   - “胜利”标签 index=1596, duration=46；
+   - 其中“背后特效”层在 global frame 1600 起放置 元件/mc_019，且 DOMSymbolInstance 上有 blendMode="multiply"；
+   - mc_019.xml 内部是 picture_249/picture_250... 的 174x138 位图序列；
+   - “失败”标签 index=1642 使用 元件/mc_003，mc_003.xml 内部 bitmap fill 采用 picture_280，该导出结果同样包含 172x138 黑底。
+4. 当前 Godot actions_game 预渲染 PNG 把这些原版内部图层/位图直接烘进了角色帧。因为它们没有作为 Godot 的独立 blend/mask 层渲染，而是变成普通不透明 PNG，所以 KO 后播放 win/lose 动作时显示成大块黑色矩形。
+
+修复内容：
+1. 重新处理 win/lose 动作 PNG，只移除被误烘焙的黑色背景矩形，保留蓝染角色本体像素。
+2. 保留原来的 KO 结算菜单：战斗结束 / Winner：P1 或 Winner：P2 / 再来一局 / 返回选人 / 返回标题。
+3. 修复 Step40 引入的 RenderingServer::CANVAS_ITEM_Z_MIN 报错：
+   - BattlePlaceholder.gd 的 WorldBackfillBgStage z_index 从 -10000 改为 -100；
+   - tile z_index 从 -10000 改为 0。
+4. 顺手清理截图中出现的几处 GDScript reload warning：
+   - ManifestFighter.gd unused 参数/局部变量改为下划线前缀；
+   - FightHud.gd 的 unused bars 改为 _bars；
+   - FightHud.gd 两处局部 material 改名 shader_material，避免 shadowed base class property warning。
+
+修改文件：
+- scripts/battle/BattlePlaceholder.gd
+- scripts/character/ManifestFighter.gd
+- scripts/ui/FightHud.gd
+- assets/characters/aizen/actions_game/win/*.png
+- assets/characters/aizen/actions_game/lose/*.png
+
+本次没有修改 qibar / hpbar / time_mc / spiritual_text 的位置常量，没有回退 U 技能后撤步修复。
+
+被检测并处理的黑底帧数量：39
+- win/0034.png: black_pixels=22838, bbox=(94, 104, 266, 242)
+- win/0035.png: black_pixels=22787, bbox=(94, 104, 266, 242)
+- win/0036.png: black_pixels=22787, bbox=(94, 104, 266, 242)
+- win/0037.png: black_pixels=22787, bbox=(94, 104, 266, 242)
+- win/0038.png: black_pixels=22799, bbox=(94, 104, 266, 242)
+- win/0039.png: black_pixels=22799, bbox=(94, 104, 266, 242)
+- win/0040.png: black_pixels=22799, bbox=(94, 104, 266, 242)
+- win/0041.png: black_pixels=22838, bbox=(94, 104, 266, 242)
+- win/0042.png: black_pixels=22838, bbox=(94, 104, 266, 242)
+- win/0043.png: black_pixels=22838, bbox=(94, 104, 266, 242)
+- win/0044.png: black_pixels=22787, bbox=(94, 104, 266, 242)
+- win/0045.png: black_pixels=22787, bbox=(94, 104, 266, 242)
+- lose/0000.png: black_pixels=22787, bbox=(94, 104, 266, 242)
+- lose/0001.png: black_pixels=22799, bbox=(94, 104, 266, 242)
+- lose/0002.png: black_pixels=22799, bbox=(94, 104, 266, 242)
+- lose/0003.png: black_pixels=22799, bbox=(94, 104, 266, 242)
+- lose/0004.png: black_pixels=22838, bbox=(94, 104, 266, 242)
+- lose/0005.png: black_pixels=22838, bbox=(94, 104, 266, 242)
+- lose/0006.png: black_pixels=22838, bbox=(94, 104, 266, 242)
+- lose/0007.png: black_pixels=22787, bbox=(94, 104, 266, 242)
+- lose/0008.png: black_pixels=22787, bbox=(94, 104, 266, 242)
+- lose/0009.png: black_pixels=22787, bbox=(94, 104, 266, 242)
+- lose/0010.png: black_pixels=22799, bbox=(94, 104, 266, 242)
+- lose/0011.png: black_pixels=22799, bbox=(94, 104, 266, 242)
+- lose/0012.png: black_pixels=22799, bbox=(94, 104, 266, 242)
+- lose/0013.png: black_pixels=22838, bbox=(94, 104, 266, 242)
+- lose/0014.png: black_pixels=22838, bbox=(94, 104, 266, 242)
+- lose/0015.png: black_pixels=22838, bbox=(94, 104, 266, 242)
+- lose/0016.png: black_pixels=22787, bbox=(94, 104, 266, 242)
+- lose/0017.png: black_pixels=22787, bbox=(94, 104, 266, 242)
+- lose/0018.png: black_pixels=22787, bbox=(94, 104, 266, 242)
+- lose/0019.png: black_pixels=22799, bbox=(94, 104, 266, 242)
+- lose/0020.png: black_pixels=22799, bbox=(94, 104, 266, 242)
+- lose/0021.png: black_pixels=22799, bbox=(94, 104, 266, 242)
+- lose/0022.png: black_pixels=22838, bbox=(94, 104, 266, 242)
+- lose/0023.png: black_pixels=22838, bbox=(94, 104, 266, 242)
+- lose/0024.png: black_pixels=22838, bbox=(94, 104, 266, 242)
+- lose/0025.png: black_pixels=22787, bbox=(94, 104, 266, 242)
+- lose/0026.png: black_pixels=22787, bbox=(94, 104, 266, 242)

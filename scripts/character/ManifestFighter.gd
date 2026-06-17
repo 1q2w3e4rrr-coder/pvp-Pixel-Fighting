@@ -751,7 +751,7 @@ func set_original_damping(damping_value: float) -> void:
 	damping_x = maxf(0.0, damping_value)
 
 
-func apply_original_dash_motion(speed_plus: float = 3.0, base_speed: float = 220.0) -> void:
+func apply_original_dash_motion(speed_plus: float = 3.0, _base_speed: float = 220.0) -> void:
 	# FighterMcCtrler.dash(speedPlus)：
 	#   _fighter.setVelocity(_fighter.speed * speedPlus * direct, 0)
 	#   _fighter.speed 原版 FighterMain.as 默认值为 6，单位是“每个 render frame 的像素”。
@@ -943,9 +943,9 @@ func apply_original_hit(hit_vo: Dictionary, attacker_facing: int) -> Dictionary:
 	var hit_id: String = str(hit_vo.get("id", ""))
 	var damage: float = get_damage_from_hitvo(hit_vo)
 	var hit_type: int = int(hit_vo.get("hitType", 0))
-	var is_real: bool = hit_vo.get("isReal", false) == true
-	var is_break_def: bool = hit_vo.get("isBreakDef", false) == true
-	var can_defend_direct: bool = facing == -attacker_facing
+	var _is_real: bool = hit_vo.get("isReal", false) == true
+	var _is_break_def: bool = hit_vo.get("isBreakDef", false) == true
+	var _can_defend_direct: bool = facing == -attacker_facing
 
 	if hit_type == 11:
 		# HitType.CATCH：不可按普通防御处理；原版 doHurt 中使用“被打”不跳到第 7 帧。
