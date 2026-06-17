@@ -4,6 +4,7 @@ var music_player: AudioStreamPlayer
 var sfx_player: AudioStreamPlayer
 var sfx_pool: Array[AudioStreamPlayer] = []
 var current_music: String = ""
+var master_volume_percent: float = 100.0
 
 # 原版 effect.xfl / EffectModel 里的 sound id 仍然保留，
 # 但文件统一转成 Godot 更稳定的 OGG，避免 Godot 4.6 读取 SWF 导出的 wav/mp3 时触发 FileAccessMemory 越界。
@@ -31,6 +32,8 @@ func _ready() -> void:
 		var p: AudioStreamPlayer = AudioStreamPlayer.new()
 		add_child(p)
 		sfx_pool.append(p)
+
+	apply_master_volume_to_bus()
 
 
 func play_music(path: String, volume_db: float = -6.0) -> void:
@@ -101,6 +104,28 @@ func snd_confirm() -> void:
 
 func snd_menu_open() -> void:
 	play_sfx("res://assets/sfx/snd_menu5.mp3")
+
+
+
+func set_master_volume_percent(percent: float) -> void:
+	master_volume_percent = clampf(percent, 0.0, 100.0)
+	apply_master_volume_to_bus()
+
+
+func get_master_volume_percent() -> float:
+	return master_volume_percent
+
+
+func apply_master_volume_to_bus() -> void:
+	var bus_idx: int = AudioServer.get_bus_index("Master")
+	if bus_idx < 0:
+		bus_idx = 0
+	if master_volume_percent <= 0.0:
+		AudioServer.set_bus_mute(bus_idx, true)
+		AudioServer.set_bus_volume_db(bus_idx, -80.0)
+	else:
+		AudioServer.set_bus_mute(bus_idx, false)
+		AudioServer.set_bus_volume_db(bus_idx, linear_to_db(master_volume_percent / 100.0))
 
 
 func stop_music() -> void:

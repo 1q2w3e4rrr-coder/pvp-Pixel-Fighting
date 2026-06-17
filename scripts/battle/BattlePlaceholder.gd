@@ -370,8 +370,28 @@ var shine_overlay: ColorRect
 var shine_alpha: float = 0.0
 
 const COMBO_RESET_TIME := 1.25
-const QI_HIT_MAX := 15.0
-const QI_HURT_MAX := 20.0
+# Step43：原版 GameConfig.as / FighterMain.as 怒气与 HP 数值。
+# GameConfig.FIGHTER_HP_MAX=1000；FighterTester.as 中 fighterHP=2，因此当前测试/课程 Demo 初始 HP=2000。
+const ORIGINAL_FIGHTER_HP_MAX := 1000.0
+const ORIGINAL_FIGHTER_HP_RATE := 2.0
+const ORIGINAL_FIGHTER_DEMO_HP_MAX := ORIGINAL_FIGHTER_HP_MAX * ORIGINAL_FIGHTER_HP_RATE
+const ORIGINAL_QI_MAX := 300.0
+const ORIGINAL_ENERGY_MAX := 100.0
+const ORIGINAL_FZQI_MAX := 100.0
+const ORIGINAL_START_QI := 0.0
+const ORIGINAL_START_ENERGY := 100.0
+const ORIGINAL_START_FZQI := 0.0
+# GameConfig.as：命中/受击怒气增量。
+const QI_ADD_HIT_BISHA_RATE := 0.0
+const QI_ADD_HIT_RATE := 0.17
+const QI_ADD_HIT_BULLET_RATE := 0.10
+const QI_ADD_HIT_ATTACKER_RATE := 0.13
+const QI_ADD_HIT_ASSISTER_RATE := 0.15
+const QI_ADD_HIT_MAX := 15.0
+const QI_ADD_HURT_RATE := 0.08
+const QI_ADD_HURT_MAX := 20.0
+# 原版 GameConfig.HURT_GAP_FRAME = 4；持续攻击面每 4 个动画帧可再次命中一次。
+const ORIGINAL_REHIT_GAP_FRAMES := 4.0
 
 # 原版 FightUI.showStart：startKOmc.gotoAndStop("start") 从 frame 9 起播。
 # AS 事件帧：frame54 = fight_in，frame57 = fight，frame87 = COMPLETE。
@@ -415,6 +435,16 @@ var game_time_left: float = float(DEMO_GAME_TIME_MAX)
 var game_time_enabled: bool = DEMO_GAME_TIME_MAX >= 0
 var time_over_finished: bool = false
 var ko_score_added: bool = false
+
+
+# Step45：战斗暂停菜单。按 Esc 暂停战斗，打开半透明界面；战斗对象停止 process，AudioManager 继续播放菜单音效。
+var battle_paused: bool = false
+var pause_root: Control
+var pause_main_panel: Control
+var pause_volume_panel: Control
+var pause_combo_panel: Control
+var pause_volume_slider: HSlider
+var pause_volume_percent_label: Label
 
 var attack_debug_layer: Control
 var attack_debug_box: ColorRect
@@ -559,6 +589,464 @@ func create_ui() -> void:
 	add_child(ko_label)
 
 	create_round_end_menu()
+	create_pause_menu()
+
+
+func create_pause_menu() -> void:
+	if pause_root != null:
+		return
+
+	pause_root = Control.new()
+	pause_root.name = "BattlePauseRoot"
+	pause_root.set_anchors_preset(Control.PRESET_FULL_RECT)
+	pause_root.mouse_filter = Control.MOUSE_FILTER_STOP
+	pause_root.z_index = 1300
+	pause_root.visible = false
+	pause_root.set_meta("keep_pause_ui", true)
+	add_child(pause_root)
+
+	var dim := ColorRect.new()
+	dim.name = "PauseDimLayer"
+	dim.set_anchors_preset(Control.PRESET_FULL_RECT)
+	dim.color = Color(0.0, 0.0, 0.0, 0.48)
+	dim.mouse_filter = Control.MOUSE_FILTER_STOP
+	pause_root.add_child(dim)
+
+	pause_main_panel = create_pause_main_panel()
+	pause_root.add_child(pause_main_panel)
+
+	pause_volume_panel = create_pause_volume_panel()
+	pause_volume_panel.visible = false
+	pause_root.add_child(pause_volume_panel)
+
+	pause_combo_panel = create_pause_combo_panel()
+	pause_combo_panel.visible = false
+	pause_root.add_child(pause_combo_panel)
+
+
+func create_pause_panel(panel_name: String, panel_position: Vector2, panel_size: Vector2) -> Panel:
+	var panel := Panel.new()
+	panel.name = panel_name
+	panel.position = panel_position
+	panel.size = panel_size
+	panel.mouse_filter = Control.MOUSE_FILTER_STOP
+
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color(0.01, 0.015, 0.02, 0.84)
+	style.border_color = Color(1.0, 0.88, 0.28, 0.94)
+	style.set_border_width_all(2)
+	style.set_corner_radius_all(8)
+	panel.add_theme_stylebox_override("panel", style)
+	return panel
+
+
+func create_pause_main_panel() -> Panel:
+	var panel := create_pause_panel("PauseMainPanel", Vector2(250, 82), Vector2(300, 436))
+
+	var title := Label.new()
+	title.name = "PauseTitle"
+	title.position = Vector2(24, 20)
+	title.size = Vector2(252, 40)
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.add_theme_font_size_override("font_size", 28)
+	title.add_theme_color_override("font_color", Color(1.0, 0.92, 0.36, 1.0))
+	title.text = "暂停菜单"
+	panel.add_child(title)
+
+	var x: float = 44.0
+	var y: float = 76.0
+	var gap: float = 52.0
+	var w: float = 212.0
+	var h: float = 38.0
+	var buttons := [
+		["继续游戏", "_on_pause_continue_pressed"],
+		["重新开始本局", "_on_pause_restart_pressed"],
+		["返回选人", "_on_pause_character_select_pressed"],
+		["返回标题", "_on_pause_main_menu_pressed"],
+		["音量", "_on_pause_volume_pressed"],
+		["技能连招表", "_on_pause_combo_pressed"]
+	]
+
+	for i in range(buttons.size()):
+		var item: Array = buttons[i]
+		var btn := create_pause_button(String(item[0]), Vector2(x, y + gap * i), Vector2(w, h))
+		btn.pressed.connect(Callable(self, String(item[1])))
+		panel.add_child(btn)
+
+	return panel
+
+
+func create_pause_volume_panel() -> Panel:
+	var panel := create_pause_panel("PauseVolumePanel", Vector2(145, 128), Vector2(510, 260))
+	var back := create_pause_back_button()
+	back.pressed.connect(Callable(self, "_on_pause_back_to_main_pressed"))
+	panel.add_child(back)
+
+	var title := Label.new()
+	title.position = Vector2(64, 20)
+	title.size = Vector2(382, 34)
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.add_theme_font_size_override("font_size", 26)
+	title.add_theme_color_override("font_color", Color(1.0, 0.92, 0.36, 1.0))
+	title.text = "音量"
+	panel.add_child(title)
+
+	var speaker := Label.new()
+	speaker.name = "SpeakerIcon"
+	speaker.position = Vector2(64, 112)
+	speaker.size = Vector2(56, 48)
+	speaker.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	speaker.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	speaker.add_theme_font_size_override("font_size", 32)
+	speaker.add_theme_color_override("font_color", Color(0.95, 0.95, 1.0, 1.0))
+	speaker.text = "🔊"
+	panel.add_child(speaker)
+
+	pause_volume_slider = HSlider.new()
+	pause_volume_slider.name = "MasterVolumeSlider"
+	pause_volume_slider.position = Vector2(132, 122)
+	pause_volume_slider.size = Vector2(250, 32)
+	pause_volume_slider.min_value = 0.0
+	pause_volume_slider.max_value = 100.0
+	pause_volume_slider.step = 1.0
+	pause_volume_slider.value = get_pause_master_volume_percent()
+	pause_volume_slider.mouse_filter = Control.MOUSE_FILTER_STOP
+	pause_volume_slider.value_changed.connect(Callable(self, "_on_pause_volume_value_changed"))
+	panel.add_child(pause_volume_slider)
+
+	pause_volume_percent_label = Label.new()
+	pause_volume_percent_label.name = "MasterVolumePercent"
+	pause_volume_percent_label.position = Vector2(392, 119)
+	pause_volume_percent_label.size = Vector2(68, 34)
+	pause_volume_percent_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	pause_volume_percent_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+	pause_volume_percent_label.add_theme_font_size_override("font_size", 20)
+	pause_volume_percent_label.add_theme_color_override("font_color", Color(0.95, 0.95, 1.0, 1.0))
+	panel.add_child(pause_volume_percent_label)
+	update_pause_volume_label()
+
+	var hint := Label.new()
+	hint.position = Vector2(76, 176)
+	hint.size = Vector2(360, 24)
+	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	hint.add_theme_font_size_override("font_size", 15)
+	hint.add_theme_color_override("font_color", Color(0.78, 0.86, 1.0, 0.95))
+	hint.text = "拖动滑块调整整体音乐和音效音量"
+	panel.add_child(hint)
+	return panel
+
+
+func create_pause_combo_panel() -> Panel:
+	var panel := create_pause_panel("PauseComboPanel", Vector2(42, 42), Vector2(716, 516))
+	var back := create_pause_back_button()
+	back.pressed.connect(Callable(self, "_on_pause_back_to_main_pressed"))
+	panel.add_child(back)
+
+	var title := Label.new()
+	title.position = Vector2(70, 18)
+	title.size = Vector2(576, 36)
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.add_theme_font_size_override("font_size", 26)
+	title.add_theme_color_override("font_color", Color(1.0, 0.92, 0.36, 1.0))
+	title.text = "技能连招表"
+	panel.add_child(title)
+
+	var split := ColorRect.new()
+	split.position = Vector2(357, 72)
+	split.size = Vector2(2, 405)
+	split.color = Color(1.0, 0.9, 0.35, 0.35)
+	split.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	panel.add_child(split)
+
+	var p1_head := create_pause_combo_header("P1", Vector2(68, 70), Vector2(260, 28))
+	panel.add_child(p1_head)
+	var p2_head := create_pause_combo_header("P2", Vector2(388, 70), Vector2(260, 28))
+	panel.add_child(p2_head)
+
+	var p1_text := Label.new()
+	p1_text.position = Vector2(70, 106)
+	p1_text.size = Vector2(272, 380)
+	p1_text.add_theme_font_size_override("font_size", 15)
+	p1_text.add_theme_color_override("font_color", Color(0.94, 0.96, 1.0, 1.0))
+	p1_text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	p1_text.text = get_pause_combo_text_p1()
+	panel.add_child(p1_text)
+
+	var p2_text := Label.new()
+	p2_text.position = Vector2(390, 106)
+	p2_text.size = Vector2(272, 380)
+	p2_text.add_theme_font_size_override("font_size", 15)
+	p2_text.add_theme_color_override("font_color", Color(0.94, 0.96, 1.0, 1.0))
+	p2_text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	p2_text.text = get_pause_combo_text_p2()
+	panel.add_child(p2_text)
+	return panel
+
+
+func create_pause_combo_header(text_value: String, pos: Vector2, size_value: Vector2) -> Label:
+	var label := Label.new()
+	label.position = pos
+	label.size = size_value
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.add_theme_font_size_override("font_size", 22)
+	label.add_theme_color_override("font_color", Color(1.0, 0.92, 0.36, 1.0))
+	label.text = text_value
+	return label
+
+
+func create_pause_button(text_value: String, pos: Vector2, size_value: Vector2) -> Button:
+	var btn := Button.new()
+	btn.name = "PauseButton_" + text_value
+	btn.text = text_value
+	btn.position = pos
+	btn.size = size_value
+	btn.alignment = HORIZONTAL_ALIGNMENT_LEFT
+	btn.add_theme_font_size_override("font_size", 20)
+	btn.add_theme_color_override("font_color", Color(0.95, 0.95, 1.0, 1.0))
+	btn.add_theme_color_override("font_hover_color", Color(1.0, 0.92, 0.36, 1.0))
+	btn.add_theme_color_override("font_pressed_color", Color(0.65, 0.9, 1.0, 1.0))
+	btn.add_theme_constant_override("h_separation", 10)
+	btn.add_theme_stylebox_override("normal", make_pause_button_style(Color(0.07, 0.08, 0.10, 0.70), Color(0.55, 0.55, 0.60, 0.70)))
+	btn.add_theme_stylebox_override("hover", make_pause_button_style(Color(0.12, 0.12, 0.14, 0.88), Color(1.0, 0.95, 0.65, 0.95)))
+	btn.add_theme_stylebox_override("pressed", make_pause_button_style(Color(0.08, 0.16, 0.24, 0.92), Color(0.65, 0.9, 1.0, 1.0)))
+	btn.mouse_entered.connect(Callable(self, "_play_pause_hover_sfx"))
+	btn.focus_entered.connect(Callable(self, "_play_pause_hover_sfx"))
+	return btn
+
+
+func create_pause_back_button() -> Button:
+	var btn := create_pause_button("←", Vector2(18, 16), Vector2(42, 34))
+	btn.alignment = HORIZONTAL_ALIGNMENT_CENTER
+	btn.add_theme_font_size_override("font_size", 24)
+	return btn
+
+
+func make_pause_button_style(bg_color: Color, border_color: Color) -> StyleBoxFlat:
+	var style := StyleBoxFlat.new()
+	style.bg_color = bg_color
+	style.border_color = border_color
+	style.set_border_width_all(1)
+	style.set_corner_radius_all(3)
+	style.content_margin_left = 14.0
+	style.content_margin_right = 8.0
+	return style
+
+
+func handle_pause_escape_input() -> void:
+	if round_end_menu_shown or ko_finished or original_round_end_actions_applied:
+		return
+	if not battle_paused:
+		set_battle_paused(true)
+		return
+	if pause_volume_panel != null and pause_volume_panel.visible:
+		show_pause_main_panel()
+		return
+	if pause_combo_panel != null and pause_combo_panel.visible:
+		show_pause_main_panel()
+		return
+	set_battle_paused(false)
+
+
+func set_battle_paused(paused: bool) -> void:
+	if battle_paused == paused:
+		return
+	battle_paused = paused
+	if pause_root == null:
+		create_pause_menu()
+	if pause_root != null:
+		pause_root.visible = battle_paused
+	if battle_paused:
+		show_pause_main_panel()
+		_play_pause_open_sfx()
+	else:
+		clear_pause_input_edges()
+	set_battle_world_processing_disabled(battle_paused)
+
+
+func set_battle_world_processing_disabled(disabled: bool) -> void:
+	var mode: int = Node.PROCESS_MODE_DISABLED if disabled else Node.PROCESS_MODE_INHERIT
+	for node in [game_layer, fight_hud, p1_effect, bisha_effect, common_effects, shadow_effects]:
+		if node != null and is_instance_valid(node):
+			(node as Node).process_mode = mode
+
+
+func clear_pause_input_edges() -> void:
+	prev_j_pressed = false
+	prev_k_pressed = false
+	prev_l_pressed = false
+	prev_u_pressed = false
+	prev_i_pressed = false
+	prev_p_pressed = false
+	prev_t_pressed = false
+	p1_attack_buffer_timer = 0.0
+	p1_skill_buffer_timer = 0.0
+	p1_bisha_buffer_timer = 0.0
+	p1_jump_buffer_timer = 0.0
+	p1_dash_buffer_timer = 0.0
+
+
+func show_pause_main_panel() -> void:
+	if pause_main_panel != null:
+		pause_main_panel.visible = true
+	if pause_volume_panel != null:
+		pause_volume_panel.visible = false
+	if pause_combo_panel != null:
+		pause_combo_panel.visible = false
+
+
+func show_pause_volume_panel() -> void:
+	if pause_main_panel != null:
+		pause_main_panel.visible = false
+	if pause_volume_panel != null:
+		pause_volume_panel.visible = true
+	if pause_combo_panel != null:
+		pause_combo_panel.visible = false
+	if pause_volume_slider != null:
+		pause_volume_slider.value = get_pause_master_volume_percent()
+	update_pause_volume_label()
+
+
+func show_pause_combo_panel() -> void:
+	if pause_main_panel != null:
+		pause_main_panel.visible = false
+	if pause_volume_panel != null:
+		pause_volume_panel.visible = false
+	if pause_combo_panel != null:
+		pause_combo_panel.visible = true
+
+
+func _on_pause_continue_pressed() -> void:
+	_play_pause_confirm_sfx()
+	set_battle_paused(false)
+
+
+func _on_pause_restart_pressed() -> void:
+	_play_pause_confirm_sfx()
+	battle_paused = false
+	set_battle_world_processing_disabled(false)
+	get_tree().reload_current_scene()
+
+
+func _on_pause_character_select_pressed() -> void:
+	_play_pause_confirm_sfx()
+	battle_paused = false
+	set_battle_world_processing_disabled(false)
+	get_tree().change_scene_to_file("res://scenes/ui/CharacterSelect.tscn")
+
+
+func _on_pause_main_menu_pressed() -> void:
+	_play_pause_confirm_sfx()
+	battle_paused = false
+	set_battle_world_processing_disabled(false)
+	get_tree().change_scene_to_file("res://scenes/ui/MainMenu.tscn")
+
+
+func _on_pause_volume_pressed() -> void:
+	_play_pause_confirm_sfx()
+	show_pause_volume_panel()
+
+
+func _on_pause_combo_pressed() -> void:
+	_play_pause_confirm_sfx()
+	show_pause_combo_panel()
+
+
+func _on_pause_back_to_main_pressed() -> void:
+	_play_pause_confirm_sfx()
+	show_pause_main_panel()
+
+
+func _on_pause_volume_value_changed(value: float) -> void:
+	if AudioManager != null and AudioManager.has_method("set_master_volume_percent"):
+		AudioManager.call("set_master_volume_percent", value)
+	else:
+		apply_pause_master_volume_percent(value)
+	update_pause_volume_label()
+
+
+func get_pause_master_volume_percent() -> float:
+	if AudioManager != null and AudioManager.has_method("get_master_volume_percent"):
+		return float(AudioManager.call("get_master_volume_percent"))
+	return 100.0
+
+
+func apply_pause_master_volume_percent(value: float) -> void:
+	var v: float = clampf(value, 0.0, 100.0)
+	var bus_idx: int = AudioServer.get_bus_index("Master")
+	if bus_idx < 0:
+		bus_idx = 0
+	if v <= 0.0:
+		AudioServer.set_bus_mute(bus_idx, true)
+		AudioServer.set_bus_volume_db(bus_idx, -80.0)
+	else:
+		AudioServer.set_bus_mute(bus_idx, false)
+		AudioServer.set_bus_volume_db(bus_idx, linear_to_db(v / 100.0))
+
+
+func update_pause_volume_label() -> void:
+	if pause_volume_percent_label == null:
+		return
+	var value: float = get_pause_master_volume_percent()
+	if pause_volume_slider != null:
+		value = float(pause_volume_slider.value)
+	pause_volume_percent_label.text = str(int(round(value))) + "%"
+
+
+func _play_pause_hover_sfx() -> void:
+	if AudioManager != null and AudioManager.has_method("snd_select"):
+		AudioManager.call("snd_select")
+
+
+func _play_pause_confirm_sfx() -> void:
+	if AudioManager != null and AudioManager.has_method("snd_confirm"):
+		AudioManager.call("snd_confirm")
+
+
+func _play_pause_open_sfx() -> void:
+	if AudioManager != null and AudioManager.has_method("snd_menu_open"):
+		AudioManager.call("snd_menu_open")
+
+
+func get_pause_combo_text_p1() -> String:
+	return "" + \
+		"移动：A / D\n" + \
+		"方向：W 上，S 下\n" + \
+		"J：普攻，可连续 J 连段\n" + \
+		"S + J：砍技1 / 反击准备\n" + \
+		"W + J：砍技2\n" + \
+		"K：跳跃\n" + \
+		"L：瞬步 / dash\n" + \
+		"U：招1\n" + \
+		"S + U：招2\n" + \
+		"W + U：招3\n" + \
+		"I：普通必杀，消耗 100 怒气\n" + \
+		"W + I：上必杀，消耗 100 怒气\n" + \
+		"S + I：超必杀，消耗 300 怒气\n" + \
+		"空中 J：跳砍\n" + \
+		"空中 U：跳招\n" + \
+		"空中 I：空中必杀\n" + \
+		"O：支援 / 换人（当前暂未接入）"
+
+
+func get_pause_combo_text_p2() -> String:
+	return "" + \
+		"移动：← / →\n" + \
+		"方向：↑ 上，↓ 下\n" + \
+		"Num1：普攻，可连续 Num1 连段\n" + \
+		"↓ + Num1：砍技1 / 反击准备\n" + \
+		"↑ + Num1：砍技2\n" + \
+		"Num2：跳跃\n" + \
+		"Num3：瞬步 / dash\n" + \
+		"Num4：招1\n" + \
+		"↓ + Num4：招2\n" + \
+		"↑ + Num4：招3\n" + \
+		"Num5：普通必杀，消耗 100 怒气\n" + \
+		"↑ + Num5：上必杀，消耗 100 怒气\n" + \
+		"↓ + Num5：超必杀，消耗 300 怒气\n" + \
+		"空中 Num1：跳砍\n" + \
+		"空中 Num4：跳招\n" + \
+		"空中 Num5：空中必杀\n" + \
+		"Num6：支援 / 换人（当前暂未接入）"
 
 func create_hp_ui() -> void:
 	var p1_back := ColorRect.new()
@@ -699,6 +1187,7 @@ func spawn_fighters() -> void:
 		p1.scale = Vector2(ORIGINAL_FIGHTER_SCALE, ORIGINAL_FIGHTER_SCALE)
 		p1.z_index = 10
 		p1.setup("res://assets/characters/aizen/aizen_game_manifest.json")
+		apply_original_default_battle_stats(p1)
 		p1.frame_event.connect(_on_p1_frame_event)
 	else:
 		create_placeholder_player(GameData.p1_character, P1_START_POS)
@@ -711,11 +1200,29 @@ func spawn_fighters() -> void:
 		p2.scale = Vector2(ORIGINAL_FIGHTER_SCALE, ORIGINAL_FIGHTER_SCALE)
 		p2.z_index = 10
 		p2.setup("res://assets/characters/aizen/aizen_game_manifest.json")
+		apply_original_default_battle_stats(p2)
 		p2.set_facing(-1)
 	else:
 		p2 = create_placeholder_player(GameData.p2_character, P2_START_POS)
 
 	spawn_effect_players()
+
+
+func apply_original_default_battle_stats(fighter) -> void:
+	# 原版来源：GameLogic.resetFighterHP + GameConfig.FIGHTER_HP_MAX + FighterTester.fighterHP=2；
+	# FighterMain 默认 qi=0 / qiMax=300 / energy=100 / fzqi=100。
+	if fighter == null:
+		return
+	if not (fighter.has_method("add_qi") and fighter.has_method("use_qi")):
+		return
+	fighter.set("hp_max", ORIGINAL_FIGHTER_DEMO_HP_MAX)
+	fighter.set("hp", ORIGINAL_FIGHTER_DEMO_HP_MAX)
+	fighter.set("qi_max", ORIGINAL_QI_MAX)
+	fighter.set("qi", ORIGINAL_START_QI)
+	fighter.set("energy_max", ORIGINAL_ENERGY_MAX)
+	fighter.set("energy", ORIGINAL_START_ENERGY)
+	fighter.set("fzqi_max", ORIGINAL_FZQI_MAX)
+	fighter.set("fzqi", ORIGINAL_START_FZQI)
 
 
 func spawn_effect_players() -> void:
@@ -771,7 +1278,10 @@ func create_placeholder_player(char_id: String, pos: Vector2) -> Label:
 
 func _process(delta: float) -> void:
 	if Input.is_action_just_pressed("ui_cancel"):
-		get_tree().change_scene_to_file("res://scenes/ui/MainMenu.tscn")
+		handle_pause_escape_input()
+		return
+
+	if battle_paused:
 		return
 
 	if ORIGINAL_DEV_KEYS_ENABLED and Input.is_key_pressed(KEY_H):
@@ -1341,6 +1851,11 @@ func handle_jump_input() -> void:
 
 func handle_dash_input() -> void:
 	if not p1.can_ground_action():
+		return
+
+	# 原版 FighterMcCtrler.doDash：hasEnergy(20, true) 后 useEnergy(20)。
+	# 注意这里消耗的是 energy/体力，不是 qi/怒气。
+	if not try_use_p1_energy(20.0, true, "地面瞬步 / dash"):
 		return
 
 	# 原版“瞬步”不是直接把角色平移 180px；mc_023 瞬步帧为：
@@ -2178,10 +2693,10 @@ func get_main_attack_hit_window(action_name: String, frame: int) -> Dictionary:
 			return {"rect": SBSATM_RECT_C, "label": "super_up_hit / sbsatm", "hit": "sbs", "key": "super_up_hit:sbs_c"}
 
 	# S+I / 超必杀 start=1197：cbs2atm global=1247-1375, cbsatm global=1376-1379。
-	# cbs2 是长时间持续攻击面；这里按 10 帧一个 key 允许多段命中，避免只命中一次。
+	# cbs2 是长时间持续攻击面；原版按 HURT_GAP_FRAME=4 的受击间隔允许多段命中。
 	if action_name == "super_special":
 		if frame >= 50 and frame <= 178:
-			var cbs2_tick: int = int(floor(float(frame - 50) / 10.0))
+			var cbs2_tick: int = int(floor(float(frame - 50) / ORIGINAL_REHIT_GAP_FRAMES))
 			return {"rect": CBS2ATM_RECT, "label": "super_special / cbs2atm", "hit": "cbs2", "key": "super_special:cbs2:" + str(cbs2_tick)}
 		if frame >= 179 and frame <= 182:
 			return {"rect": CBSATM_RECT, "label": "super_special / cbsatm", "hit": "cbs", "key": "super_special:cbs"}
@@ -2329,21 +2844,27 @@ func update_original_attack_box() -> void:
 		var label_text := ""
 		var hit_vo_id := ""
 
+		var attack_key := ""
 		if p1_effect.frame_index >= 2 and p1_effect.frame_index <= 48:
 			local_rect = BS1ATM_RECT
 			label_text = "bsmc / bs1atm"
 			hit_vo_id = "bs1"
+			# 原版 FighterAttacker.getCurrentHits 每帧返回 bs1atm；目标被打间隔为 4 帧。
+			# 旧版只允许 bsmc:bs1 命中一次，导致 I 必杀总伤害明显偏低。
+			var bs1_tick: int = int(floor(float(p1_effect.frame_index - 2) / ORIGINAL_REHIT_GAP_FRAMES))
+			attack_key = "bsmc:bs1:" + str(bs1_tick)
 		elif p1_effect.frame_index >= 49 and p1_effect.frame_index <= 52:
 			local_rect = BSATM_RECT
 			label_text = "bsmc / bsatm"
 			hit_vo_id = "bs"
+			attack_key = "bsmc:bs"
 		else:
 			hide_current_attack_box_for_empty_frame()
 			return
 
 		var attacker_origin: Vector2 = active_attacker_original_origin
 		var world_rect := make_directed_rect(attacker_origin, local_rect, active_attacker_facing)
-		set_current_attack_box(world_rect, label_text, hit_vo_id, "bsmc:" + hit_vo_id)
+		set_current_attack_box(world_rect, label_text, hit_vo_id, attack_key)
 		return
 
 	if active_original_hitbox == "zh3mc":
@@ -2510,18 +3031,19 @@ func check_active_hit_target() -> void:
 	if not current_attack_world_rect.intersects(hurt_rect, true):
 		return
 
-	active_attacker_has_hit = true
 	p1_last_hit_vo_id = current_hit_vo_id
 	p1_last_hit_action = str(p1.get("current_action")) if p1 != null else ""
 	var hit_vo: Dictionary = AIZEN_HIT_VO.get(current_hit_vo_id, {})
 	print("HIT: ", current_attack_label, " -> p2 bdmn; HitVO=", current_hit_vo_id,
 		" data=", hit_vo, " attack=", current_attack_world_rect, " hurt=", hurt_rect)
 
-	# 对应原版流程：target.beHit(hitVO, hitRect)，attacker.hit(hitVO, target)。
-	# 当前先实现核心：伤害、hurtType、hitx/hity、hurtTime。防御、连击计数、得分、特效仍待接。
+	# 对应原版流程：body 可被打时才返回碰撞；如果 target 仍在 beHitGap 内，本帧应等同 body=null，
+	# 不锁死 active_attacker_has_hit，让持续攻击面下一帧继续检测。
 	var hit_result: Dictionary = {}
 	if p2 != null and p2.has_method("apply_original_hit"):
 		hit_result = p2.apply_original_hit(hit_vo, p1.facing)
+	if str(hit_result.get("result", "")) != "ignored":
+		active_attacker_has_hit = true
 	if str(hit_result.get("result", "")) == "catch":
 		original_catch_target = p2
 		if p2 != null and p2.has_method("set_original_caught_by_throw"):
@@ -2548,7 +3070,18 @@ func try_use_p1_qi(cost: float, label_text: String) -> bool:
 	if p1.call("use_qi", cost):
 		print("原版必杀气消耗：", label_text, " cost=", cost, " qi=", get_node_float_property(p1, "qi", 0.0))
 		return true
-	print("气不足，不能释放 ", label_text, "；需要 ", cost, "，当前 qi=", get_node_float_property(p1, "qi", 0.0), "。按 T 可临时充满气用于测试。")
+	print("气不足，不能释放 ", label_text, "；需要 ", cost, "，当前 qi=", get_node_float_property(p1, "qi", 0.0), "。按 P 可临时充满气用于测试。")
+	return false
+
+
+func try_use_p1_energy(cost: float, allow_overflow: bool, label_text: String) -> bool:
+	if p1 == null or not p1.has_method("has_energy") or not p1.has_method("use_energy"):
+		return true
+	if bool(p1.call("has_energy", cost, allow_overflow)):
+		p1.call("use_energy", cost)
+		print("原版体力消耗：", label_text, " cost=", cost, " energy=", get_node_float_property(p1, "energy", 0.0))
+		return true
+	print("体力不足，不能执行 ", label_text, "；需要 ", cost, "，当前 energy=", get_node_float_property(p1, "energy", 0.0))
 	return false
 
 
@@ -2557,11 +3090,9 @@ func debug_fill_qi_energy() -> void:
 		return
 	if p1 != null:
 		set_node_float_property(p1, "qi", 300.0)
-		set_node_float_property(p1, "fzqi", 100.0)
 		set_node_float_property(p1, "energy", 100.0)
 	if p2 != null:
 		set_node_float_property(p2, "qi", 300.0)
-		set_node_float_property(p2, "fzqi", 100.0)
 		set_node_float_property(p2, "energy", 100.0)
 
 
@@ -2570,12 +3101,35 @@ func is_bisha_hitvo(hit_vo: Dictionary) -> bool:
 	return hit_id in ["bs", "bs1", "sbs", "sbs1", "sbs2", "sbs3", "sbs4", "cbs", "cbs2", "kbs"]
 
 
-func add_qi_on_hit(attacker, target, hit_vo: Dictionary) -> void:
+func get_original_attacker_qi_gain(hit_vo: Dictionary, hit_source: String) -> float:
 	var power: float = float(hit_vo.get("power", 0.0))
-	if attacker != null and attacker.has_method("add_qi") and not is_bisha_hitvo(hit_vo):
-		attacker.call("add_qi", minf(QI_HIT_MAX, power * 0.16))
-	if target != null and target.has_method("add_qi"):
-		target.call("add_qi", minf(QI_HURT_MAX, power * 0.085))
+	if hit_source == "bsmc" or hit_source == "zh3mc":
+		# 原版 FighterAttacker.hit：owner.addQi(hitvo.power * QI_ADD_HIT_ATTACKER_RATE)，不走 15 点上限。
+		return power * QI_ADD_HIT_ATTACKER_RATE
+	if hit_source == "bullet":
+		return power * QI_ADD_HIT_BULLET_RATE
+	if hit_source == "assister":
+		return power * QI_ADD_HIT_ASSISTER_RATE
+
+	# 原版 FighterMain.hit：必杀命中按 QI_ADD_HIT_BISHA_RATE；普通攻击/普通技能按 QI_ADD_HIT_RATE，单次最多 15。
+	var rate: float = QI_ADD_HIT_BISHA_RATE if is_bisha_hitvo(hit_vo) else QI_ADD_HIT_RATE
+	return minf(QI_ADD_HIT_MAX, power * rate)
+
+
+func get_original_hurt_qi_gain(hit_vo: Dictionary) -> float:
+	# 原版 FighterMain.beHit：target.addQi(min(QI_ADD_HURT_MAX, hitvo.power * QI_ADD_HURT_RATE))。
+	var power: float = float(hit_vo.get("power", 0.0))
+	return minf(QI_ADD_HURT_MAX, power * QI_ADD_HURT_RATE)
+
+
+func add_qi_on_hit(attacker, target, hit_vo: Dictionary, hit_source: String = "main_attack") -> void:
+	var attacker_gain: float = get_original_attacker_qi_gain(hit_vo, hit_source)
+	var target_gain: float = get_original_hurt_qi_gain(hit_vo)
+	if attacker != null and attacker.has_method("add_qi") and attacker_gain > 0.0:
+		attacker.call("add_qi", attacker_gain)
+	if target != null and target.has_method("add_qi") and target_gain > 0.0:
+		target.call("add_qi", target_gain)
+	print("原版怒气累计：source=", hit_source, " hit=", str(hit_vo.get("id", "")), " attacker+=", attacker_gain, " target+=", target_gain)
 
 
 func add_score_by_hit(hit_vo: Dictionary, current_hits: int) -> int:
@@ -2597,10 +3151,15 @@ func add_score_by_hit(hit_vo: Dictionary, current_hits: int) -> int:
 
 func after_p1_hit_target(hit_vo: Dictionary, hit_result: Dictionary) -> void:
 	var result: String = str(hit_result.get("result", ""))
+	var hit_source: String = active_original_hitbox if active_original_hitbox != "" else "main_attack"
 	play_original_hit_feedback(hit_vo, current_attack_world_rect, result, p1.facing)
+	# 原版 GameMainLogicCtrler.checkHit：只要碰撞命中且目标 body 可被打，就先 target.beHit，再 attacker.hit。
+	# 因此防御/钢体/反击动作也会按 FighterMain.hit / FighterAttacker.hit / FighterMain.beHit 累计怒气；
+	# isAllowBeHit=false 时 body=null，不发生命中，所以 ignored 不加。
+	if result != "ignored":
+		add_qi_on_hit(p1, p2, hit_vo, hit_source)
 	if result == "dead" or result == "counter" or result == "defense" or result == "steel" or result == "ignored" or result == "catch":
 		return
-	add_qi_on_hit(p1, p2, hit_vo)
 	p1_combo_count += 1
 	p1_combo_timer = COMBO_RESET_TIME
 	p2_combo_count = 0
@@ -2612,9 +3171,10 @@ func after_p2_hit_target(hit_vo: Dictionary, hit_result: Dictionary) -> void:
 	var result: String = str(hit_result.get("result", ""))
 	var p2_face: int = int(p2.get("facing")) if p2 != null else -1
 	play_original_hit_feedback(hit_vo, current_attack_world_rect, result, p2_face)
+	if result != "ignored":
+		add_qi_on_hit(p2, p1, hit_vo, "main_attack")
 	if result == "dead" or result == "counter" or result == "defense" or result == "steel" or result == "ignored":
 		return
-	add_qi_on_hit(p2, p1, hit_vo)
 	p2_combo_count += 1
 	p2_combo_timer = COMBO_RESET_TIME
 	p1_combo_count = 0
@@ -2887,7 +3447,7 @@ func audit_original_core_battle_once() -> void:
 	if original_core_battle_audit_printed:
 		return
 	original_core_battle_audit_printed = true
-	print("Step19-21 core battle audit: defense/break/catch/KO enabled; Aizen HitVO count=", AIZEN_HIT_VO.size())
+	print("Step43 core battle audit: original HP/QI/damage rates enabled; Aizen HitVO count=", AIZEN_HIT_VO.size())
 
 
 func audit_original_final_stage_once() -> void:

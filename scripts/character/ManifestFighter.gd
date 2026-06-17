@@ -24,19 +24,18 @@ var in_air: bool = false
 var action_locked: bool = false
 var fired_event_keys: Dictionary = {}
 
-# 第 8 步：按原版 HitVO 做最小伤害/受击/击退。
-# 3.8.4.3 原版实机 HUD 中蓝染初始 HP 显示为 2000。
-# 原版 FighterMcCtrler.doHurt：power -> loseHp，hitx/hity 由攻击者 direct 修正，hurtType=0 进入“被打”，hurtType=1 进入击飞。
+# Step44：保留 Step43 的原版 HP / qi / energy / HitVO 伤害公式。
+# fzqi 辅助气条暂时回退到上个可用版本：当前 Demo 不做 O 支援/换人，避免 HUD 下方出现额外 fzqibar/readymc。
+# 依据：GameConfig.FIGHTER_HP_MAX=1000；FighterTester.as 里 fighterHP=2，所以当前 Demo 初始 HP=2000。
+# HitVO.getDamage：damage = (power + power * powerAdd / 100) * powerRate。
 var hp_max: float = 2000.0
 var hp: float = 2000.0
 var is_alive: bool = true
 
-# 原版 FighterMain：qiMax=300；qi 用于普通必杀/上必杀/空中必杀 100，超必杀 300。
-# 初始值不在这里强行填 1 格，避免破坏原版 QiBar/qbar_fzqi_mc 显示层。
+# 原版 FighterMain：qi 用于普通必杀/上必杀/空中必杀 100，超必杀 300；初始 qi=0。
 var qi: float = 0.0
 var qi_max: float = 300.0
-# 原版 QiBar.as 还读取 fighter.fzqi/100 来显示辅助气条 fzqibar/readymc/sp。
-# 当前项目按你的要求忽略 O 支援/换人，只保留 HUD 显示变量和调试充满。
+# 当前项目按你的要求忽略 O 支援/换人；fzqi 不强行填满，避免显示辅助气条多余部件。
 var fzqi: float = 0.0
 var fzqi_max: float = 100.0
 var energy: float = 100.0
@@ -638,6 +637,7 @@ func update_energy(delta: float) -> void:
 		energy_overload = false
 
 
+
 func is_attacking_action() -> bool:
 	return (
 		current_action.begins_with("atk")
@@ -678,7 +678,8 @@ func has_energy(value: float, allow_overflow: bool = false) -> bool:
 
 func use_energy(value: float) -> void:
 	energy -= value
-	energy_add_gap = USE_ENERGY_CD * ENERGY_ADD_OVERLOAD_RESUME / ORIGINAL_FPS
+	# 原版：_energyAddGap = USE_ENERGY_CD * FPS_ANIMATE；这里用秒计时，所以直接保存 0.8s。
+	energy_add_gap = USE_ENERGY_CD
 	if energy < 0.0:
 		energy = 0.0
 		energy_overload = true
@@ -812,7 +813,13 @@ func set_original_caught_by_throw(enabled: bool) -> void:
 
 
 func get_damage_from_hitvo(hit_vo: Dictionary) -> float:
-	return float(hit_vo.get("power", 0)) * float(hit_vo.get("powerRate", 1.0))
+	# 原版 HitVO.getDamage():
+	#   powAdd = power * (powerAdd / 100)
+	#   return (power + powAdd) * powerRate
+	var power: float = float(hit_vo.get("power", 0.0))
+	var power_add: float = float(hit_vo.get("powerAdd", 0.0))
+	var power_rate: float = float(hit_vo.get("powerRate", 1.0))
+	return (power + power * (power_add / 100.0)) * power_rate
 
 
 func set_original_hurt_action(action_name: String) -> void:
@@ -1044,11 +1051,11 @@ func apply_original_hit(hit_vo: Dictionary, attacker_facing: int) -> Dictionary:
 		mark_original_hit_result("hurt", damage)
 		return {"result":"hurt", "damage":damage}
 
-	# hurtType=1：原版进入 FighterMC.playHurtFly(hitx, hity)，先显示“被打”，下一帧进入“击飞”，落地后“击飞_落/弹/倒/起”。
+	# hurtType=1：原版进入 FighterMC.playHurtFly(hitx, hity)，但普通受击间隔仍来自 GameConfig.HURT_GAP_FRAME=4。
 	if hity == 0.0:
 		# HitVO 未给 hity 时保留一个最小上抛，避免击飞状态停在地面。
 		hity = -6.0
-	_set_be_hit_gap(10)
+	_set_be_hit_gap(4)
 	_start_original_hurt_fly(hitx, hity)
 	mark_original_hit_result("knock_fly", damage)
 	return {"result":"knock_fly", "damage":damage}
