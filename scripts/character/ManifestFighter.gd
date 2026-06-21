@@ -92,6 +92,14 @@ var original_last_damage_taken: float = 0.0
 var original_guard_break_timer: float = 0.0
 var original_can_hurt_break_timer: float = 0.0
 
+# Step49：原版 EffectModel.shock_ing = xg_dian_ing，并由 SpecialEffectView 对目标执行
+# targetColorOffset [50, -75, 255]。Godot 侧用 Sprite2D ShaderMaterial 做颜色 offset，
+# 避免用普通 modulate 乘色替代。
+var original_special_color_active: bool = false
+var original_special_color_time_left: float = 0.0
+var original_special_color_material: ShaderMaterial
+var original_special_color_previous_material: Material
+
 const ORIGINAL_FPS := 30.0
 const ORIGINAL_GAME_RENDER_FPS := 60.0
 const ORIGINAL_FIGHTER_SPEED_PER_FRAME := 6.0
@@ -154,16 +162,20 @@ func play_action(action_name: String) -> void:
 		print("Action not found:", action_name)
 		return
 
-	# Step27：原版 mc_023 的 招1/招2/招3 时间轴没有 move / movePercent / dash / moveToTarget。
-	# 因此这些地面 U 技能不应改变 FighterMain 世界坐标；开始时记录 anchor，并在动作期间持续锁定。
+	# Step27/Step53：原版 mc_023 的 招1/招2/招3 没有根移动；超必杀也没有 move/moveToTarget 事件。
+	# 这些动作不应被 A/D 或旧 velocity 推动世界坐标。W+I / 空中 I 仍由原版 moveToTarget 事件控制，不在这里锁死。
 	original_no_world_move_anchor_active = false
-	if action_name == "skill1" or action_name == "skill2" or action_name == "skill3":
+	if action_name == "skill1" or action_name == "skill2" or action_name == "skill3" or action_name == "super_special":
 		velocity_x = 0.0
 		damping_x = 0.0
 		if not in_air:
 			velocity_y = 0.0
 			original_no_world_move_anchor_active = true
 			original_no_world_move_anchor_pos = position
+	elif action_name.begins_with("super"):
+		# 普通 I / W+I / 空中 I 进入必杀时先清掉玩家自由移动残留，后续位移只接受时间轴 moveToTarget。
+		velocity_x = 0.0
+		damping_x = 0.0
 
 	current_action = action_name
 	frame_index = 0
@@ -237,10 +249,67 @@ func _process(delta: float) -> void:
 	update_original_can_hurt_break_timer(scaled_delta)
 	update_hurt_timer(scaled_delta)
 	update_hurt_fly_state(scaled_delta)
+	update_original_special_color(scaled_delta)
 	update_animation(scaled_delta)
 	update_physics(scaled_delta)
 	update_horizontal_motion(scaled_delta)
 	apply_original_no_world_move_anchor()
+
+
+func apply_original_special_color_offset(offset: Vector3, min_time: float = 0.40) -> void:
+	# 对照原版 SpecialEffectView.setTarget：把 EffectVO.targetColorOffset 写到目标 FighterMain 的 ColorTransform。
+	# 这里 offset 仍使用原版 0..255 的 red/green/blue offset。
+	ensure_sprite()
+	if original_special_color_material == null:
+		var shader := Shader.new()
+		shader.code = """
+shader_type canvas_item;
+uniform vec3 color_offset = vec3(0.0, 0.0, 0.0);
+
+void fragment() {
+	vec4 tex = texture(TEXTURE, UV) * COLOR;
+	if (tex.a > 0.0) {
+		tex.rgb = clamp(tex.rgb + color_offset, vec3(0.0), vec3(1.0));
+	}
+	COLOR = tex;
+}
+"""
+		original_special_color_material = ShaderMaterial.new()
+		original_special_color_material.shader = shader
+
+	if not original_special_color_active:
+		original_special_color_previous_material = sprite.material
+
+	original_special_color_active = true
+	original_special_color_time_left = maxf(original_special_color_time_left, min_time)
+	original_special_color_material.set_shader_parameter(
+		"color_offset",
+		Vector3(offset.x / 255.0, offset.y / 255.0, offset.z / 255.0)
+	)
+	sprite.material = original_special_color_material
+
+
+func resume_original_special_color() -> void:
+	if not original_special_color_active:
+		return
+	original_special_color_active = false
+	original_special_color_time_left = 0.0
+	if sprite != null:
+		sprite.material = original_special_color_previous_material
+	original_special_color_previous_material = null
+
+
+func update_original_special_color(delta: float) -> void:
+	if not original_special_color_active:
+		return
+	if original_special_color_time_left > 0.0:
+		original_special_color_time_left -= delta
+		return
+	# 原版 SpecialEffectView 在目标恢复 NORMAL / HURT_DOWN / HURT_DOWN_TAN 时 resumeColor。
+	# 当前状态机中用“没有 hitstun、没有 hurt_fly_state、且回到中立/移动类动作”作为恢复点。
+	if not in_hitstun and hurt_fly_state == 0:
+		if current_action == "idle" or current_action == "walk" or current_action == "jump" or current_action == "fall":
+			resume_original_special_color()
 
 
 func apply_original_no_world_move_anchor() -> void:
@@ -249,8 +318,8 @@ func apply_original_no_world_move_anchor() -> void:
 	if in_air:
 		original_no_world_move_anchor_active = false
 		return
-	# 只锁地面 U 技能的 FighterMain 世界坐标；动作本身的帧动画仍正常播放。
-	if current_action != "skill1" and current_action != "skill2" and current_action != "skill3":
+	# 只锁原版无根移动的地面技能/超必杀 FighterMain 世界坐标；动作本身的帧动画仍正常播放。
+	if current_action != "skill1" and current_action != "skill2" and current_action != "skill3" and current_action != "super_special":
 		original_no_world_move_anchor_active = false
 		return
 	position = original_no_world_move_anchor_pos

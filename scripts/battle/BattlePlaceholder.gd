@@ -23,13 +23,19 @@ var map_front_sprite: Node2D
 var camera_zoom: float = 1.0
 var camera_rect: Rect2 = Rect2(Vector2.ZERO, Vector2(800, 600))
 
+# Step50：按原版 EffectCtrl.bisha / BlackBackView 复刻必杀黑底阶段。
+# 原版做法是隐藏地图、黑底放在 GameStage 底层、只让发动者继续播放必杀动画。
+var original_bisha_stage_mode_active: bool = false
+var original_bisha_saved_canvas_states: Array = []
+var original_bisha_black_backfill: ColorRect
+
 var move_speed: float = 220.0
 var dash_distance: float = 180.0
 
 # Step11 原版时间轴控制事件：shine / dash / moveToTarget / movePercent / isApplyG。
 # FighterEffectCtrler.shine(color=0xFFFFFF) 会传 alpha=0.3 到 EffectCtrler.shine；
 # EffectCtrler.shine 默认 alpha=0.2，但蓝染时间轴使用的是 fighter effect ctrler。
-const ORIGINAL_SHINE_WHITE_ALPHA: float = 0.30
+const ORIGINAL_SHINE_WHITE_ALPHA: float = 0.12
 const ORIGINAL_SHINE_COLORED_ALPHA: float = 0.20
 const ORIGINAL_SHINE_DURATION: float = 0.12
 # 原版 Flash 战斗时间轴按 30 fps 计算。move / movePercent / hurtTime 等帧制换算都以此为基准。
@@ -392,6 +398,23 @@ const QI_ADD_HURT_RATE := 0.08
 const QI_ADD_HURT_MAX := 20.0
 # 原版 GameConfig.HURT_GAP_FRAME = 4；持续攻击面每 4 个动画帧可再次命中一次。
 const ORIGINAL_REHIT_GAP_FRAMES := 4.0
+
+# Step56：原版 EffectModel.as / EffectCtrl.as 中命中特效的声音来源。
+# 原版 doHitEffect(hitvo, hitRect) 会先按 hitType 取得 EffectVO，再由 EffectView.start(playSound=true) 播放 EffectVO.sound。
+# Step55 为避免预渲染 PNG common hit 在 bisha 多段命中时形成“电视雪花”，跳过了 bisha common sprite，
+# 但不能跳过原版命中声音；因此 bisha 系 HitVO 走 sound-only，视觉仍由 XG_bs / XG_cbs 承担。
+const ORIGINAL_HIT_SOUND_BY_TYPE := {
+	1: "snd_kan1",       # HitType.KAN -> XG_kan2
+	2: "snd_hit2",       # HitType.DA -> XG_qdj
+	3: "snd_hit_heavy",  # HitType.DA_HEAVY -> XG_qdjx
+	4: "snd_hit2",       # HitType.MAGIC -> XG_mfdj
+	5: "snd_mfdjx",      # HitType.MAGIC_HEAVY -> XG_mfdjx
+	6: "snd_kan2",       # HitType.KAN_HEAVY -> XG_kanx2
+	7: "snd_hit_fire",
+	8: "snd_hit_ice",
+	9: "snd_hit_dian",
+	11: "snd_hit_cache"
+}
 
 # 原版 FightUI.showStart：startKOmc.gotoAndStop("start") 从 frame 9 起播。
 # AS 事件帧：frame54 = fight_in，frame57 = fight，frame87 = COMPLETE。
@@ -1684,6 +1707,13 @@ func handle_p1_input(delta: float) -> void:
 	if t_just:
 		debug_fill_qi_energy()
 
+	# 原版 FighterMcCtrler.renderFloorAction 的顺序是：bishaSUPER -> bishaUP -> bisha -> skill -> attack -> defense。
+	# 旧版先进入防御，导致玩家先按住 S 再按 I 时，角色已经被锁在 defend/defend_recover，S+I 无法释放。
+	# 这里在防御判定前先处理 I 缓冲；如果当前正在防御，也允许按原版优先级切入必杀。
+	if p1_bisha_buffer_timer > 0.0 and try_execute_one_p1_buffer("bisha"):
+		p1_bisha_buffer_timer = 0.0
+		return
+
 	# 原版 FighterKeyCtrler.defense() = down。这里只在 S 单独按住时进入防御，避免影响 S+J / S+U / S+I。
 	var pure_down_defense: bool = Input.is_key_pressed(KEY_S) and not (j_pressed or u_pressed or i_pressed or k_pressed or l_pressed)
 	if p1.current_action == "defend" and not pure_down_defense:
@@ -1780,14 +1810,16 @@ func try_execute_p1_buffered_actions() -> void:
 	if p1_dash_buffer_timer > 0.0 and try_execute_one_p1_buffer("dash"):
 		p1_dash_buffer_timer = 0.0
 		return
+	# 原版地面行动中，必杀类输入优先于普通 skill/attack/defense。
+	# jump/dash 仍放前面，是为了保留当前 Demo 的 K 后接空中 I 手感；真正地面 S+I 已在防御前提前处理。
+	if p1_bisha_buffer_timer > 0.0 and try_execute_one_p1_buffer("bisha"):
+		p1_bisha_buffer_timer = 0.0
+		return
 	if p1_attack_buffer_timer > 0.0 and try_execute_one_p1_buffer("attack"):
 		p1_attack_buffer_timer = 0.0
 		return
 	if p1_skill_buffer_timer > 0.0 and try_execute_one_p1_buffer("skill"):
 		p1_skill_buffer_timer = 0.0
-		return
-	if p1_bisha_buffer_timer > 0.0 and try_execute_one_p1_buffer("bisha"):
-		p1_bisha_buffer_timer = 0.0
 		return
 
 
@@ -1932,6 +1964,20 @@ func handle_attack_input() -> void:
 		p1.play_action("atk1")
 
 
+func can_start_p1_ground_bisha() -> bool:
+	if p1 == null:
+		return false
+	if bool(p1.get("in_air")):
+		return false
+	if p1.can_ground_action():
+		return true
+
+	# 对齐原版输入优先级：必杀判定在 defense 之前。
+	# Godot 当前 defend 是 action_locked，如果玩家先按 S 再按 I，必须允许从 defend/defend_recover 切入 S+I。
+	var action_name: String = str(p1.get("current_action"))
+	return action_name == "defend" or action_name == "defend_recover"
+
+
 func handle_skill_input() -> void:
 	var up_pressed: bool = Input.is_key_pressed(KEY_W)
 	var down_pressed: bool = Input.is_key_pressed(KEY_S)
@@ -1981,15 +2027,17 @@ func handle_bisha_input() -> void:
 		p1.play_action("super_air")
 		return
 
-	if not p1.can_ground_action():
+	if not can_start_p1_ground_bisha():
 		return
 
 	# 原版 FighterKeyCtrler：
-	# I      = bisha()，对应“必杀”，Aizen_1 + XG_bs
-	# W + I  = bishaUP()，对应“上必杀”，Aizen_1 + XG_bs
-	# S + I  = bishaSUPER()，对应“超必杀”，Aizen_2 + XG_cbs
+	# bisha()      = superSkill(justDown) && !(up || down)
+	# bishaUP()    = superSkill(justDown) && up
+	# bishaSUPER() = superSkill(justDown) && down
+	# FighterMcCtrler.renderFloorAction 顺序：bishaSUPER -> bishaUP -> bisha。
 	if down_pressed:
 		if try_use_p1_qi(300.0, "超必杀 / super_special"):
+			print("Step51 S+I super_special accepted: play original label 超必杀 / cbs2+cbs")
 			p1.play_action("super_special")
 	elif up_pressed:
 		if try_use_p1_qi(100.0, "上必杀 / super_up"):
@@ -2171,13 +2219,15 @@ func handle_aizen_semantic_event(action_name: String, relative_frame: int, seman
 				var bisha_target_screen: Vector2 = world_to_screen(bisha_caster_origin)
 				var bisha_current_target_screen: Vector2 = world_to_screen(bisha_target_origin)
 				var bisha_xg_screen: Vector2 = world_to_screen(bisha_caster_origin + Vector2(0.0, -50.0))
-				bisha_effect.play_bisha(is_super, original_face_id, bisha_target_screen, p1.facing, bisha_current_target_screen, bisha_xg_screen)
+				begin_original_bisha_stage_mode(is_super)
+				bisha_effect.play_bisha(is_super, original_face_id, bisha_target_screen, p1.facing, bisha_current_target_screen, bisha_xg_screen, camera_zoom)
 
 		"super_effect_end":
 			print("Bisha end action=", action_name, " frame=", relative_frame)
 
 			if bisha_effect != null:
 				bisha_effect.end_bisha()
+			end_original_bisha_stage_mode()
 
 		"effect":
 			var effect_method: String = str(semantic.get("effect_method", ""))
@@ -3002,9 +3052,16 @@ func update_p2_test_attack_box() -> void:
 	if not attack_rect.intersects(p1_hurt_rect, true):
 		return
 
+	# 原版 GameMainLogicCtrler.getHitObj() 传给 EffectCtrl.doHitEffect 的不是完整攻击面，
+	# 而是 hitArea.intersection(body)。如果用完整攻击面，S+I 的 cbs2 巨大攻击框中心会落在 P1 身上，
+	# 导致 P1 位置错误播放命中特效。
+	var p2_hit_intersection: Rect2 = attack_rect.intersection(p1_hurt_rect)
+	if p2_hit_intersection.size == Vector2.ZERO:
+		p2_hit_intersection = attack_rect
+
 	p2_test_attack_has_hit = true
 	var hit_vo: Dictionary = AIZEN_HIT_VO.get("k1", {})
-	print("P2 HIT: atk1 / k1atm -> p1 bdmn; HitVO=k1 data=", hit_vo, " attack=", attack_rect, " hurt=", p1_hurt_rect)
+	print("P2 HIT: atk1 / k1atm -> p1 bdmn; HitVO=k1 data=", hit_vo, " attack=", attack_rect, " hurt=", p1_hurt_rect, " hitRect=", p2_hit_intersection)
 
 	p2_last_hit_vo_id = "k1"
 	p2_last_hit_action = action_name
@@ -3013,7 +3070,7 @@ func update_p2_test_attack_box() -> void:
 		hit_result = p1.apply_original_hit(hit_vo, p2_direct)
 	var old_rect: Rect2 = current_attack_world_rect
 	current_attack_world_rect = attack_rect
-	after_p2_hit_target(hit_vo, hit_result)
+	after_p2_hit_target(hit_vo, hit_result, p2_hit_intersection)
 	current_attack_world_rect = old_rect
 
 
@@ -3031,11 +3088,19 @@ func check_active_hit_target() -> void:
 	if not current_attack_world_rect.intersects(hurt_rect, true):
 		return
 
+	# 原版 GameMainLogicCtrler.getHitObj():
+	# hitRect = hitArea.intersection(body)，然后 FighterMcCtrler.doHurt(hitVO, hitRect) -> EffectCtrl.doHitEffect(hitVO, hitRect)。
+	# Step53 之前传的是完整 current_attack_world_rect；S+I 的 cbs2/cbs 巨大攻击面中心几乎在 P1 原点，
+	# 因此命中特效会错误地出现在 P1 位置。这里改为原版交集 hitRect。
+	var p1_hit_intersection: Rect2 = current_attack_world_rect.intersection(hurt_rect)
+	if p1_hit_intersection.size == Vector2.ZERO:
+		p1_hit_intersection = current_attack_world_rect
+
 	p1_last_hit_vo_id = current_hit_vo_id
 	p1_last_hit_action = str(p1.get("current_action")) if p1 != null else ""
 	var hit_vo: Dictionary = AIZEN_HIT_VO.get(current_hit_vo_id, {})
 	print("HIT: ", current_attack_label, " -> p2 bdmn; HitVO=", current_hit_vo_id,
-		" data=", hit_vo, " attack=", current_attack_world_rect, " hurt=", hurt_rect)
+		" data=", hit_vo, " attack=", current_attack_world_rect, " hurt=", hurt_rect, " hitRect=", p1_hit_intersection)
 
 	# 对应原版流程：body 可被打时才返回碰撞；如果 target 仍在 beHitGap 内，本帧应等同 body=null，
 	# 不锁死 active_attacker_has_hit，让持续攻击面下一帧继续检测。
@@ -3048,7 +3113,7 @@ func check_active_hit_target() -> void:
 		original_catch_target = p2
 		if p2 != null and p2.has_method("set_original_caught_by_throw"):
 			p2.set_original_caught_by_throw(true)
-	after_p1_hit_target(hit_vo, hit_result)
+	after_p1_hit_target(hit_vo, hit_result, p1_hit_intersection)
 
 
 func get_node_float_property(node, property_name: String, fallback: float) -> float:
@@ -3065,9 +3130,17 @@ func set_node_float_property(node, property_name: String, value: float) -> void:
 
 
 func try_use_p1_qi(cost: float, label_text: String) -> bool:
-	if p1 == null or not p1.has_method("use_qi"):
+	if p1 == null:
 		return true
-	if p1.call("use_qi", cost):
+	# Step51：原版 qi 是 Number，UI 层会显示整数层数。Godot 侧多段命中/补气是 float，
+	# 在 299.999 这类边界值时不应导致 S+I 超必杀看起来“完全没触发”。
+	# 这里按原版容错：只要当前 qi 在 cost 的 0.01 范围内，就视为足够。
+	var current_qi: float = get_node_float_property(p1, "qi", 0.0)
+	if current_qi + 0.01 >= cost:
+		set_node_float_property(p1, "qi", maxf(0.0, current_qi - cost))
+		print("原版必杀气消耗：", label_text, " cost=", cost, " qi=", get_node_float_property(p1, "qi", 0.0))
+		return true
+	if p1.has_method("use_qi") and p1.call("use_qi", cost):
 		print("原版必杀气消耗：", label_text, " cost=", cost, " qi=", get_node_float_property(p1, "qi", 0.0))
 		return true
 	print("气不足，不能释放 ", label_text, "；需要 ", cost, "，当前 qi=", get_node_float_property(p1, "qi", 0.0), "。按 P 可临时充满气用于测试。")
@@ -3099,6 +3172,23 @@ func debug_fill_qi_energy() -> void:
 func is_bisha_hitvo(hit_vo: Dictionary) -> bool:
 	var hit_id: String = str(hit_vo.get("id", ""))
 	return hit_id in ["bs", "bs1", "sbs", "sbs1", "sbs2", "sbs3", "sbs4", "cbs", "cbs2", "kbs"]
+
+
+func play_original_hit_sound_only(hit_vo: Dictionary) -> void:
+	# 对照原版：EffectCtrl.doHitEffect -> EffectModel.getHitEffect(type) -> EffectView.start(playSound=true)。
+	# 这里只播放 EffectVO.sound，不创建 Sprite2D，避免当前预渲染 common hit PNG 的 ADD/HARDLIGHT 失真变成“电视雪花”。
+	var hit_type: int = int(hit_vo.get("hitType", 0))
+	var sound_id: String = str(ORIGINAL_HIT_SOUND_BY_TYPE.get(hit_type, "snd_hit2"))
+	if sound_id != "" and AudioManager != null and AudioManager.has_method("play_effect_sfx"):
+		AudioManager.call("play_effect_sfx", sound_id)
+
+
+func should_skip_common_hit_sprite_for_bisha(hit_vo: Dictionary) -> bool:
+	# Step55：I / W+I / S+I 的 bs/sbs/cbs 系列 HitVO 视觉主体不是普通 hit_4/hit_5。
+	# 原版会先由 EffectCtrl.bisha() 播放 XG_bs / XG_cbs；cbs2/cbs 的攻击面只是用于持续伤害/击退。
+	# 当前 Godot 的 common hit PNG 是从 Flash 光效预渲染后的普通 Sprite2D，连续 cbs2 每 4 帧叠加时会在目标头顶形成
+	# “电视雪花/马赛克”伪影。这里保留伤害、怒气、hit stop、shake，但不再叠加普通 common hit sprite。
+	return is_bisha_hitvo(hit_vo)
 
 
 func get_original_attacker_qi_gain(hit_vo: Dictionary, hit_source: String) -> float:
@@ -3149,10 +3239,13 @@ func add_score_by_hit(hit_vo: Dictionary, current_hits: int) -> int:
 	return score
 
 
-func after_p1_hit_target(hit_vo: Dictionary, hit_result: Dictionary) -> void:
+func after_p1_hit_target(hit_vo: Dictionary, hit_result: Dictionary, original_hit_rect: Rect2 = Rect2()) -> void:
 	var result: String = str(hit_result.get("result", ""))
 	var hit_source: String = active_original_hitbox if active_original_hitbox != "" else "main_attack"
-	play_original_hit_feedback(hit_vo, current_attack_world_rect, result, p1.facing)
+	var feedback_rect: Rect2 = original_hit_rect
+	if feedback_rect.size == Vector2.ZERO:
+		feedback_rect = current_attack_world_rect
+	play_original_hit_feedback(hit_vo, feedback_rect, result, p1.facing, p2)
 	# 原版 GameMainLogicCtrler.checkHit：只要碰撞命中且目标 body 可被打，就先 target.beHit，再 attacker.hit。
 	# 因此防御/钢体/反击动作也会按 FighterMain.hit / FighterAttacker.hit / FighterMain.beHit 累计怒气；
 	# isAllowBeHit=false 时 body=null，不发生命中，所以 ignored 不加。
@@ -3167,10 +3260,13 @@ func after_p1_hit_target(hit_vo: Dictionary, hit_result: Dictionary) -> void:
 	p1_score += add_score_by_hit(hit_vo, p1_combo_count)
 
 
-func after_p2_hit_target(hit_vo: Dictionary, hit_result: Dictionary) -> void:
+func after_p2_hit_target(hit_vo: Dictionary, hit_result: Dictionary, original_hit_rect: Rect2 = Rect2()) -> void:
 	var result: String = str(hit_result.get("result", ""))
 	var p2_face: int = int(p2.get("facing")) if p2 != null else -1
-	play_original_hit_feedback(hit_vo, current_attack_world_rect, result, p2_face)
+	var feedback_rect: Rect2 = original_hit_rect
+	if feedback_rect.size == Vector2.ZERO:
+		feedback_rect = current_attack_world_rect
+	play_original_hit_feedback(hit_vo, feedback_rect, result, p2_face, p1)
 	if result != "ignored":
 		add_qi_on_hit(p2, p1, hit_vo, "main_attack")
 	if result == "dead" or result == "counter" or result == "defense" or result == "steel" or result == "ignored":
@@ -3182,7 +3278,7 @@ func after_p2_hit_target(hit_vo: Dictionary, hit_result: Dictionary) -> void:
 	p2_score += add_score_by_hit(hit_vo, p2_combo_count)
 
 
-func play_original_hit_feedback(hit_vo: Dictionary, hit_rect: Rect2, result: String, facing: int) -> void:
+func play_original_hit_feedback(hit_vo: Dictionary, hit_rect: Rect2, result: String, facing: int, target_fighter = null) -> void:
 	if hit_rect.size == Vector2.ZERO:
 		hit_rect = Rect2(get_p2_original_effect_origin() - Vector2(20, 60), Vector2(40, 80))
 
@@ -3231,14 +3327,36 @@ func play_original_hit_feedback(hit_vo: Dictionary, hit_rect: Rect2, result: Str
 	if result == "counter" or result == "dead":
 		return
 
-	if common_effects != null:
+	var suppress_bisha_common_sprite: bool = should_skip_common_hit_sprite_for_bisha(hit_vo)
+	if common_effects != null and not suppress_bisha_common_sprite:
 		common_effects.play_hit_effect(hit_vo, effect_hit_rect, facing)
+	elif suppress_bisha_common_sprite:
+		# Step56：只跳过损坏的 common hit 预渲染图，不跳过原版命中音效。
+		# 原版 EffectView.start() 中声音和显示来自同一个 EffectVO；当前 Godot 为避免电视雪花，把二者拆开处理。
+		play_original_hit_sound_only(hit_vo)
+		print("Step56 skip bisha common hit sprite but keep hit sound HitVO=", str(hit_vo.get("id", "")), " rect=", hit_rect)
 
 	var hit_type: int = int(hit_vo.get("hitType", 0))
-	if hit_type in [3, 5, 6, 7, 8, 9]:
-		flash_shine(Color(1, 1, 1, 0.18), 0.14)
-		start_original_shake(0.0, 6.0, 0.22)
-		hit_stop_timer = maxf(hit_stop_timer, 0.08)
+	if hit_type == 9:
+		# Step49：EffectModel.as 原版 ELECTRIC：
+		# XG_leidian + snd_hit_dian + shock_ing + freeze=400 + shine 0x8288D2 alpha=0.2 + shake pow=6 time=400。
+		if target_fighter != null and target_fighter.has_method("apply_original_special_color_offset"):
+			target_fighter.apply_original_special_color_offset(Vector3(50.0, -75.0, 255.0), 0.40)
+		flash_shine(Color(0.5098, 0.5333, 0.8235, 0.20), 0.14)
+		start_original_shake(0.0, 6.0, 0.40)
+		hit_stop_timer = maxf(hit_stop_timer, 0.40)
+	elif hit_type in [3, 5, 6, 7, 8]:
+		# Step53：I / W+I / S+I 的 bisha 系命中本身已经叠加了 XG_bs / XG_cbs 光效。
+		# 原版是 Flash BlendMode.ADD + ShineEffectView 逐帧衰减；当前 Godot 如果再用较强白色 ColorRect，
+		# 会把局部光效边缘放大成“白色马赛克”。bisha HitVO 只保留很弱的全屏 shine。
+		if is_bisha_hitvo(hit_vo):
+			flash_shine(Color(1, 1, 1, 0.08), 0.08)
+			start_original_shake(0.0, 5.0, 0.18)
+			hit_stop_timer = maxf(hit_stop_timer, 0.08)
+		else:
+			flash_shine(Color(1, 1, 1, 0.18), 0.14)
+			start_original_shake(0.0, 6.0, 0.22)
+			hit_stop_timer = maxf(hit_stop_timer, 0.08)
 	else:
 		hit_stop_timer = maxf(hit_stop_timer, 0.035)
 
@@ -3650,6 +3768,104 @@ func force_hide_legacy_blackout_layers() -> void:
 	force_hide_legacy_blackout_layers_recursive(self)
 
 
+
+func ensure_original_bisha_black_backfill() -> void:
+	if original_bisha_black_backfill != null and is_instance_valid(original_bisha_black_backfill):
+		return
+	original_bisha_black_backfill = ColorRect.new()
+	original_bisha_black_backfill.name = "OriginalBishaBlackBackFill"
+	original_bisha_black_backfill.set_anchors_preset(Control.PRESET_FULL_RECT)
+	original_bisha_black_backfill.color = Color(0, 0, 0, 1.0)
+	original_bisha_black_backfill.visible = false
+	original_bisha_black_backfill.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	# Godot 4 的 z_index 安全范围内，放在 game_layer(z=1) 下方；地图隐藏后露出黑底。
+	original_bisha_black_backfill.z_index = 0
+	add_child(original_bisha_black_backfill)
+	move_child(original_bisha_black_backfill, 0)
+
+
+func begin_original_bisha_stage_mode(is_super: bool) -> void:
+	# 对齐 EffectCtrl.bisha(): _blackBack 放到底层、地图隐藏、超必杀 cameraFocusOne。
+	# 当前 Step50 不冻结 p1 时间轴，否则 bisha 自身的 end 事件不会继续触发。
+	ensure_original_bisha_black_backfill()
+	if original_bisha_black_backfill != null:
+		original_bisha_black_backfill.visible = true
+		original_bisha_black_backfill.modulate.a = 1.0
+		original_bisha_black_backfill.color = Color(0, 0, 0, 1.0)
+
+	if original_bisha_stage_mode_active:
+		return
+	original_bisha_stage_mode_active = true
+	original_bisha_saved_canvas_states.clear()
+
+	for node in collect_original_bisha_map_nodes():
+		save_and_hide_original_bisha_canvas_item(node)
+
+	if is_super:
+		# 原版超必杀会 cameraFocusOne(target.getDisplay())。
+		# 当前仍使用已有 GameCamera 逻辑，不强行改 camera_rect，避免影响战斗镜头；这里保留审计日志。
+		print("Step50 bisha_super cameraFocusOne requested; current camera keeps existing 2P framing.")
+
+
+func collect_original_bisha_map_nodes() -> Array:
+	var nodes: Array = []
+	var bg_node: Node = get_node_or_null("XianshiOriginalBgStage")
+	if bg_node != null:
+		nodes.append(bg_node)
+	if map_sprite != null:
+		nodes.append(map_sprite)
+	if map_front_sprite != null:
+		nodes.append(map_front_sprite)
+	if game_layer != null:
+		for child in game_layer.get_children():
+			var child_name: String = str(child.name)
+			if child_name == "WorldBackfillBgStage" or child_name.begins_with("XianshiOriginal"):
+				nodes.append(child)
+	return nodes
+
+
+func save_and_hide_original_bisha_canvas_item(node: Variant) -> void:
+	if node == null:
+		return
+	if not is_instance_valid(node):
+		return
+	if not (node is CanvasItem):
+		return
+	for state in original_bisha_saved_canvas_states:
+		if state.has("node") and state["node"] == node:
+			return
+	var item := node as CanvasItem
+	original_bisha_saved_canvas_states.append({
+		"node": node,
+		"visible": item.visible,
+		"modulate": item.modulate
+	})
+	item.visible = false
+
+
+func end_original_bisha_stage_mode() -> void:
+	if original_bisha_black_backfill != null and is_instance_valid(original_bisha_black_backfill):
+		original_bisha_black_backfill.visible = false
+		original_bisha_black_backfill.modulate.a = 0.0
+
+	for state in original_bisha_saved_canvas_states:
+		if not state.has("node"):
+			continue
+		var node: Variant = state["node"]
+		if node == null or not is_instance_valid(node):
+			continue
+		if not (node is CanvasItem):
+			continue
+		var item := node as CanvasItem
+		item.visible = bool(state.get("visible", true))
+		var old_modulate: Variant = state.get("modulate", Color(1, 1, 1, 1))
+		if typeof(old_modulate) == TYPE_COLOR:
+			item.modulate = old_modulate
+
+	original_bisha_saved_canvas_states.clear()
+	original_bisha_stage_mode_active = false
+
+
 func force_hide_legacy_blackout_layers_recursive(node: Node) -> void:
 	if node == null:
 		return
@@ -3712,6 +3928,7 @@ func force_clear_action_effects_after_round_end() -> void:
 func force_clear_bisha_after_round_end() -> void:
 	# Step28：KO 后如果 BishaEffectPlayer 的黑底层残留，会表现为角色后方大块全黑矩形。
 	# KO / timeover / round end 期间每帧兜底清理，并禁止后续 super_effect_start 再打开它。
+	end_original_bisha_stage_mode()
 	if bisha_effect == null:
 		return
 	if bisha_effect.has_method("force_clear_bisha_visuals"):
@@ -4348,6 +4565,11 @@ func play_original_shine_event(action_name: String, relative_frame: int, semanti
 	# Aizen 时间轴中当前解析到的是 shine()，没有显式 color，因此使用白色 0.3。
 	var color_value: int = int(semantic.get("color", 0xFFFFFF))
 	var alpha: float = ORIGINAL_SHINE_WHITE_ALPHA if color_value == 0xFFFFFF else ORIGINAL_SHINE_COLORED_ALPHA
+	# Step53：蓝染 I / W+I / S+I 的 timeline shine 在原版中由 ShineEffectView 以 ADD 混合并逐帧衰减。
+	# 当前 Godot 只用全屏 ColorRect 近似，强度过高会把 XG_bs / XG_cbs 的白色边缘叠成块状闪光。
+	# 对 super 系动作做限幅，保留闪屏感但不覆盖局部特效。
+	if action_name.begins_with("super"):
+		alpha = minf(alpha, 0.10)
 	var r: float = float((color_value >> 16) & 0xFF) / 255.0
 	var g: float = float((color_value >> 8) & 0xFF) / 255.0
 	var b: float = float(color_value & 0xFF) / 255.0

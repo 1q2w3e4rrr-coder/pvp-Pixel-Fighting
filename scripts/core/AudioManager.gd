@@ -16,8 +16,7 @@ const EFFECT_SFX_FALLBACK := {
 	"snd_fykanx": "snd_fykan",
 	"snd_defx": "snd_def",
 	"snd_hit_fire": "snd_mfdjx",
-	"snd_hit_ice": "snd_mfdjx",
-	"snd_hit_dian": "snd_mfdjx"
+	"snd_hit_ice": "snd_mfdjx"
 }
 
 

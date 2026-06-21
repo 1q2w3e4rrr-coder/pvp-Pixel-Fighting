@@ -18,7 +18,7 @@ const HIT_EFFECT_BY_TYPE := {
 	6: "hit_6", # KAN_HEAVY -> XG_kanx
 	7: "hit_5",
 	8: "hit_5",
-	9: "hit_5",
+	9: "electric_hit", # ELECTRIC -> XG_leidian
 	11: "catch_hit"
 }
 
@@ -74,14 +74,43 @@ const DEF_SOUND_BY_TYPE := {
 var manifest: Dictionary = {}
 var active_items: Array[Dictionary] = []
 var original_time_scale: float = 1.0
-var additive_material: CanvasItemMaterial
+var additive_material: Material
+var frame_effect_count: Dictionary = {}
+var frame_effect_count_reset_queued: bool = false
 
 
 func _ready() -> void:
 	z_index = 80
-	additive_material = CanvasItemMaterial.new()
-	additive_material.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+	additive_material = _create_original_flash_add_material()
 	load_manifest()
+
+
+func _create_original_flash_add_material() -> ShaderMaterial:
+	# 原版依据：EffectView.as 使用 Bitmap.display.blendMode = EffectVO.blendMode；
+	# EffectModel.as 中 KAN / KAN_HEAVY / MAGIC 等 common hit 均为 BlendMode.ADD。
+	# 当前 Godot 不能直接复刻 Flash 的 BitmapData + ADD 透明合成；CanvasItemMaterial.ADD
+	# 会把预渲染 PNG 边缘低 alpha 像素放大成“电视雪花/白色马赛克”。
+	# 这里用 shader 先按 alpha 预乘再做 add，并丢弃极低 alpha 边缘，保留原版声音、freeze、shake、shine。
+	var shader := Shader.new()
+	shader.code = """
+shader_type canvas_item;
+render_mode blend_add, unshaded;
+
+uniform float alpha_cutoff = 0.012;
+
+void fragment() {
+	vec4 tex = texture(TEXTURE, UV) * COLOR;
+	if (tex.a <= alpha_cutoff) {
+		discard;
+	}
+	tex.rgb *= tex.a;
+	COLOR = tex;
+}
+"""
+	var mat := ShaderMaterial.new()
+	mat.shader = shader
+	mat.set_shader_parameter("alpha_cutoff", 0.012)
+	return mat
 
 
 func set_original_time_scale(value: float) -> void:
@@ -104,7 +133,16 @@ func play_hit_effect(hit_vo: Dictionary, hit_rect: Rect2, facing: int = 1) -> vo
 	var hit_type: int = int(hit_vo.get("hitType", 0))
 	var effect_id: String = str(HIT_EFFECT_BY_TYPE.get(hit_type, "hit_4"))
 	var sound_id: String = str(HIT_SOUND_BY_TYPE.get(hit_type, "snd_hit2"))
-	play_effect(effect_id, hit_rect.get_center(), facing, 1.0, true)
+	# Step49：hitType=9 原版为 XG_leidian，EffectModel.as 指定 blendMode=HARDLIGHT。
+	# Godot 当前不使用占位 hit_5；电属性使用从 effect.xfl/mc_029 渲染出的 electric_hit。
+	# HARDLIGHT 在当前 CanvasItemMaterial 里没有 1:1 等价项，这里先不套 ADD，保留原始 PNG 透明度；
+	# 后续 Step51 的 FlashMovieClipPlayer / shader 再补真正 hardlight 混合。
+	var additive: bool = hit_type != 9
+	# 原版 EffectModel.as: KAN/KAN_HEAVY/DA/DA_HEAVY/MAGIC/MAGIC_HEAVY 的 common hit 都 randRotate=true。
+	# 旧 Godot manifest 部分条目缺失 randRotate，这会让连续 J 的 KAN/KAN_HEAVY 视觉叠在同一角度，
+	# 更容易形成“雪花/马赛克”感；这里按原版 HitType 补回。
+	var original_rand_rotate: bool = hit_type in [1, 2, 3, 4, 5, 6]
+	play_effect(effect_id, hit_rect.get_center(), facing, 1.0, additive, original_rand_rotate)
 	AudioManager.play_effect_sfx(sound_id)
 
 
@@ -157,6 +195,13 @@ func play_ko_hit_end(pos: Vector2, facing: int = 1) -> void:
 		print("KO hit_end effect missing; skipped")
 
 
+func _reset_frame_effect_count() -> void:
+	# 原版 EffectCtrl.doEffectVO 每个 render 帧同一种 EffectVO 最多保留 3 个，
+	# 防止同帧多段命中把 ADD 光效叠成噪点。这里按 effect_id 复刻这个上限。
+	frame_effect_count.clear()
+	frame_effect_count_reset_queued = false
+
+
 func play_effect(effect_id: String, pos: Vector2, facing: int = 1, effect_scale: float = 1.0, additive: bool = true, rand_rotate: bool = false) -> void:
 	if not manifest.has("effects"):
 		return
@@ -169,9 +214,20 @@ func play_effect(effect_id: String, pos: Vector2, facing: int = 1, effect_scale:
 	if frames.is_empty():
 		return
 
+	if not frame_effect_count_reset_queued:
+		frame_effect_count_reset_queued = true
+		call_deferred("_reset_frame_effect_count")
+	var effect_count: int = int(frame_effect_count.get(effect_id, 0)) + 1
+	frame_effect_count[effect_id] = effect_count
+	if effect_count > 3:
+		print("原版 EffectCtrl.doEffectVO 同帧同特效上限：skip visual effect_id=", effect_id, " count=", effect_count)
+		return
+
 	var sprite := Sprite2D.new()
 	sprite.centered = true
-	sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	# 原版 common hit effect 来自 Flash/XFL 光效位图，带抗锯齿和 ADD/HARDLIGHT 混合。
+	# 使用 LINEAR 避免命中光效边缘出现方块状“白色马赛克”；角色本体仍由 ManifestFighter 保持 NEAREST。
+	sprite.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
 	sprite.position = pos
 	sprite.scale = Vector2(effect_scale, effect_scale)
 	sprite.flip_h = facing < 0

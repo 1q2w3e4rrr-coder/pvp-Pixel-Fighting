@@ -379,6 +379,51 @@
       "additive": true,
       "sound": "snd_hit_cache",
       "freeze_ms": 400
+    },
+    "electric_hit": {
+      "source_linkage": "XG_leidian",
+      "source_symbol": "OpenBleachVsNaruto/swf_source/assets/effect/LIBRARY/mc/mc_029.xml",
+      "fps": 30,
+      "loop": false,
+      "frames": [
+        "electric_hit/0000.png",
+        "electric_hit/0001.png",
+        "electric_hit/0002.png",
+        "electric_hit/0003.png",
+        "electric_hit/0004.png",
+        "electric_hit/0005.png",
+        "electric_hit/0006.png",
+        "electric_hit/0007.png",
+        "electric_hit/0008.png",
+        "electric_hit/0009.png",
+        "electric_hit/0010.png"
+      ],
+      "additive": false,
+      "blend_mode": "hardlight",
+      "original_sound": "snd_hit_dian",
+      "specialEffectId": "shock_ing",
+      "freeze_ms": 400,
+      "shine": {
+        "color": "0x8288D2",
+        "alpha": 0.2
+      },
+      "shake": {
+        "pow": 6,
+        "time": 400
+      },
+      "step51_white_core_alpha_fix": true,
+      "step51_note": "XG_leidian uses EffectModel blendMode=HARDLIGHT; current Godot has no exact hardlight CanvasItem blend, so near-white core alpha is attenuated in frames to avoid opaque white flash while preserving original colored edges."
+    },
+    "shock_ing": {
+      "source_effect_vo": "EffectModel.as: EffectVO(\"xg_dian_ing\", {blendMode: ADD, isSpecial: true, targetColorOffset: [50,-75,255]})",
+      "isSpecial": true,
+      "targetColorOffset": [
+        50,
+        -75,
+        255
+      ],
+      "frames": [],
+      "note": "No xg_dian_ing linkage or Library symbol was present in uploaded OpenBleachVsNaruto effect.xfl; implemented via target ColorTransform offset behavior in ManifestFighter.gd."
     }
   }
 }

@@ -14,7 +14,7 @@ var playing: bool = false
 var facing: int = 1
 var original_time_scale: float = 1.0
 
-var additive_material: CanvasItemMaterial
+var additive_material: Material
 
 
 func setup(path: String) -> void:
@@ -33,8 +33,32 @@ func ensure_sprite() -> void:
 	sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	add_child(sprite)
 
-	additive_material = CanvasItemMaterial.new()
-	additive_material.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+	additive_material = _create_original_flash_add_material()
+
+
+func _create_original_flash_add_material() -> ShaderMaterial:
+	# 原版 EffectView.as：display.blendMode = data.blendMode，XG_bs / XG_cbs 等使用 BlendMode.ADD。
+	# Godot 的普通 ADD 对当前预渲染 PNG 的低 alpha 边缘会过曝；用 alpha 预乘近似 Flash 光效合成。
+	var shader := Shader.new()
+	shader.code = """
+shader_type canvas_item;
+render_mode blend_add, unshaded;
+
+uniform float alpha_cutoff = 0.010;
+
+void fragment() {
+	vec4 tex = texture(TEXTURE, UV) * COLOR;
+	if (tex.a <= alpha_cutoff) {
+		discard;
+	}
+	tex.rgb *= tex.a;
+	COLOR = tex;
+}
+"""
+	var mat := ShaderMaterial.new()
+	mat.shader = shader
+	mat.set_shader_parameter("alpha_cutoff", 0.010)
+	return mat
 
 
 func load_manifest() -> void:
@@ -161,6 +185,12 @@ func _process(delta: float) -> void:
 		update_frame()
 
 
+func _use_original_smooth_filter(effect_name: String) -> bool:
+	# 原版 Flash 对 XG_bs / XG_cbs 这类位图光效会进行平滑/ADD 混合；Godot NEAREST 会放大白色边缘块。
+	# 角色动作仍由 ManifestFighter 保持 NEAREST，这里只影响 EffectPlayer 播放的独立特效。
+	return effect_name == "xg_bs" or effect_name == "xg_cbs" or effect_name.begins_with("xg_")
+
+
 func update_frame() -> void:
 	var effect = manifest["effects"][current_effect]
 	var frames: Array = effect.get("frames", [])
@@ -178,6 +208,7 @@ func update_frame() -> void:
 		return
 
 	ensure_sprite()
+	sprite.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR if _use_original_smooth_filter(current_effect) else CanvasItem.TEXTURE_FILTER_NEAREST
 	sprite.texture = tex
 	sprite.flip_h = facing < 0
 	_apply_effect_registration(effect)
