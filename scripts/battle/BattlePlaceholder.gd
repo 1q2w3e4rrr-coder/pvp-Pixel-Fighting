@@ -10,6 +10,7 @@ const FightHud = preload("res://scripts/ui/FightHud.gd")
 var p1
 var p2
 var p1_effect
+var p2_effect
 var bisha_effect
 var common_effects: CommonEffectLayer
 var shadow_effects: ShadowEffectLayer
@@ -108,15 +109,28 @@ var prev_i_pressed: bool = false
 var prev_p_pressed: bool = false
 var prev_t_pressed: bool = false
 
+# Step60：按原版 ConfigVO.as 的 P2 默认键位接入 2P 操作：
+# ↑/↓/←/→ + Num1/Num2/Num3/Num4/Num5/Num6。Num6 对应 O/beckons，当前仍暂不接支援/换人。
+var prev_p2_attack_pressed: bool = false
+var prev_p2_jump_pressed: bool = false
+var prev_p2_dash_pressed: bool = false
+var prev_p2_skill_pressed: bool = false
+var prev_p2_bisha_pressed: bool = false
+
 # Step22-24：输入响应优化。
 # 原版 Flash 每帧轮询键位，玩家提前几帧按下 J/U/I/K/L 也会在动作窗口到达时立即被 renderFloorAction/renderAirAction 消化。
 # 这里加入 0.12s 输入缓冲，减少“按键已经按下但角色等到下一次窗口才响应”的体感延迟。
-const ORIGINAL_INPUT_BUFFER_TIME: float = 0.12
+const ORIGINAL_INPUT_BUFFER_TIME: float = 2.0 / 30.0
 var p1_attack_buffer_timer: float = 0.0
 var p1_skill_buffer_timer: float = 0.0
 var p1_bisha_buffer_timer: float = 0.0
 var p1_jump_buffer_timer: float = 0.0
 var p1_dash_buffer_timer: float = 0.0
+var p2_attack_buffer_timer: float = 0.0
+var p2_skill_buffer_timer: float = 0.0
+var p2_bisha_buffer_timer: float = 0.0
+var p2_jump_buffer_timer: float = 0.0
+var p2_dash_buffer_timer: float = 0.0
 
 # 原版 FighterAttacker 里 followTargetX / followTargetY 每帧跟随 currentTarget。
 # 当前 Demo 是单目标 P2，因此 currentTarget 按原版语义固定映射到 P2；bsmc 每帧跟随 P2 地面坐标。
@@ -436,6 +450,30 @@ const DRAWGAME_ANIM_TIME: float = (308.0 - 266.0) / 30.0
 const WINNER_DELAY_AFTER_KO: float = 2.0
 const WINNER_DELAY_AFTER_TIMEOVER: float = 1.0
 
+# Step64：原版 GameStartCtrler / GameEndCtrler 审计。
+# 开场：cameraFocusOne(P1) -> P1.sayIntro() -> cameraFocusOne(P2) -> P2.sayIntro() -> cameraResume() -> showStart(Round/Fight)。
+# 结算：playKO/showEnd 等待败者进入 DEAD/倒地流程后，cameraFocusOne(winner) / showWinner，随后 GameEndCtrler 调 winner.win() 并保持约 3 秒。
+const ORIGINAL_CAMERA_FOCUS_ONE_ZOOM: float = 3.5
+const ORIGINAL_START_FOCUS_HOLD_TIME: float = 0.5
+const ORIGINAL_START_AFTER_INTRO_HOLD_TIME: float = 0.3
+const ORIGINAL_START_RESUME_HOLD_TIME: float = 0.1
+const ORIGINAL_WINNER_FOCUS_HOLD_TIME: float = 0.5
+const ORIGINAL_WIN_ACTION_HOLD_TIME: float = 3.0
+# Step66：原版 cameraFocusOne(display) 聚焦的是 Flash 显示对象；当前 ManifestFighter 使用 centered PNG，
+# Node2D.position 不是可见人物中心。以下偏移来自当前 aizen actions_game 的透明 bbox 审计：
+# idle 中心约 +82.5px，开场平均 +88.1px，胜利平均 +80.3px；再乘 ORIGINAL_FIGHTER_SCALE。
+const ORIGINAL_CAMERA_FOCUS_ONE_IDLE_CENTER_Y_FROM_NODE: float = 82.5 * ORIGINAL_FIGHTER_SCALE
+const ORIGINAL_CAMERA_FOCUS_ONE_INTRO_CENTER_Y_FROM_NODE: float = 88.1 * ORIGINAL_FIGHTER_SCALE
+const ORIGINAL_CAMERA_FOCUS_ONE_WIN_CENTER_Y_FROM_NODE: float = 80.3 * ORIGINAL_FIGHTER_SCALE
+# mc_023.xml 声音层：开场 label index=1537，语音 sound_005 at 1553；声音 sound_013 at 1540；
+# 胜利 label index=1596，语音 sound_009 at 1599。
+const ORIGINAL_AIZEN_INTRO_SFX_DELAY: float = (1540.0 - 1537.0) / 30.0
+const ORIGINAL_AIZEN_INTRO_VOICE_DELAY: float = (1553.0 - 1537.0) / 30.0
+const ORIGINAL_AIZEN_WIN_VOICE_DELAY: float = (1599.0 - 1596.0) / 30.0
+const ORIGINAL_AIZEN_INTRO_SFX_PATH: String = "res://assets/sfx/aizen/sound_013_intro_sfx.wav"
+const ORIGINAL_AIZEN_INTRO_VOICE_PATH: String = "res://assets/sfx/aizen/sound_005_intro_voice.wav"
+const ORIGINAL_AIZEN_WIN_VOICE_PATH: String = "res://assets/sfx/aizen/sound_009_win_voice.wav"
+
 # 原版 FightTimeUI 从 GameCtrler.I.gameRunData.gameTime 读取。这里 Demo 默认 99 秒；设 -1 可显示无限。
 const DEMO_GAME_TIME_MAX: int = -1
 
@@ -458,6 +496,17 @@ var game_time_left: float = float(DEMO_GAME_TIME_MAX)
 var game_time_enabled: bool = DEMO_GAME_TIME_MAX >= 0
 var time_over_finished: bool = false
 var ko_score_added: bool = false
+
+# Step64：开场 / 胜利镜头特写状态。
+var original_start_sequence_active: bool = false
+var original_start_step: int = -1
+var original_start_hold_timer: float = 0.0
+var original_start_intro_started: bool = false
+var original_camera_focus_one_active: bool = false
+var original_camera_focus_one_target: Node2D = null
+var original_round_end_winner_action_started: bool = false
+# Step66：按原版时间轴延迟播放“开场/胜利”声音层，不直接用立即播放替代。
+var original_timeline_sfx_events: Array = []
 
 
 # Step45：战斗暂停菜单。按 Esc 暂停战斗，打开半透明界面；战斗对象停止 process，AudioManager 继续播放菜单音效。
@@ -494,6 +543,8 @@ var p1_zhao1_ready: bool = false
 # 跳砍第 9 帧 setBishaAIR + setSkillAIR 后，原版允许继续接空中 U 或空中 I。
 var p1_air_skill_ready: bool = false
 var p1_air_bisha_ready: bool = false
+var p2_air_skill_ready: bool = false
+var p2_air_bisha_ready: bool = false
 
 # 第 10 步补充：P2 最小攻击测试，用来验证原版 setHurtAction 反击逻辑。
 # 这不是最终 P2 控制方案，只是为了让 P1 的 S+J “砍技1”能被真实 HitVO 打中后转入 砍技1_HA。
@@ -503,6 +554,18 @@ var p1_hurt_debug_box: ColorRect
 var p1_hurt_debug_label: Label
 var p2_test_attack_has_hit: bool = false
 var p2_test_attack_key: String = ""
+var p2_active_original_hitbox: String = ""
+var p2_active_attacker_follow_target: bool = false
+var p2_active_attacker_effect_name: String = ""
+var p2_active_attacker_offset: Vector2 = Vector2.ZERO
+var p2_active_attacker_original_origin: Vector2 = Vector2.ZERO
+var p2_active_attacker_facing: int = -1
+var p2_pending_hit_target_checker: String = ""
+var p2_pending_hit_target_action: String = ""
+var p2_pending_hit_target_enabled: bool = false
+var p2_attack_skill2_1_ready: bool = false
+var p2_attack_skill2_next_attack_ready: bool = false
+var p2_zhao1_ready: bool = false
 
 # 原版 justHitToPlay：只检查当前动作中刚命中的攻击 ID。
 var p1_last_hit_vo_id: String = ""
@@ -1225,6 +1288,7 @@ func spawn_fighters() -> void:
 		p2.setup("res://assets/characters/aizen/aizen_game_manifest.json")
 		apply_original_default_battle_stats(p2)
 		p2.set_facing(-1)
+		p2.frame_event.connect(_on_p2_frame_event)
 	else:
 		p2 = create_placeholder_player(GameData.p2_character, P2_START_POS)
 
@@ -1253,6 +1317,11 @@ func spawn_effect_players() -> void:
 	p1_effect.z_index = 20
 	game_layer.add_child(p1_effect)
 	p1_effect.setup("res://assets/characters/aizen/aizen_effect_manifest.json")
+
+	p2_effect = EffectPlayer.new()
+	p2_effect.z_index = 20
+	game_layer.add_child(p2_effect)
+	p2_effect.setup("res://assets/characters/aizen/aizen_effect_manifest.json")
 
 	shadow_effects = ShadowEffectLayer.new()
 	shadow_effects.name = "OriginalShadowEffectLayer"
@@ -1307,6 +1376,8 @@ func _process(delta: float) -> void:
 	if battle_paused:
 		return
 
+	update_original_timeline_sfx_events(delta)
+
 	if ORIGINAL_DEV_KEYS_ENABLED and Input.is_key_pressed(KEY_H):
 		if not has_meta("h_down"):
 			set_meta("h_down", true)
@@ -1324,13 +1395,13 @@ func _process(delta: float) -> void:
 	if ko_finished or original_round_end_actions_applied:
 		force_clear_bisha_after_round_end()
 		force_hide_legacy_blackout_layers()
-		if ko_anim_phase == 4 and not round_end_menu_shown:
+		if ko_anim_phase == 6 and not round_end_menu_shown:
 			show_round_end_menu()
 	# 原版 EffectCtrler.renderAnimate() 每帧 render ShadowEffectView。
 	# 即使当前 hit-stop 锁住战斗输入，残影自身仍继续衰减。
 	# ShadowEffectLayer 是 Node2D 子节点，会自动 _process；这里不需要手动 tick。
 
-	if p1 == null:
+	if p1 == null and p2 == null:
 		return
 
 	if hit_stop_timer > 0.0:
@@ -1341,11 +1412,13 @@ func _process(delta: float) -> void:
 		return
 
 	update_attacker_follow_target()
+	update_p2_attacker_follow_target()
 	update_original_move_target(delta * get_original_slow_time_scale())
 	update_original_attack_box()
 	update_target_hurt_box()
 	update_p1_hurt_box()
 	update_pending_hit_target_check()
+	update_p2_pending_hit_target_check()
 	check_active_hit_target()
 	update_p2_test_attack_box()
 	update_hp_ui()
@@ -1361,6 +1434,7 @@ func _process(delta: float) -> void:
 		p1_air_skill_ready = false
 		p1_air_bisha_ready = false
 	handle_p1_input(delta * get_original_slow_time_scale())
+	handle_p2_input(delta * get_original_slow_time_scale())
 	resolve_original_cross_collision()
 	clamp_fighters_to_original_map_bounds()
 	force_reapply_original_world_locked_positions()
@@ -1379,7 +1453,147 @@ func force_reapply_original_world_locked_positions() -> void:
 		p2.force_reapply_original_no_world_move_anchor()
 
 
+func is_original_aizen_fighter(fighter: Variant) -> bool:
+	# 当前 2P Demo 双方都是 Aizen；这里仍按 manifest_path 做保护，避免以后其他角色误播蓝染时间轴语音。
+	if fighter == null or not is_instance_valid(fighter):
+		return false
+	if fighter is Object:
+		var manifest_value = (fighter as Object).get("manifest_path")
+		if typeof(manifest_value) == TYPE_STRING:
+			return String(manifest_value).to_lower().find("aizen") >= 0
+	return false
+
+
+func schedule_original_timeline_sfx(path: String, delay: float, volume_db: float = -2.0, tag: String = "") -> void:
+	if path == "":
+		return
+	var event: Dictionary = {
+		"time": maxf(0.0, delay),
+		"path": path,
+		"volume": volume_db,
+		"tag": tag
+	}
+	original_timeline_sfx_events.append(event)
+
+
+func clear_original_timeline_sfx_events() -> void:
+	original_timeline_sfx_events.clear()
+
+
+func update_original_timeline_sfx_events(delta: float) -> void:
+	for i: int in range(original_timeline_sfx_events.size() - 1, -1, -1):
+		var event: Dictionary = original_timeline_sfx_events[i]
+		var remain: float = float(event.get("time", 0.0)) - delta
+		if remain <= 0.0:
+			var path: String = String(event.get("path", ""))
+			var volume: float = float(event.get("volume", -2.0))
+			if path != "":
+				AudioManager.play_sfx(path, volume)
+			original_timeline_sfx_events.remove_at(i)
+		else:
+			event["time"] = remain
+			original_timeline_sfx_events[i] = event
+
+
+func play_original_aizen_intro_timeline_sounds(fighter: Variant) -> void:
+	# 原版 mc_023.xml：开场 label index=1537；
+	# “声音”层 sound_013 at 1540，“语音”层 sound_005 at 1553。
+	if not is_original_aizen_fighter(fighter):
+		return
+	schedule_original_timeline_sfx(ORIGINAL_AIZEN_INTRO_SFX_PATH, ORIGINAL_AIZEN_INTRO_SFX_DELAY, -3.0, "aizen_intro_sfx_sound_013")
+	schedule_original_timeline_sfx(ORIGINAL_AIZEN_INTRO_VOICE_PATH, ORIGINAL_AIZEN_INTRO_VOICE_DELAY, -2.0, "aizen_intro_voice_sound_005")
+
+
+func play_original_aizen_win_timeline_sounds(fighter: Variant) -> void:
+	# 原版 mc_023.xml：胜利 label index=1596；“语音”层 sound_009 at 1599。
+	if not is_original_aizen_fighter(fighter):
+		return
+	schedule_original_timeline_sfx(ORIGINAL_AIZEN_WIN_VOICE_PATH, ORIGINAL_AIZEN_WIN_VOICE_DELAY, -2.0, "aizen_win_voice_sound_009")
+
+
+func original_camera_focus_one(fighter: Variant, immediate: bool = false) -> void:
+	# GameStage.cameraFocusOne(display)：camera.focus([display]); camera.setZoom(3.5); tweenSpd=2.5。
+	if fighter != null and is_instance_valid(fighter) and fighter is Node2D:
+		original_camera_focus_one_target = fighter as Node2D
+		original_camera_focus_one_active = true
+		if immediate:
+			update_original_camera(0.0, true)
+
+
+func original_camera_resume() -> void:
+	# GameStage.cameraResume()：恢复双人 focus。
+	original_camera_focus_one_active = false
+	original_camera_focus_one_target = null
+
+
+func _camera_focus_one_point(node: Variant, fallback: Vector2) -> Vector2:
+	# 原版 GameStage.cameraFocusOne(display) 传入的是 FighterMain.getDisplay()，GameCamera.renderY 使用：
+	# fy = display.y - screenHalf / zoom - mapBottomDistance。
+	# 但当前 Godot 的 ManifestFighter 是 centered PNG：Node2D.position 对应导出帧中心/注册点，
+	# 不等价于 Flash 显示对象的视觉中心。若直接聚焦 Node2D.position，会只看到半个人物。
+	# 因此这里根据当前动作透明 bbox 的可见人物中心做一次坐标映射，不改变角色世界坐标、hitbox 或镜头公式。
+	var pos: Vector2 = get_node_ground_pos(node, fallback)
+	var offset: Vector2 = get_original_camera_focus_one_visual_offset(node)
+	return pos + offset
+
+
+func get_original_camera_focus_one_visual_offset(node: Variant) -> Vector2:
+	var action_name: String = ""
+	if node != null and is_instance_valid(node) and node is Object:
+		var action_value = (node as Object).get("current_action")
+		if typeof(action_value) == TYPE_STRING:
+			action_name = String(action_value)
+	match action_name:
+		"intro":
+			return Vector2(0.0, ORIGINAL_CAMERA_FOCUS_ONE_INTRO_CENTER_Y_FROM_NODE)
+		"win":
+			return Vector2(0.0, ORIGINAL_CAMERA_FOCUS_ONE_WIN_CENTER_Y_FROM_NODE)
+		_:
+			return Vector2(0.0, ORIGINAL_CAMERA_FOCUS_ONE_IDLE_CENTER_Y_FROM_NODE)
+
+
+func update_original_camera_focus_one(_delta: float, immediate: bool = false) -> void:
+	if game_layer == null:
+		return
+	if original_camera_focus_one_target == null or not is_instance_valid(original_camera_focus_one_target):
+		original_camera_resume()
+		update_original_camera(_delta, immediate)
+		return
+	var fallback := P1_START_POS
+	if original_camera_focus_one_target == p2:
+		fallback = P2_START_POS
+	var focus_center := _camera_focus_one_point(original_camera_focus_one_target, fallback)
+	var target_zoom: float = maxf(0.001, ORIGINAL_CAMERA_FOCUS_ONE_ZOOM * GODOT_XIANSHI_CAMERA_VISUAL_SCALE)
+	var view_size := ORIGINAL_GAME_SIZE / target_zoom
+	var target_rect := Rect2(Vector2.ZERO, view_size)
+	target_rect.position.x = focus_center.x - view_size.x * 0.5
+	target_rect.position.y = focus_center.y - view_size.y * 0.5 - ORIGINAL_CAMERA_OFFSET_Y
+
+	var min_x := ORIGINAL_MAP_LEFT
+	var max_x := maxf(min_x, ORIGINAL_MAP_RIGHT - view_size.x)
+	var min_y := -1000.0 * target_zoom
+	var max_y := maxf(min_y, ORIGINAL_MAP_BOTTOM - view_size.y)
+	target_rect.position.x = clampf(target_rect.position.x, min_x, max_x)
+	target_rect.position.y = clampf(target_rect.position.y, min_y, max_y)
+
+	if immediate:
+		camera_zoom = target_zoom
+		camera_rect = target_rect
+	else:
+		var camera_tween_speed: float = ORIGINAL_CAMERA_TWEEN_SPEED * original_slow_rate if original_slow_active else ORIGINAL_CAMERA_TWEEN_SPEED
+		camera_zoom += (target_zoom - camera_zoom) / camera_tween_speed
+		camera_rect.position += (target_rect.position - camera_rect.position) / camera_tween_speed
+		camera_rect.size = ORIGINAL_GAME_SIZE / camera_zoom
+
+	game_layer.scale = Vector2(camera_zoom, camera_zoom)
+	game_layer.position = -camera_rect.position * camera_zoom
+	update_original_front_layer()
+
+
 func update_original_camera(_delta: float, immediate: bool = false) -> void:
+	if original_camera_focus_one_active:
+		update_original_camera_focus_one(_delta, immediate)
+		return
 	if game_layer == null or p1 == null or p2 == null:
 		return
 	var p1_focus := _camera_focus_point(p1, P1_START_POS)
@@ -1506,25 +1720,103 @@ func world_to_screen(world_pos: Vector2) -> Vector2:
 
 
 func start_round_intro() -> void:
-	round_intro_timer = ROUND_INTRO_TOTAL_TIME
-	fight_input_lock_timer = ROUND_INTRO_FIGHT_TIME
-	round_intro_phase = -1
+	# 原版 GameStartCtrler.start1v1：Round/Fight UI 之前先分别 cameraFocusOne 并播放双方“开场”动作。
 	game_time_left = float(DEMO_GAME_TIME_MAX)
 	time_over_finished = false
 	ko_score_added = false
+	round_intro_timer = 0.0
+	round_intro_phase = -1
+	fight_input_lock_timer = 999.0
+	original_start_sequence_active = true
+	original_start_step = 0
+	original_start_hold_timer = 0.0
+	original_start_intro_started = false
+	original_round_end_winner_action_started = false
+	clear_original_timeline_sfx_events()
+	original_camera_resume()
 	if fight_hud != null:
 		if fight_hud.has_method("fad_in"):
 			fight_hud.call("fad_in", true)
 		if fight_hud.has_method("qibar_fad_in"):
 			fight_hud.call("qibar_fad_in", true)
+		if fight_hud.has_method("hide_center_message"):
+			fight_hud.call("hide_center_message")
+		if fight_hud.has_method("set_time_left"):
+			fight_hud.call("set_time_left", DEMO_GAME_TIME_MAX, not game_time_enabled)
+	print("原版 GameStartCtrler：cameraFocusOne(P1)->P1.sayIntro()->cameraFocusOne(P2)->P2.sayIntro()->cameraResume()->FightUI.showStart。")
+
+
+func begin_round_start_ui() -> void:
+	# 原版 FightUI.showStart：startKOmc.gotoAndStop("start")；frame54 fight_in，frame57 fight，frame87 complete。
+	round_intro_timer = ROUND_INTRO_TOTAL_TIME
+	fight_input_lock_timer = ROUND_INTRO_FIGHT_TIME
+	round_intro_phase = -1
+	if fight_hud != null:
 		if fight_hud.has_method("show_round_start"):
 			fight_hud.call("show_round_start", 1)
 		if fight_hud.has_method("set_time_left"):
 			fight_hud.call("set_time_left", DEMO_GAME_TIME_MAX, not game_time_enabled)
-	print("原版 FightUI.showStart：start label frame=9，fight_in=54，fight=57，complete=87。")
+
+
+func update_original_start_sequence(delta: float) -> void:
+	if not original_start_sequence_active:
+		return
+	fight_input_lock_timer = 999.0
+	if original_start_hold_timer > 0.0:
+		original_start_hold_timer = maxf(0.0, original_start_hold_timer - delta)
+		return
+
+	match original_start_step:
+		0:
+			# GameStartCtrler.renderStart1v1 case 0：cameraFocusOne(P1)，hold 0.5s。
+			original_camera_focus_one(p1, true)
+			original_start_hold_timer = ORIGINAL_START_FOCUS_HOLD_TIME
+			original_start_step = 1
+		1:
+			# case 1：P1.sayIntro() -> FighterMcCtrler.sayIntro() -> goFrame("开场")。
+			if not original_start_intro_started:
+				if p1 != null and p1.has_method("play_action"):
+					p1.play_action("intro")
+					play_original_aizen_intro_timeline_sounds(p1)
+				original_start_intro_started = true
+				return
+			if p1 == null or str(p1.get("current_action")) != "intro":
+				original_start_intro_started = false
+				original_start_hold_timer = ORIGINAL_START_AFTER_INTRO_HOLD_TIME
+				original_start_step = 2
+		2:
+			# case 2：cameraFocusOne(P2)，hold 0.5s。
+			original_camera_focus_one(p2, true)
+			original_start_hold_timer = ORIGINAL_START_FOCUS_HOLD_TIME
+			original_start_step = 3
+		3:
+			# case 3：P2.sayIntro()。
+			if not original_start_intro_started:
+				if p2 != null and p2.has_method("play_action"):
+					p2.play_action("intro")
+					play_original_aizen_intro_timeline_sounds(p2)
+				original_start_intro_started = true
+				return
+			if p2 == null or str(p2.get("current_action")) != "intro":
+				original_start_intro_started = false
+				original_start_hold_timer = ORIGINAL_START_AFTER_INTRO_HOLD_TIME
+				original_start_step = 4
+		4:
+			# case 4：cameraResume()，hold 0.1s。
+			original_camera_resume()
+			original_start_hold_timer = ORIGINAL_START_RESUME_HOLD_TIME
+			original_start_step = 5
+		5:
+			# case 5：FightUI.showStart，即 Round/Fight UI。
+			original_start_sequence_active = false
+			original_start_step = -1
+			begin_round_start_ui()
 
 
 func update_round_intro(delta: float) -> void:
+	if original_start_sequence_active:
+		update_original_start_sequence(delta)
+		return
 	if fight_input_lock_timer > 0.0:
 		fight_input_lock_timer = maxf(0.0, fight_input_lock_timer - delta)
 	if round_intro_timer <= 0.0:
@@ -1550,7 +1842,6 @@ func update_round_intro(delta: float) -> void:
 	if round_intro_timer <= 0.0 and fight_hud != null and fight_hud.has_method("hide_center_message"):
 		fight_hud.call("hide_center_message")
 
-
 func update_fight_timer(delta: float) -> void:
 	if not game_time_enabled:
 		if fight_hud != null and fight_hud.has_method("set_time_left"):
@@ -1570,7 +1861,7 @@ func update_ko_sequence(delta: float) -> void:
 		return
 
 	# Step40：旧 startKO / winner 序列会留下 663x466 黑底贴图。
-	# KO 流程只保留音效和短延迟，然后显示自建菜单，不再调用 FightHud.show_ko/show_winner/show_timeover/show_drawgame。
+	# Step64：保留自建结算菜单，但按原版 GameEndCtrler 在菜单前增加败者倒地、胜者镜头聚焦和胜利动作。
 	force_clear_bisha_after_round_end()
 	force_hide_legacy_blackout_layers()
 
@@ -1584,6 +1875,7 @@ func update_ko_sequence(delta: float) -> void:
 		return
 
 	if ko_anim_phase == 1:
+		# FightUI.playKO：500ms 预延迟后播放 ko / timeover 动画与声音。
 		ko_anim_phase = 2
 		ko_sequence_timer = 0.45 if ko_timeover else 0.55
 		hide_fight_hud_center_message()
@@ -1599,19 +1891,50 @@ func update_ko_sequence(delta: float) -> void:
 		return
 
 	if ko_anim_phase == 2:
+		# FightUI.renderEnd：KO 后等待败者进入 DEAD/倒地，再延迟 1~2 秒展示 Winner。
 		ko_anim_phase = 3
-		ko_sequence_timer = 0.25
+		ko_sequence_timer = WINNER_DELAY_AFTER_TIMEOVER if ko_timeover else WINNER_DELAY_AFTER_KO
 		hide_fight_hud_center_message()
 		return
 
 	if ko_anim_phase == 3:
-		ko_winner_shown = true
+		if ko_draw_game or ko_winner_id == 0:
+			ko_winner_shown = true
+			ko_anim_phase = 6
+			show_round_end_menu()
+			return
+		# 原版 FightUI.renderEnd：先等 loser.actionState 进入 DEAD，再延迟展示 winner。
+		# 如果败者还在被击飞/弹起，就不要过早切胜者特写。
+		if not is_original_loser_dead_ready():
+			ko_sequence_timer = 0.05
+			return
+		# FightUI.renderEnd 到达 _showWinnerDelay 后：cameraFocusOne(winner)，showWinner(winner)。
+		var winner = get_original_round_winner()
+		if winner != null:
+			original_camera_focus_one(winner, false)
 		ko_anim_phase = 4
+		ko_sequence_timer = ORIGINAL_WINNER_FOCUS_HOLD_TIME
+		hide_fight_hud_center_message()
+		return
+
+	if ko_anim_phase == 4:
+		# GameEndCtrler.renderEND step1：确认可胜利动作后调用 _winner.win()，播放“胜利”动作并保持约 3 秒。
+		var winner2 = get_original_round_winner()
+		if winner2 != null and winner2.has_method("play_action"):
+			winner2.play_action("win")
+			play_original_aizen_win_timeline_sounds(winner2)
+		original_round_end_winner_action_started = true
+		ko_anim_phase = 5
+		ko_sequence_timer = ORIGINAL_WIN_ACTION_HOLD_TIME
+		return
+
+	if ko_anim_phase == 5:
+		ko_winner_shown = true
+		ko_anim_phase = 6
 		hide_fight_hud_center_message()
 		force_hide_legacy_blackout_layers()
 		show_round_end_menu()
 		return
-
 
 
 func start_time_over_sequence() -> void:
@@ -1736,6 +2059,11 @@ func handle_p1_input(delta: float) -> void:
 	# 这里不再只看 just_pressed，而是使用 0.12s buffer，提升连招/技能衔接响应。
 	try_execute_p1_buffered_actions()
 
+	# 原版 renderAirAction 末尾允许空中水平移动；不切 walk 动画。
+	if p1.in_air:
+		handle_p1_air_move(delta)
+		return
+
 	# A / D：只在地面空闲时切 walk；攻击/技能/必杀动作中不覆盖当前动画。
 	if p1.can_ground_action():
 		if Input.is_key_pressed(KEY_A):
@@ -1752,6 +2080,339 @@ func handle_p1_input(delta: float) -> void:
 				p1.play_action("walk")
 		elif p1.current_action != "idle":
 			p1.play_action("idle")
+
+
+func p2_key_up_pressed() -> bool:
+	# 原版 ConfigVO.as: P2 up = Keyboard.UP。
+	# Step70：方向键不能只读 physical_key；部分系统/Godot 对非字符键的 physical 状态不稳定。
+	# 同时读 logical + physical，但不把小键盘 8 的 NumLock 关闭状态映射成 up，避免再次误触发。
+	return Input.is_key_pressed(KEY_UP) or Input.is_physical_key_pressed(KEY_UP)
+
+
+func p2_key_down_pressed() -> bool:
+	# 原版 ConfigVO.as: P2 down = Keyboard.DOWN。
+	return Input.is_key_pressed(KEY_DOWN) or Input.is_physical_key_pressed(KEY_DOWN)
+
+
+func p2_key_left_pressed() -> bool:
+	# 原版 ConfigVO.as: P2 left = Keyboard.LEFT。
+	return Input.is_key_pressed(KEY_LEFT) or Input.is_physical_key_pressed(KEY_LEFT)
+
+
+func p2_key_right_pressed() -> bool:
+	# 原版 ConfigVO.as: P2 right = Keyboard.RIGHT。
+	return Input.is_key_pressed(KEY_RIGHT) or Input.is_physical_key_pressed(KEY_RIGHT)
+
+
+func p2_key_attack_pressed() -> bool:
+	# 原版 ConfigVO.as: P2 attack = Keyboard.NUMPAD_1。
+	# 当前项目额外允许主键盘 1 作为无独立小键盘设备的兜底。
+	return Input.is_key_pressed(KEY_KP_1) or Input.is_physical_key_pressed(KEY_KP_1) or Input.is_key_pressed(KEY_1) or Input.is_physical_key_pressed(KEY_1)
+
+
+func p2_key_jump_pressed() -> bool:
+	# 原版 ConfigVO.as: P2 jump = Keyboard.NUMPAD_2。
+	return Input.is_key_pressed(KEY_KP_2) or Input.is_physical_key_pressed(KEY_KP_2) or Input.is_key_pressed(KEY_2) or Input.is_physical_key_pressed(KEY_2)
+
+
+func p2_key_dash_pressed() -> bool:
+	# 原版 ConfigVO.as: P2 dash = Keyboard.NUMPAD_3。
+	return Input.is_key_pressed(KEY_KP_3) or Input.is_physical_key_pressed(KEY_KP_3) or Input.is_key_pressed(KEY_3) or Input.is_physical_key_pressed(KEY_3)
+
+
+func p2_key_skill_pressed() -> bool:
+	# 原版 ConfigVO.as: P2 skill = Keyboard.NUMPAD_4。
+	return Input.is_key_pressed(KEY_KP_4) or Input.is_physical_key_pressed(KEY_KP_4) or Input.is_key_pressed(KEY_4) or Input.is_physical_key_pressed(KEY_4)
+
+
+func p2_key_bisha_pressed() -> bool:
+	# 原版 ConfigVO.as: P2 superKill = Keyboard.NUMPAD_5。
+	return Input.is_key_pressed(KEY_KP_5) or Input.is_physical_key_pressed(KEY_KP_5) or Input.is_key_pressed(KEY_5) or Input.is_physical_key_pressed(KEY_5)
+
+
+func handle_p2_input(delta: float) -> void:
+	# 原版 ConfigVO.as P2 默认键位：↑/↓/←/→ + Num1/Num2/Num3/Num4/Num5/Num6。
+	# Num6/O 是 beckons/assist，当前仍不接支援/换人系统。
+	if ko_finished:
+		return
+	if p2 == null or not p2.has_method("play_action"):
+		return
+
+	var attack_pressed: bool = p2_key_attack_pressed()
+	var jump_pressed: bool = p2_key_jump_pressed()
+	var dash_pressed: bool = p2_key_dash_pressed()
+	var skill_pressed: bool = p2_key_skill_pressed()
+	var bisha_pressed: bool = p2_key_bisha_pressed()
+
+	var attack_just: bool = attack_pressed and not prev_p2_attack_pressed
+	var jump_just: bool = jump_pressed and not prev_p2_jump_pressed
+	var dash_just: bool = dash_pressed and not prev_p2_dash_pressed
+	var skill_just: bool = skill_pressed and not prev_p2_skill_pressed
+	var bisha_just: bool = bisha_pressed and not prev_p2_bisha_pressed
+
+	prev_p2_attack_pressed = attack_pressed
+	prev_p2_jump_pressed = jump_pressed
+	prev_p2_dash_pressed = dash_pressed
+	prev_p2_skill_pressed = skill_pressed
+	prev_p2_bisha_pressed = bisha_pressed
+
+	update_p2_input_buffers(delta, attack_just, jump_just, dash_just, skill_just, bisha_just)
+
+	# 原版 renderFloorAction 优先级：bishaSUPER -> bishaUP -> bisha -> skill -> attack -> defense。
+	if p2_bisha_buffer_timer > 0.0 and try_execute_one_p2_buffer("bisha"):
+		p2_bisha_buffer_timer = 0.0
+		return
+
+	var pure_down_defense: bool = p2_key_down_pressed() and not (attack_pressed or skill_pressed or bisha_pressed or jump_pressed or dash_pressed)
+	if p2.current_action == "defend" and not pure_down_defense:
+		p2.play_action("defend_recover")
+	elif pure_down_defense and p2.can_ground_action():
+		p2.play_action("defend")
+		return
+
+	try_execute_p2_buffered_actions()
+
+	# 原版 renderAirAction 末尾允许空中水平移动；不切 walk 动画。
+	if p2.in_air:
+		handle_p2_air_move(delta)
+		return
+
+	if p2.can_ground_action():
+		if p2_key_left_pressed():
+			p2.position.x -= move_speed * delta
+			clamp_fighter_to_original_map_bounds(p2)
+			p2.set_facing(-1)
+			if p2.current_action != "walk":
+				p2.play_action("walk")
+		elif p2_key_right_pressed():
+			p2.position.x += move_speed * delta
+			clamp_fighter_to_original_map_bounds(p2)
+			p2.set_facing(1)
+			if p2.current_action != "walk":
+				p2.play_action("walk")
+		elif p2.current_action != "idle":
+			p2.play_action("idle")
+
+
+func update_p2_input_buffers(delta: float, attack_just: bool, jump_just: bool, dash_just: bool, skill_just: bool, bisha_just: bool) -> void:
+	p2_attack_buffer_timer = maxf(0.0, p2_attack_buffer_timer - delta)
+	p2_skill_buffer_timer = maxf(0.0, p2_skill_buffer_timer - delta)
+	p2_bisha_buffer_timer = maxf(0.0, p2_bisha_buffer_timer - delta)
+	p2_jump_buffer_timer = maxf(0.0, p2_jump_buffer_timer - delta)
+	p2_dash_buffer_timer = maxf(0.0, p2_dash_buffer_timer - delta)
+
+	if attack_just:
+		p2_attack_buffer_timer = ORIGINAL_INPUT_BUFFER_TIME
+	if skill_just:
+		p2_skill_buffer_timer = ORIGINAL_INPUT_BUFFER_TIME
+	if bisha_just:
+		p2_bisha_buffer_timer = ORIGINAL_INPUT_BUFFER_TIME
+	if jump_just:
+		p2_jump_buffer_timer = ORIGINAL_INPUT_BUFFER_TIME
+	if dash_just:
+		p2_dash_buffer_timer = ORIGINAL_INPUT_BUFFER_TIME
+
+
+func _did_p2_action_change(before_action: String, before_frame: int) -> bool:
+	if p2 == null:
+		return false
+	return str(p2.current_action) != before_action or int(p2.frame_index) != before_frame
+
+
+func try_execute_one_p2_buffer(buffer_name: String) -> bool:
+	if p2 == null:
+		return false
+	var before_action: String = str(p2.current_action)
+	var before_frame: int = int(p2.frame_index)
+
+	match buffer_name:
+		"jump":
+			handle_p2_jump_input()
+		"dash":
+			handle_p2_dash_input()
+		"attack":
+			handle_p2_attack_input()
+		"skill":
+			handle_p2_skill_input()
+		"bisha":
+			handle_p2_bisha_input()
+		_:
+			return false
+
+	return _did_p2_action_change(before_action, before_frame)
+
+
+func try_execute_p2_buffered_actions() -> void:
+	# 对齐原版 FighterMcCtrler.renderFloorAction 的输入优先级：
+	# bishaSUPER / bishaUP / bisha -> skill1/skill2 -> zhao -> attack -> defense -> dash -> move -> jump。
+	# 当前 Godot 的 attack 分支同时处理 S+Num1 / ↑+Num1，所以放在 skill 前。
+	if p2_bisha_buffer_timer > 0.0 and try_execute_one_p2_buffer("bisha"):
+		p2_bisha_buffer_timer = 0.0
+		return
+	if p2_attack_buffer_timer > 0.0 and try_execute_one_p2_buffer("attack"):
+		p2_attack_buffer_timer = 0.0
+		return
+	if p2_skill_buffer_timer > 0.0 and try_execute_one_p2_buffer("skill"):
+		p2_skill_buffer_timer = 0.0
+		return
+	if p2_dash_buffer_timer > 0.0 and try_execute_one_p2_buffer("dash"):
+		p2_dash_buffer_timer = 0.0
+		return
+	if p2_jump_buffer_timer > 0.0 and try_execute_one_p2_buffer("jump"):
+		p2_jump_buffer_timer = 0.0
+		return
+
+
+func clear_p2_input_buffers() -> void:
+	p2_attack_buffer_timer = 0.0
+	p2_skill_buffer_timer = 0.0
+	p2_bisha_buffer_timer = 0.0
+	p2_jump_buffer_timer = 0.0
+	p2_dash_buffer_timer = 0.0
+
+
+func handle_p2_jump_input() -> void:
+	if p2 != null and p2.has_method("start_jump"):
+		p2.start_jump()
+
+
+func handle_p2_dash_input() -> void:
+	if p2 == null:
+		return
+	# 原版 renderAirAction 末尾允许空中 dash：doDashAir(瞬步)。
+	# doDashAir 条件：_action.jumpTimes >= 1，消耗 energy=30，并把 jumpTimes 清零。
+	if p2.in_air:
+		if not p2.has_method("can_original_air_dash") or not bool(p2.call("can_original_air_dash")):
+			return
+		if not try_use_p2_energy(30.0, true, "P2 空中瞬步 / air dash"):
+			return
+		if p2.has_method("try_start_original_air_dash"):
+			p2.call("try_start_original_air_dash")
+		return
+
+	if not p2.can_ground_action():
+		return
+	if not try_use_p2_energy(20.0, true, "P2 地面瞬步 / dash"):
+		return
+	p2.play_action("dash")
+
+
+func handle_p2_attack_input() -> void:
+	var up_pressed: bool = p2_key_up_pressed()
+	var down_pressed: bool = p2_key_down_pressed()
+
+	if p2.in_air:
+		p2_air_skill_ready = false
+		p2_air_bisha_ready = false
+		p2.start_air_attack()
+		return
+
+	if p2.current_action == "attack_skill2_check" and p2.frame_index >= 11 and p2.frame_index < 18:
+		if up_pressed and p2_attack_skill2_1_ready:
+			p2.play_action("attack_skill2_1")
+			p2_attack_skill2_1_ready = false
+			p2_attack_skill2_next_attack_ready = false
+			p2_zhao1_ready = false
+			return
+		if not up_pressed and not down_pressed and p2_attack_skill2_next_attack_ready:
+			p2.play_action("atk4_extra")
+			p2_attack_skill2_next_attack_ready = false
+			return
+
+	if down_pressed and p2.can_ground_action():
+		p2.play_action("attack_skill1")
+		return
+	if up_pressed and p2.can_ground_action():
+		p2_attack_skill2_1_ready = false
+		p2_attack_skill2_next_attack_ready = false
+		p2.play_action("attack_skill2")
+		return
+
+	if p2.current_action == "atk1" and p2.frame_index >= 7 and p2.frame_index < 18:
+		p2.play_action("atk2")
+		return
+	if p2.current_action == "atk2" and p2.frame_index >= 8 and p2.frame_index < 16:
+		p2.play_action("atk3")
+		return
+	if p2.current_action == "atk3" and p2.frame_index >= 11 and p2.frame_index < 26:
+		p2.play_action("atk4")
+		return
+	if p2.current_action == "atk4_extra" and p2.frame_index >= 8 and p2.frame_index < 19:
+		p2.play_action("atk5")
+		return
+	if p2.can_ground_action():
+		p2.play_action("atk1")
+
+
+func can_start_p2_ground_bisha() -> bool:
+	if p2 == null:
+		return false
+	if bool(p2.get("in_air")):
+		return false
+	if p2.can_ground_action():
+		return true
+	var action_name: String = str(p2.get("current_action"))
+	return action_name == "defend" or action_name == "defend_recover"
+
+
+func handle_p2_skill_input() -> void:
+	var up_pressed: bool = p2_key_up_pressed()
+	var down_pressed: bool = p2_key_down_pressed()
+
+	if p2.in_air:
+		# 原版 skillAIR 不等待 jump/fall 动作结束；airHitTimes 可用即可。
+		if p2.has_method("can_original_air_action") and not bool(p2.call("can_original_air_action")):
+			return
+		p2_air_skill_ready = false
+		p2_air_bisha_ready = false
+		if p2.has_method("consume_original_air_action_limits"):
+			p2.consume_original_air_action_limits()
+		p2.play_action("air_skill")
+		return
+
+	if p2_zhao1_ready:
+		p2_zhao1_ready = false
+		p2.play_action("skill1")
+		return
+
+	if not p2.can_ground_action():
+		return
+	if down_pressed:
+		p2.play_action("skill2")
+	elif up_pressed:
+		p2.play_action("skill3")
+	else:
+		p2.play_action("skill1")
+
+
+func handle_p2_bisha_input() -> void:
+	var up_pressed: bool = p2_key_up_pressed()
+	var down_pressed: bool = p2_key_down_pressed()
+
+	if p2.in_air:
+		if p2.has_method("can_original_air_action") and not bool(p2.call("can_original_air_action")):
+			return
+		if not try_use_p2_qi(100.0, "P2 空中必杀 / super_air"):
+			return
+		p2_air_skill_ready = false
+		p2_air_bisha_ready = false
+		if p2.has_method("consume_original_air_action_limits"):
+			p2.consume_original_air_action_limits()
+		p2.play_action("super_air")
+		return
+
+	if not can_start_p2_ground_bisha():
+		return
+
+	if down_pressed:
+		if try_use_p2_qi(300.0, "P2 超必杀 / super_special"):
+			p2.play_action("super_special")
+	elif up_pressed:
+		if try_use_p2_qi(100.0, "P2 上必杀 / super_up"):
+			p2.play_action("super_up")
+	else:
+		if try_use_p2_qi(100.0, "P2 普通必杀 / super"):
+			p2.play_action("super")
 
 
 func update_p1_input_buffers(delta: float, j_just: bool, k_just: bool, l_just: bool, u_just: bool, i_just: bool) -> void:
@@ -1803,15 +2464,9 @@ func try_execute_one_p1_buffer(buffer_name: String) -> bool:
 
 
 func try_execute_p1_buffered_actions() -> void:
-	# 优先级按原版常用输入：跳/瞬步先改变移动状态，再处理攻击、招、必杀。
-	if p1_jump_buffer_timer > 0.0 and try_execute_one_p1_buffer("jump"):
-		p1_jump_buffer_timer = 0.0
-		return
-	if p1_dash_buffer_timer > 0.0 and try_execute_one_p1_buffer("dash"):
-		p1_dash_buffer_timer = 0.0
-		return
-	# 原版地面行动中，必杀类输入优先于普通 skill/attack/defense。
-	# jump/dash 仍放前面，是为了保留当前 Demo 的 K 后接空中 I 手感；真正地面 S+I 已在防御前提前处理。
+	# 对齐原版 FighterMcCtrler.renderFloorAction 的输入优先级：
+	# bishaSUPER / bishaUP / bisha -> skill1/skill2 -> zhao -> attack -> defense -> dash -> move -> jump。
+	# 当前 Godot 的 attack 分支同时处理 S+J / W+J，所以放在 skill 前。
 	if p1_bisha_buffer_timer > 0.0 and try_execute_one_p1_buffer("bisha"):
 		p1_bisha_buffer_timer = 0.0
 		return
@@ -1820,6 +2475,12 @@ func try_execute_p1_buffered_actions() -> void:
 		return
 	if p1_skill_buffer_timer > 0.0 and try_execute_one_p1_buffer("skill"):
 		p1_skill_buffer_timer = 0.0
+		return
+	if p1_dash_buffer_timer > 0.0 and try_execute_one_p1_buffer("dash"):
+		p1_dash_buffer_timer = 0.0
+		return
+	if p1_jump_buffer_timer > 0.0 and try_execute_one_p1_buffer("jump"):
+		p1_jump_buffer_timer = 0.0
 		return
 
 
@@ -1882,6 +2543,17 @@ func handle_jump_input() -> void:
 
 
 func handle_dash_input() -> void:
+	# 原版 renderAirAction 末尾允许空中 dash：doDashAir(瞬步)。
+	# doDashAir 条件：_action.jumpTimes >= 1，消耗 energy=30，并把 jumpTimes 清零。
+	if p1.in_air:
+		if not p1.has_method("can_original_air_dash") or not bool(p1.call("can_original_air_dash")):
+			return
+		if not try_use_p1_energy(30.0, true, "空中瞬步 / air dash"):
+			return
+		if p1.has_method("try_start_original_air_dash"):
+			p1.call("try_start_original_air_dash")
+		return
+
 	if not p1.can_ground_action():
 		return
 
@@ -1944,19 +2616,19 @@ func handle_attack_input() -> void:
 		return
 
 	# 地面 J 连段。窗口按蓝染 mc_023 时间轴 setAttack / endAct 校正。
-	if p1.current_action == "atk1" and p1.frame_index >= 7 and p1.frame_index < 13:
+	if p1.current_action == "atk1" and p1.frame_index >= 7 and p1.frame_index < 18:
 		p1.play_action("atk2")
 		return
 
-	if p1.current_action == "atk2" and p1.frame_index >= 8 and p1.frame_index < 13:
+	if p1.current_action == "atk2" and p1.frame_index >= 8 and p1.frame_index < 16:
 		p1.play_action("atk3")
 		return
 
-	if p1.current_action == "atk3" and p1.frame_index >= 11 and p1.frame_index < 17:
+	if p1.current_action == "atk3" and p1.frame_index >= 11 and p1.frame_index < 26:
 		p1.play_action("atk4")
 		return
 
-	if p1.current_action == "atk4_extra" and p1.frame_index >= 8 and p1.frame_index < 14:
+	if p1.current_action == "atk4_extra" and p1.frame_index >= 8 and p1.frame_index < 19:
 		p1.play_action("atk5")
 		return
 
@@ -1984,9 +2656,14 @@ func handle_skill_input() -> void:
 
 	# 空中 U：原版 skillAIR，蓝染对应“跳招”。
 	# 跳砍第 9 帧 setSkillAIR 后，即使 jump_attack 还没播完，也允许接空中 U。
-	if p1.in_air and (not p1.is_busy() or p1_air_skill_ready):
+	if p1.in_air:
+		# 原版 skillAIR 不等待 jump/fall 动作结束；airHitTimes 可用即可。
+		if p1.has_method("can_original_air_action") and not bool(p1.call("can_original_air_action")):
+			return
 		p1_air_skill_ready = false
 		p1_air_bisha_ready = false
+		if p1.has_method("consume_original_air_action_limits"):
+			p1.consume_original_air_action_limits()
 		p1.play_action("air_skill")
 		return
 
@@ -2018,12 +2695,17 @@ func handle_bisha_input() -> void:
 	var down_pressed: bool = Input.is_key_pressed(KEY_S)
 
 	# 空中 I：原版 bishaAIR，对应“空中必杀”。
-	# 跳砍第 9 帧 setBishaAIR 后，即使 jump_attack 还没播完，也允许接空中 I。
-	if p1.in_air and (not p1.is_busy() or p1_air_bisha_ready):
+	# FighterMcCtrler.renderAirAction() 在空中每帧先判断 attackAIR / skillAIR / bishaAIR，
+	# 不要求当前 jump/fall 动作已经播放结束；只要 airHitTimes 仍可用即可。
+	if p1.in_air:
+		if p1.has_method("can_original_air_action") and not bool(p1.call("can_original_air_action")):
+			return
 		if not try_use_p1_qi(100.0, "空中必杀 / super_air"):
 			return
 		p1_air_skill_ready = false
 		p1_air_bisha_ready = false
+		if p1.has_method("consume_original_air_action_limits"):
+			p1.consume_original_air_action_limits()
 		p1.play_action("super_air")
 		return
 
@@ -2047,6 +2729,45 @@ func handle_bisha_input() -> void:
 			p1.play_action("super")
 
 
+func handle_p1_air_move(delta: float) -> void:
+	# 原版 FighterMcCtrler.renderAirAction() 最后：if (_action.airMove) doAirMove();
+	# doAirMove() 会在空中按 moveLEFT/moveRIGHT 水平移动，不切 walk 动画。
+	if p1 == null or not bool(p1.get("in_air")):
+		return
+	if bool(p1.get("in_hitstun")) or ko_finished:
+		return
+	var moved: bool = false
+	if Input.is_key_pressed(KEY_A) and not Input.is_key_pressed(KEY_D):
+		p1.position.x -= move_speed * delta
+		p1.set_facing(-1)
+		moved = true
+	elif Input.is_key_pressed(KEY_D) and not Input.is_key_pressed(KEY_A):
+		p1.position.x += move_speed * delta
+		p1.set_facing(1)
+		moved = true
+	if moved:
+		clamp_fighter_to_original_map_bounds(p1)
+
+
+func handle_p2_air_move(delta: float) -> void:
+	# 同步 P2：原版 P2 输入同样走 FighterKeyCtrler.moveLEFT/moveRIGHT。
+	if p2 == null or not bool(p2.get("in_air")):
+		return
+	if bool(p2.get("in_hitstun")) or ko_finished:
+		return
+	var moved: bool = false
+	if p2_key_left_pressed() and not p2_key_right_pressed():
+		p2.position.x -= move_speed * delta
+		p2.set_facing(-1)
+		moved = true
+	elif p2_key_right_pressed() and not p2_key_left_pressed():
+		p2.position.x += move_speed * delta
+		p2.set_facing(1)
+		moved = true
+	if moved:
+		clamp_fighter_to_original_map_bounds(p2)
+
+
 func _on_p1_frame_event(action_name: String, event_data: Dictionary) -> void:
 	var relative_frame: int = int(event_data.get("relative_frame", -1))
 
@@ -2061,6 +2782,254 @@ func _on_p1_frame_event(action_name: String, event_data: Dictionary) -> void:
 		handle_aizen_semantic_event(action_name, relative_frame, semantic)
 
 
+
+
+func _on_p2_frame_event(action_name: String, event_data: Dictionary) -> void:
+	var relative_frame: int = int(event_data.get("relative_frame", -1))
+
+	for call_data in event_data.get("calls", []):
+		var raw_call: Dictionary = call_data
+		var semantic: Dictionary = raw_call.get("semantic", {})
+
+		if semantic.is_empty():
+			handle_aizen_p2_raw_call_event(action_name, relative_frame, raw_call)
+			continue
+
+		handle_aizen_p2_semantic_event(action_name, relative_frame, semantic)
+
+
+func handle_aizen_p2_raw_call_event(action_name: String, relative_frame: int, raw_call: Dictionary) -> void:
+	var object_name: String = str(raw_call.get("object", ""))
+	var method_name: String = str(raw_call.get("method", ""))
+	var args: Array = raw_call.get("args", []) as Array
+
+	if object_name == "effect_ctrler":
+		match method_name:
+			"shadow":
+				var r: int = int(_raw_args_number(args, 0, 0.0))
+				var g: int = int(_raw_args_number(args, 1, 0.0))
+				var b: int = int(_raw_args_number(args, 2, 0.0))
+				start_fighter_shadow(p2, r, g, b)
+			"endShadow":
+				end_p1_shadow()
+			"shake":
+				play_fighter_effect_shake_event(action_name, relative_frame, args)
+			"startShake":
+				start_fighter_effect_hold_shake_event(action_name, relative_frame, args)
+			"endShake":
+				end_fighter_effect_hold_shake_event(action_name, relative_frame)
+			"playSoundHit1":
+				play_original_timeline_asset_sound("se_hit1", action_name, relative_frame)
+			"playSoundHit2":
+				play_original_timeline_asset_sound("se_hit2", action_name, relative_frame)
+			"walk":
+				play_original_walk_sound(action_name, relative_frame)
+			"slowDown":
+				play_original_slow_down_event(action_name, relative_frame, args)
+			"slowDownResume":
+				play_original_slow_down_resume_event(action_name, relative_frame)
+			_:
+				pass
+		return
+
+	if object_name == "fighter_ctrler":
+		match method_name:
+			"moveOnce":
+				move_fighter_once_by_original_args(p2, action_name, relative_frame, args)
+			"setDirectToTarget":
+				face_p2_current_target(action_name, relative_frame)
+			"setCross":
+				var cross_enabled: bool = args.size() > 0 and bool(args[0])
+				set_fighter_cross_enabled(p2, cross_enabled, action_name, relative_frame, "P2")
+			_:
+				pass
+		return
+
+	if object_name != "mc_ctrler" or method_name != "addAttacker":
+		return
+	if args.is_empty():
+		return
+
+	var attacker_name: String = str(args[0])
+	if attacker_name == "bsmc":
+		var args_raw: String = str(raw_call.get("args_raw", ""))
+		var raw_offset: Vector2 = parse_add_attacker_follow_offset(args_raw, BSMC_ORIGINAL_TARGET_OFFSET)
+		play_p2_attacker_at_target("bsmc", raw_offset, 1.0)
+		p2_active_original_hitbox = "bsmc"
+	elif attacker_name == "zh3mc":
+		play_p2_attacker_at_self("zh3mc", Vector2.ZERO, 1.0)
+		p2_active_original_hitbox = "zh3mc"
+
+
+func handle_aizen_p2_semantic_event(action_name: String, relative_frame: int, semantic: Dictionary) -> void:
+	var event_type: String = str(semantic.get("type", ""))
+
+	match event_type:
+		"super_effect_start":
+			if ko_finished or original_round_end_actions_applied:
+				force_clear_bisha_after_round_end()
+				return
+			var original_face_id: String = str(semantic.get("effect_name", ""))
+			var is_super: bool = semantic.get("is_super", false) == true
+			if bisha_effect != null:
+				var bisha_caster_origin: Vector2 = get_p2_original_effect_origin()
+				var bisha_target_origin: Vector2 = get_p2_target_original_effect_origin()
+				var bisha_target_screen: Vector2 = world_to_screen(bisha_caster_origin)
+				var bisha_current_target_screen: Vector2 = world_to_screen(bisha_target_origin)
+				var bisha_xg_screen: Vector2 = world_to_screen(bisha_caster_origin + Vector2(0.0, -50.0))
+				begin_original_bisha_stage_mode(is_super)
+				bisha_effect.play_bisha(is_super, original_face_id, bisha_target_screen, p2.facing, bisha_current_target_screen, bisha_xg_screen, camera_zoom, 2)
+
+		"super_effect_end":
+			if bisha_effect != null:
+				bisha_effect.end_bisha()
+			end_original_bisha_stage_mode()
+
+		"effect":
+			var effect_method: String = str(semantic.get("effect_method", ""))
+			if effect_method == "shine":
+				play_original_shine_event(action_name, relative_frame, semantic)
+			elif effect_method == "dash":
+				play_original_dash_effect_for_fighter(p2, action_name, relative_frame)
+			elif effect_method == "walk":
+				play_original_walk_sound(action_name, relative_frame)
+			elif effect_method == "slowDown":
+				var slow_args: Array = semantic.get("args", []) as Array
+				play_original_slow_down_event(action_name, relative_frame, slow_args)
+			elif effect_method == "slowDownResume":
+				play_original_slow_down_resume_event(action_name, relative_frame)
+			elif effect_method == "shake":
+				var shake_args: Array = semantic.get("args", []) as Array
+				play_fighter_effect_shake_event(action_name, relative_frame, shake_args)
+			elif effect_method == "startShake":
+				var hold_args: Array = semantic.get("args", []) as Array
+				start_fighter_effect_hold_shake_event(action_name, relative_frame, hold_args)
+			elif effect_method == "endShake":
+				end_fighter_effect_hold_shake_event(action_name, relative_frame)
+
+		"end_action":
+			end_p1_shadow()
+			if p2 != null and p2.has_method("set_steel_body"):
+				p2.set_steel_body(false, false)
+			if action_name == "jump_attack" or action_name == "air_skill" or action_name == "super_air":
+				p2_air_skill_ready = false
+				p2_air_bisha_ready = false
+				if p2 != null and p2.has_method("unlock_original_action"):
+					p2.unlock_original_action()
+
+		"return_idle":
+			p2_air_skill_ready = false
+			p2_air_bisha_ready = false
+			p2_attack_skill2_1_ready = false
+			p2_attack_skill2_next_attack_ready = false
+			p2_zhao1_ready = false
+			_reset_p2_active_attacker_state()
+			if p2 != null and p2.has_method("clear_original_timeline_states"):
+				p2.clear_original_timeline_states()
+			if p2 != null and p2.has_method("return_to_neutral_from_timeline"):
+				p2.return_to_neutral_from_timeline()
+
+		"hit_target_check":
+			var checker_name: String = str(semantic.get("checker", semantic.get("hit_mc", "")))
+			var target_label: String = str(semantic.get("target_action", semantic.get("success_label", "")))
+			var target_action: String = map_original_label_to_action(target_label)
+			if target_action == "":
+				target_action = target_label
+			if checker_name != "" and target_action != "":
+				p2_pending_hit_target_checker = checker_name
+				p2_pending_hit_target_action = target_action
+				p2_pending_hit_target_enabled = true
+
+		"set_hurt_action":
+			var hurt_label: String = str(semantic.get("target_label", ""))
+			var hurt_action: String = map_original_label_to_action(hurt_label)
+			if hurt_action == "":
+				hurt_action = hurt_label
+			if hurt_action != "" and p2 != null and p2.has_method("set_original_hurt_action"):
+				p2.set_original_hurt_action(hurt_action)
+
+		"add_qi":
+			var qi_value: float = float(semantic.get("value", 0.0))
+			if qi_value > 0.0 and p2 != null and p2.has_method("add_qi"):
+				p2.add_qi(qi_value)
+
+		"steel_body":
+			var steel_enabled: bool = semantic.get("enabled", false) == true
+			var steel_super: bool = semantic.get("is_super", false) == true
+			if p2 != null and p2.has_method("set_steel_body"):
+				p2.set_steel_body(steel_enabled, steel_super)
+
+		"enable_skill":
+			var enable_method: String = str(semantic.get("method", ""))
+			if enable_method == "setSkillAIR":
+				p2_air_skill_ready = true
+			elif enable_method == "setSkill2":
+				var skill2_label: String = str(semantic.get("target_label", ""))
+				var skill2_action: String = map_original_label_to_action(skill2_label)
+				if skill2_action == "attack_skill2_1":
+					p2_attack_skill2_1_ready = true
+
+		"enable_next_attack":
+			var attack_label: String = str(semantic.get("target_label", ""))
+			var attack_action: String = map_original_label_to_action(attack_label)
+			if attack_action == "atk4_extra":
+				p2_attack_skill2_next_attack_ready = true
+
+		"enable_zhao":
+			p2_zhao1_ready = true
+
+		"set_cross":
+			var cross_enabled_sem: bool = semantic.get("enabled", false) == true
+			set_fighter_cross_enabled(p2, cross_enabled_sem, action_name, relative_frame, "P2")
+
+		"face_target":
+			face_p2_current_target(action_name, relative_frame)
+
+		"air_move":
+			var air_move_enabled: bool = semantic.get("enabled", false) == true
+			if p2 != null and p2.has_method("set_air_move_enabled"):
+				p2.set_air_move_enabled(air_move_enabled)
+
+		"if_last_hit_play":
+			handle_original_just_hit_to_play_for_fighter(p2, true, action_name, relative_frame, semantic)
+
+		"stop_animation":
+			if p2 != null and p2.has_method("stop_original_animation"):
+				p2.stop_original_animation()
+
+		"teleport_or_move_to_target":
+			var offset_x_value: Variant = semantic.get("x", null)
+			var offset_y_value: Variant = semantic.get("y", null)
+			var auto_turn: bool = semantic.get("auto_turn", false) == true
+			move_fighter_to_target(p2, p1, offset_x_value, offset_y_value, auto_turn)
+
+		"apply_gravity":
+			var apply_g: bool = semantic.get("enabled", true) == true
+			if p2 != null and p2.has_method("set_apply_gravity_enabled"):
+				p2.set_apply_gravity_enabled(apply_g)
+
+		"movement":
+			handle_original_movement_event_for_fighter(p2, action_name, relative_frame, semantic)
+
+		"dash_or_stop":
+			handle_original_dash_or_stop_event_for_fighter(p2, action_name, relative_frame, semantic)
+
+		"add_attacker":
+			var attacker_name: String = str(semantic.get("attacker", ""))
+			if attacker_name == "bsmc":
+				play_p2_attacker_at_target("bsmc", BSMC_ORIGINAL_TARGET_OFFSET, 1.0)
+				p2_active_original_hitbox = "bsmc"
+			elif attacker_name == "zh3mc":
+				play_p2_attacker_at_self("zh3mc", Vector2.ZERO, 1.0)
+				p2_active_original_hitbox = "zh3mc"
+
+		"enable_super":
+			var enable_method_super: String = str(semantic.get("method", ""))
+			if enable_method_super == "setBishaAIR":
+				p2_air_bisha_ready = true
+
+		_:
+			pass
 
 
 func _nullable_number_to_float(value: Variant, fallback: float = 0.0) -> float:
@@ -2220,7 +3189,7 @@ func handle_aizen_semantic_event(action_name: String, relative_frame: int, seman
 				var bisha_current_target_screen: Vector2 = world_to_screen(bisha_target_origin)
 				var bisha_xg_screen: Vector2 = world_to_screen(bisha_caster_origin + Vector2(0.0, -50.0))
 				begin_original_bisha_stage_mode(is_super)
-				bisha_effect.play_bisha(is_super, original_face_id, bisha_target_screen, p1.facing, bisha_current_target_screen, bisha_xg_screen, camera_zoom)
+				bisha_effect.play_bisha(is_super, original_face_id, bisha_target_screen, p1.facing, bisha_current_target_screen, bisha_xg_screen, camera_zoom, 1)
 
 		"super_effect_end":
 			print("Bisha end action=", action_name, " frame=", relative_frame)
@@ -2433,15 +3402,26 @@ func handle_aizen_semantic_event(action_name: String, relative_frame: int, seman
 
 
 
-func start_p1_shadow(r: int = 0, g: int = 0, b: int = 0) -> void:
+func start_fighter_shadow(fighter: Variant, r: int = 0, g: int = 0, b: int = 0) -> void:
 	# FighterEffectCtrler.shadow(r,g,b) -> EffectCtrler.startShadow(_targetDisplay,r,g,b)。
-	if shadow_effects == null or p1 == null:
+	if shadow_effects == null or fighter == null:
 		return
-	shadow_effects.start_shadow(p1, r, g, b)
+	shadow_effects.start_shadow(fighter, r, g, b)
+
+
+func start_p1_shadow(r: int = 0, g: int = 0, b: int = 0) -> void:
+	start_fighter_shadow(p1, r, g, b)
 
 
 func end_p1_shadow() -> void:
 	# 原版 endShadow() 只停止继续新增残影；已有残影继续按 alphaLose 衰减。
+	if shadow_effects == null:
+		return
+	shadow_effects.end_shadow()
+
+
+func end_p2_shadow() -> void:
+	# 当前 ShadowEffectLayer 是统一层，P2 与 P1 一样只停止继续新增残影。
 	if shadow_effects == null:
 		return
 	shadow_effects.end_shadow()
@@ -3017,34 +3997,108 @@ func draw_p2_attack_box(rect: Rect2, label_text: String) -> void:
 		p2_attack_debug_label.position = rect.position + Vector2(0, -20)
 
 
-func update_p2_test_attack_box() -> void:
-	if p2 == null or p1 == null:
-		clear_p2_attack_box()
+func get_p2_hit_target_checker_rect(checker_name: String) -> Rect2:
+	if checker_name == "kj2_chkm":
+		return make_directed_rect(p2.position, KJ2_CHKM_RECT, p2.facing)
+	if checker_name == "zh2_chkm":
+		return make_directed_rect(p2.position, ZH2_CHKM_RECT, p2.facing)
+	return Rect2()
+
+
+func update_p2_pending_hit_target_check() -> void:
+	if not p2_pending_hit_target_enabled:
+		return
+	if p1 == null or p2 == null:
 		return
 
-	if not p2.has_method("play_action"):
+	var expected_action: String = ""
+	if p2_pending_hit_target_checker == "kj2_chkm":
+		expected_action = "attack_skill2"
+	elif p2_pending_hit_target_checker == "zh2_chkm":
+		expected_action = "skill2"
+
+	if expected_action != "" and p2.current_action != expected_action:
+		p2_pending_hit_target_enabled = false
+		p2_pending_hit_target_checker = ""
+		p2_pending_hit_target_action = ""
+		return
+
+	var checker_rect: Rect2 = get_p2_hit_target_checker_rect(p2_pending_hit_target_checker)
+	if checker_rect.size == Vector2.ZERO:
+		return
+	if attack_debug_enabled:
+		draw_p2_attack_box(checker_rect, "P2 CHECK " + p2_pending_hit_target_checker + " -> " + p2_pending_hit_target_action)
+
+	var hurt_rect: Rect2 = get_p1_hurt_rect()
+	if not checker_rect.intersects(hurt_rect, true):
+		return
+
+	print("原版 P2 setHitTarget 命中：", p2_pending_hit_target_checker, " -> ", p2_pending_hit_target_action)
+	p2_pending_hit_target_enabled = false
+	p2_pending_hit_target_checker = ""
+	var next_action: String = p2_pending_hit_target_action
+	p2_pending_hit_target_action = ""
+	p2.play_action(next_action)
+
+
+func set_p2_current_attack_key(key: String) -> void:
+	if key != p2_test_attack_key:
+		p2_test_attack_key = key
+		p2_test_attack_has_hit = false
+
+
+func update_p2_test_attack_box() -> void:
+	# Step60：从原来“P2 debug atk1”升级为正式 P2 攻击检测。
+	# 判定矩形继续使用 Step43~57 已按 aizen mc_023.xml 校准的 get_main_attack_hit_window()。
+	if p2 == null or p1 == null or not p2.has_method("play_action"):
 		clear_p2_attack_box()
 		return
 
 	var action_name: String = str(p2.get("current_action"))
 	var frame: int = int(p2.get("frame_index"))
+	var data: Dictionary = get_main_attack_hit_window(action_name, frame)
+	var attack_rect: Rect2 = Rect2()
+	var label_text: String = ""
+	var hit_vo_id: String = ""
+	var attack_key: String = ""
 
-	# 当前只接 P2 测试 J 的原版砍1窗口：atk1 第 2-3 帧，k1atm -> HitVO k1。
-	if action_name != "atk1" or frame < 2 or frame > 3:
-		if action_name != "atk1":
-			clear_p2_attack_box()
+	if not data.is_empty():
+		var local_rect: Rect2 = data.get("rect", Rect2())
+		label_text = "P2 " + str(data.get("label", ""))
+		hit_vo_id = str(data.get("hit", ""))
+		attack_key = "p2:" + str(data.get("key", label_text + ":" + hit_vo_id))
+		attack_rect = make_directed_rect(p2.position, local_rect, p2.facing)
+		p2_active_original_hitbox = "main_attack"
+	elif p2_active_original_hitbox == "bsmc" and p2_effect != null and p2_effect.playing and p2_effect.current_effect == "bsmc":
+		if p2_effect.frame_index >= 2 and p2_effect.frame_index <= 48:
+			var bs1_tick: int = int(floor(float(p2_effect.frame_index - 2) / ORIGINAL_REHIT_GAP_FRAMES))
+			attack_rect = make_directed_rect(p2_active_attacker_original_origin, BS1ATM_RECT, p2_active_attacker_facing)
+			label_text = "P2 bsmc / bs1atm"
+			hit_vo_id = "bs1"
+			attack_key = "p2:bsmc:bs1:" + str(bs1_tick)
+		elif p2_effect.frame_index >= 49 and p2_effect.frame_index <= 52:
+			attack_rect = make_directed_rect(p2_active_attacker_original_origin, BSATM_RECT, p2_active_attacker_facing)
+			label_text = "P2 bsmc / bsatm"
+			hit_vo_id = "bs"
+			attack_key = "p2:bsmc:bs"
+		else:
+			return
+	elif p2_active_original_hitbox == "zh3mc" and p2_effect != null and p2_effect.playing and p2_effect.current_effect == "zh3mc":
+		attack_rect = make_directed_rect(p2_active_attacker_original_origin, ZH3ATM_RECT, p2_active_attacker_facing)
+		label_text = "P2 zh3mc / zh3atm"
+		hit_vo_id = "zh3"
+		attack_key = "p2:zh3mc:zh3"
+	else:
+		if p2_active_original_hitbox == "main_attack":
+			p2_active_original_hitbox = ""
+		clear_p2_attack_box()
 		return
 
-	var key: String = "p2:atk1:k1"
-	if key != p2_test_attack_key:
-		p2_test_attack_key = key
-		p2_test_attack_has_hit = false
+	if attack_rect.size == Vector2.ZERO or hit_vo_id == "":
+		return
 
-	var p2_pos: Vector2 = get_node_ground_pos(p2, P2_START_POS)
-	var p2_direct: int = get_node_facing(p2)
-	var attack_rect: Rect2 = make_directed_rect(p2_pos, K1ATM_RECT, p2_direct)
-	draw_p2_attack_box(attack_rect, "P2 atk1 / k1atm -> HitVO:k1")
-
+	set_p2_current_attack_key(attack_key)
+	draw_p2_attack_box(attack_rect, label_text + " -> HitVO:" + hit_vo_id)
 	if p2_test_attack_has_hit:
 		return
 
@@ -3052,26 +4106,23 @@ func update_p2_test_attack_box() -> void:
 	if not attack_rect.intersects(p1_hurt_rect, true):
 		return
 
-	# 原版 GameMainLogicCtrler.getHitObj() 传给 EffectCtrl.doHitEffect 的不是完整攻击面，
-	# 而是 hitArea.intersection(body)。如果用完整攻击面，S+I 的 cbs2 巨大攻击框中心会落在 P1 身上，
-	# 导致 P1 位置错误播放命中特效。
 	var p2_hit_intersection: Rect2 = attack_rect.intersection(p1_hurt_rect)
 	if p2_hit_intersection.size == Vector2.ZERO:
 		p2_hit_intersection = attack_rect
 
-	p2_test_attack_has_hit = true
-	var hit_vo: Dictionary = AIZEN_HIT_VO.get("k1", {})
-	print("P2 HIT: atk1 / k1atm -> p1 bdmn; HitVO=k1 data=", hit_vo, " attack=", attack_rect, " hurt=", p1_hurt_rect, " hitRect=", p2_hit_intersection)
-
-	p2_last_hit_vo_id = "k1"
+	var hit_vo: Dictionary = AIZEN_HIT_VO.get(hit_vo_id, {})
+	p2_last_hit_vo_id = hit_vo_id
 	p2_last_hit_action = action_name
 	var hit_result: Dictionary = {}
 	if p1 != null and p1.has_method("apply_original_hit"):
-		hit_result = p1.apply_original_hit(hit_vo, p2_direct)
-	var old_rect: Rect2 = current_attack_world_rect
-	current_attack_world_rect = attack_rect
+		hit_result = p1.apply_original_hit(hit_vo, p2.facing)
+	if str(hit_result.get("result", "")) != "ignored":
+		p2_test_attack_has_hit = true
+	if str(hit_result.get("result", "")) == "catch":
+		original_catch_target = p1
+		if p1 != null and p1.has_method("set_original_caught_by_throw"):
+			p1.set_original_caught_by_throw(true)
 	after_p2_hit_target(hit_vo, hit_result, p2_hit_intersection)
-	current_attack_world_rect = old_rect
 
 
 func check_active_hit_target() -> void:
@@ -3155,6 +4206,32 @@ func try_use_p1_energy(cost: float, allow_overflow: bool, label_text: String) ->
 		print("原版体力消耗：", label_text, " cost=", cost, " energy=", get_node_float_property(p1, "energy", 0.0))
 		return true
 	print("体力不足，不能执行 ", label_text, "；需要 ", cost, "，当前 energy=", get_node_float_property(p1, "energy", 0.0))
+	return false
+
+
+func try_use_p2_qi(cost: float, label_text: String) -> bool:
+	if p2 == null:
+		return true
+	var current_qi: float = get_node_float_property(p2, "qi", 0.0)
+	if current_qi + 0.01 >= cost:
+		set_node_float_property(p2, "qi", maxf(0.0, current_qi - cost))
+		print("原版必杀气消耗：", label_text, " cost=", cost, " qi=", get_node_float_property(p2, "qi", 0.0))
+		return true
+	if p2.has_method("use_qi") and p2.call("use_qi", cost):
+		print("原版必杀气消耗：", label_text, " cost=", cost, " qi=", get_node_float_property(p2, "qi", 0.0))
+		return true
+	print("P2 气不足，不能释放 ", label_text, "；需要 ", cost, "，当前 qi=", get_node_float_property(p2, "qi", 0.0), "。按 P 可临时充满气用于测试。")
+	return false
+
+
+func try_use_p2_energy(cost: float, allow_overflow: bool, label_text: String) -> bool:
+	if p2 == null or not p2.has_method("has_energy") or not p2.has_method("use_energy"):
+		return true
+	if bool(p2.call("has_energy", cost, allow_overflow)):
+		p2.call("use_energy", cost)
+		print("原版体力消耗：", label_text, " cost=", cost, " energy=", get_node_float_property(p2, "energy", 0.0))
+		return true
+	print("P2 体力不足，不能执行 ", label_text, "；需要 ", cost, "，当前 energy=", get_node_float_property(p2, "energy", 0.0))
 	return false
 
 
@@ -3267,8 +4344,9 @@ func after_p2_hit_target(hit_vo: Dictionary, hit_result: Dictionary, original_hi
 	if feedback_rect.size == Vector2.ZERO:
 		feedback_rect = current_attack_world_rect
 	play_original_hit_feedback(hit_vo, feedback_rect, result, p2_face, p1)
+	var hit_source: String = p2_active_original_hitbox if p2_active_original_hitbox != "" else "main_attack"
 	if result != "ignored":
-		add_qi_on_hit(p2, p1, hit_vo, "main_attack")
+		add_qi_on_hit(p2, p1, hit_vo, hit_source)
 	if result == "dead" or result == "counter" or result == "defense" or result == "steel" or result == "ignored":
 		return
 	p2_combo_count += 1
@@ -3941,24 +5019,64 @@ func force_clear_bisha_after_round_end() -> void:
 		item.modulate.a = 0.0
 
 
+func is_original_loser_dead_ready() -> bool:
+	var loser = get_original_round_loser()
+	if loser == null:
+		return true
+	if loser.has_method("is_original_round_end_dead_down"):
+		return bool(loser.call("is_original_round_end_dead_down"))
+	return true
+
+
+func get_original_round_winner() -> Variant:
+	if ko_winner_id == 1:
+		return p1
+	if ko_winner_id == 2:
+		return p2
+	return null
+
+
+func get_original_round_loser() -> Variant:
+	if ko_winner_id == 1:
+		return p2
+	if ko_winner_id == 2:
+		return p1
+	return null
+
+
 func apply_original_round_end_actions(reason: String) -> void:
-	# 原版 FightUI.playKO / timeover 进入结算后，角色动作进入 win / lose，战斗输入锁住。
+	# 原版 GameEndCtrl/FightUI 流程：KO 后先锁输入与伤害，败者进入击飞/倒地/DEAD；
+	# 等 KO UI 与败者倒地结束后，cameraFocusOne(winner)，然后 GameEndCtrler 调 winner.win()。
+	# 因此这里不能像旧 Godot 补丁那样立即让胜者 win、败者 lose。
 	if original_round_end_actions_applied:
 		return
 	original_round_end_actions_applied = true
 	clear_p1_input_buffers()
+	clear_p2_input_buffers()
+	clear_original_timeline_sfx_events()
 	resume_original_slow_down()
 	end_p1_shadow()
+	end_p2_shadow()
 	clear_original_move_target_binding(reason)
 	force_clear_bisha_after_round_end()
+	original_round_end_winner_action_started = false
 	if ko_draw_game or ko_winner_id == 0:
 		return
-	if p1 != null and p1.has_method("play_action"):
-		p1.play_action("win" if ko_winner_id == 1 else "lose")
-	if p2 != null and p2.has_method("play_action"):
-		p2.play_action("win" if ko_winner_id == 2 else "lose")
-	print("原版 round end action: reason=", reason, " winner=", ko_winner_id)
 
+	var loser = get_original_round_loser()
+	var winner = get_original_round_winner()
+	if reason == "ko" and loser != null:
+		# FighterMain.die()：如果 KO 前已经在受击/击飞，则继续原本击飞流程；
+		# renderHurtFly state4 检测到 !isAlive 后进入 DEAD 并停在倒地。
+		# Step70：把最后一击 HitVO 也传入 ManifestFighter，避免 Godot 侧 KO 检测晚一帧时丢失原版 hitx/hity/hurtType。
+		var ko_attacker_facing: int = get_node_facing(winner) if winner != null else (1 if ko_winner_id == 1 else -1)
+		var last_hit_id: String = p1_last_hit_vo_id if ko_winner_id == 1 else p2_last_hit_vo_id
+		var last_hit_vo: Dictionary = AIZEN_HIT_VO.get(last_hit_id, {})
+		if loser.has_method("play_original_round_end_loser_down"):
+			loser.call("play_original_round_end_loser_down", ko_attacker_facing, last_hit_vo)
+		elif loser.has_method("play_action"):
+			loser.play_action("knock_down")
+	print("原版 round end state: reason=", reason, " winner=", ko_winner_id, " loser fly/down->DEAD; winner win action delayed until camera focus.")
 
 func add_original_ko_score() -> void:
 	# 对应 GameLogic.addScoreByKO：必杀 KO +2000；满血胜利 +20000，否则 +3000。
@@ -4017,7 +5135,8 @@ func check_ko_state() -> void:
 	elif p2_hp_now <= 0.0 and p2 != null:
 		ko_loser = p2
 	if ko_loser != null and common_effects != null and common_effects.has_method("play_ko_hit_end"):
-		common_effects.play_ko_hit_end(get_original_swf_effect_origin(ko_loser, P2_START_POS), get_node_facing(ko_loser))
+		var ko_loser_fallback: Vector2 = P1_START_POS if ko_loser == p1 else P2_START_POS
+		common_effects.play_ko_hit_end(get_original_swf_effect_origin(ko_loser, ko_loser_fallback), get_node_facing(ko_loser))
 	AudioManager.play_sfx("res://assets/sfx/snd_over_hit.mp3", -2.0)
 	hit_stop_timer = maxf(hit_stop_timer, 0.06)
 	start_original_shake(5.0, 0.0, 1.5)
@@ -4432,6 +5551,7 @@ func apply_original_slow_runtime() -> void:
 	_set_original_time_scale_on_node(p1, slow_scale)
 	_set_original_time_scale_on_node(p2, slow_scale)
 	_set_original_time_scale_on_node(p1_effect, slow_scale)
+	_set_original_time_scale_on_node(p2_effect, slow_scale)
 	_set_original_time_scale_on_node(common_effects, slow_scale)
 	_set_original_time_scale_on_node(shadow_effects, slow_scale)
 	_set_original_time_scale_on_node(bisha_effect, slow_scale)
@@ -4448,43 +5568,62 @@ func _set_original_time_scale_on_node(node_value: Variant, slow_scale: float) ->
 		n.call("set_original_time_scale", slow_scale)
 
 
-func move_p1_once_by_original_args(action_name: String, relative_frame: int, args: Array) -> void:
-	# FighterCtrler.moveOnce(x,y): fighter.x += x * direct; fighter.y += y
-	if p1 == null:
+func move_fighter_once_by_original_args(fighter: Variant, action_name: String, relative_frame: int, args: Array) -> void:
+	# FighterCtrler.moveOnce(x,y): fighter.x += x * direct; fighter.y += y。
+	if fighter == null:
 		return
 	var dx: float = _raw_args_number(args, 0, 0.0)
 	var dy: float = _raw_args_number(args, 1, 0.0)
-	p1.position.x += dx * float(p1.facing)
-	p1.position.y += dy
-	clamp_fighter_to_original_map_bounds(p1)
-	if p1.has_method("set_air_state_from_position"):
-		p1.set_air_state_from_position()
-	print("原版 moveOnce 触发 action=", action_name, " frame=", relative_frame, " delta=", Vector2(dx, dy), " new_pos=", p1.position)
+	var direct: int = get_node_facing(fighter)
+	fighter.position.x += dx * float(direct)
+	fighter.position.y += dy
+	clamp_fighter_to_original_map_bounds(fighter)
+	if fighter.has_method("set_air_state_from_position"):
+		fighter.set_air_state_from_position()
+	var fighter_label: String = str(fighter.name) if fighter is Node else "?"
+	print("原版 moveOnce 触发 action=", action_name, " frame=", relative_frame, " fighter=", fighter_label, " delta=", Vector2(dx, dy), " new_pos=", fighter.position)
+
+
+func move_p1_once_by_original_args(action_name: String, relative_frame: int, args: Array) -> void:
+	move_fighter_once_by_original_args(p1, action_name, relative_frame, args)
+
+
+func face_fighter_to_target(fighter: Variant, target: Variant, action_name: String, relative_frame: int, label_text: String) -> void:
+	# FighterCtrler.setDirectToTarget(): fighter.direct = fighter.x > target.x ? -1 : 1。
+	if fighter == null or target == null:
+		return
+	if fighter.has_method("set_facing"):
+		var fighter_pos: Vector2 = get_node_ground_pos(fighter, P1_START_POS)
+		var target_pos: Vector2 = get_node_ground_pos(target, P2_START_POS)
+		fighter.set_facing(-1 if fighter_pos.x > target_pos.x else 1)
+	print("原版 setDirectToTarget 触发 ", label_text, " action=", action_name, " frame=", relative_frame, " facing=", get_node_facing(fighter))
 
 
 func face_p1_current_target(action_name: String, relative_frame: int) -> void:
-	# FighterCtrler.setDirectToTarget(): fighter.direct = fighter.x > target.x ? -1 : 1
-	if p1 == null or p2 == null:
+	face_fighter_to_target(p1, p2, action_name, relative_frame, "P1")
+
+
+func face_p2_current_target(action_name: String, relative_frame: int) -> void:
+	face_fighter_to_target(p2, p1, action_name, relative_frame, "P2")
+
+
+func set_fighter_cross_enabled(fighter: Variant, enabled: bool, action_name: String, relative_frame: int, label_text: String) -> void:
+	# FighterCtrler.setCross(v): _fighter.isCross = v
+	if fighter == null:
 		return
-	if p1.has_method("set_facing"):
-		p1.set_facing(-1 if p1.position.x > get_p1_target_ground_pos().x else 1)
-	print("原版 setDirectToTarget 触发 action=", action_name, " frame=", relative_frame, " facing=", p1.facing)
+	if fighter.has_method("set_cross_enabled"):
+		fighter.set_cross_enabled(enabled)
+	else:
+		fighter.set_meta("original_is_cross", enabled)
+	print("原版 setCross 触发 ", label_text, " action=", action_name, " frame=", relative_frame, " enabled=", enabled)
 
 
 func set_p1_cross_enabled(enabled: bool, action_name: String, relative_frame: int) -> void:
-	# FighterCtrler.setCross(v): _fighter.isCross = v
-	if p1 == null:
-		return
-	if p1.has_method("set_cross_enabled"):
-		p1.set_cross_enabled(enabled)
-	else:
-		p1.set_meta("original_is_cross", enabled)
-	print("原版 setCross 触发 action=", action_name, " frame=", relative_frame, " enabled=", enabled)
+	set_fighter_cross_enabled(p1, enabled, action_name, relative_frame, "P1")
 
 
-func handle_original_just_hit_to_play(action_name: String, relative_frame: int, semantic: Dictionary) -> void:
-	# FighterMcCtrler.justHitToPlay(hitId, label, returnIdleOnFail, continueWhenDefended)
-	# 蓝染上必杀使用：justHitToPlay("sbs1", "上必杀_HIT", false, false)
+func handle_original_just_hit_to_play_for_fighter(fighter: Variant, is_p2_actor: bool, action_name: String, relative_frame: int, semantic: Dictionary) -> void:
+	# FighterMcCtrler.justHitToPlay(hitId, label, returnIdleOnFail, continueWhenDefended)。
 	var attack_id: String = str(semantic.get("attack_id", ""))
 	var target_label: String = str(semantic.get("target_label", ""))
 	var return_idle_on_fail: bool = semantic.get("return_idle_on_fail", false) == true
@@ -4492,52 +5631,61 @@ func handle_original_just_hit_to_play(action_name: String, relative_frame: int, 
 	if target_action == "":
 		target_action = target_label
 
-	var matched: bool = attack_id != "" and p1_last_hit_vo_id == attack_id and p1_last_hit_action == action_name
-	print("原版 justHitToPlay 检查 action=", action_name, " frame=", relative_frame, " attack_id=", attack_id, " last=", p1_last_hit_vo_id, "/", p1_last_hit_action, " matched=", matched, " target=", target_action)
+	var last_id: String = p2_last_hit_vo_id if is_p2_actor else p1_last_hit_vo_id
+	var last_action: String = p2_last_hit_action if is_p2_actor else p1_last_hit_action
+	var matched: bool = attack_id != "" and last_id == attack_id and last_action == action_name
+	print("原版 justHitToPlay 检查 actor=", "P2" if is_p2_actor else "P1", " action=", action_name, " frame=", relative_frame, " attack_id=", attack_id, " last=", last_id, "/", last_action, " matched=", matched, " target=", target_action)
 
-	if matched and target_action != "" and p1 != null:
-		p1.play_action(target_action)
-		p1_last_hit_vo_id = ""
-		p1_last_hit_action = ""
-	elif return_idle_on_fail and p1 != null and p1.has_method("return_to_neutral_from_timeline"):
-		p1.return_to_neutral_from_timeline()
+	if matched and target_action != "" and fighter != null:
+		fighter.play_action(target_action)
+		if is_p2_actor:
+			p2_last_hit_vo_id = ""
+			p2_last_hit_action = ""
+		else:
+			p1_last_hit_vo_id = ""
+			p1_last_hit_action = ""
+	elif return_idle_on_fail and fighter != null and fighter.has_method("return_to_neutral_from_timeline"):
+		fighter.return_to_neutral_from_timeline()
 
 
-func move_p1_to_current_target(offset_x_value: Variant, offset_y_value: Variant, auto_turn: bool) -> void:
-	if p1 == null:
+func handle_original_just_hit_to_play(action_name: String, relative_frame: int, semantic: Dictionary) -> void:
+	handle_original_just_hit_to_play_for_fighter(p1, false, action_name, relative_frame, semantic)
+
+
+func move_fighter_to_target(fighter: Variant, target: Variant, offset_x_value: Variant, offset_y_value: Variant, auto_turn: bool) -> void:
+	if fighter == null or target == null:
 		return
-	if p2 == null:
-		return
-
-	var target_pos: Vector2 = get_p1_target_ground_pos()
+	var target_pos: Vector2 = get_node_ground_pos(target, P2_START_POS)
 	var has_x: bool = _original_number_is_present(offset_x_value)
 	var has_y: bool = _original_number_is_present(offset_y_value)
 	var offset_x: float = _nullable_number_to_float(offset_x_value, 0.0)
 	var offset_y: float = _nullable_number_to_float(offset_y_value, 0.0)
+	var direct: int = get_node_facing(fighter)
 
-	# 对应 FighterCtrler.moveToTarget(x, y, setDirect)：
-	# if x != null: fighter.x = target.x + Number(x) * fighter.direct
-	#   但当 x > 0 且目标接近地图左右边缘时，原版会改到目标另一侧，避免越界。
-	# if y != null: fighter.y = target.y + Number(y)
 	if has_x:
-		var fx: float = target_pos.x + offset_x * float(p1.facing)
+		var fx: float = target_pos.x + offset_x * float(direct)
 		if offset_x > 0.0:
 			if target_pos.x < offset_x:
 				fx = target_pos.x + offset_x
 			elif target_pos.x > ORIGINAL_MAP_RIGHT - offset_x:
 				fx = target_pos.x - offset_x
-		p1.position.x = fx
+		fighter.position.x = fx
 
 	if has_y:
-		p1.position.y = target_pos.y + offset_y
+		fighter.position.y = target_pos.y + offset_y
 
-	clamp_fighter_to_original_map_bounds(p1)
-	if p1.has_method("set_air_state_from_position"):
-		p1.set_air_state_from_position()
-	if auto_turn and p1.has_method("set_facing"):
-		var new_direct: int = 1 if p1.position.x < target_pos.x else -1
-		p1.set_facing(new_direct)
-	print("原版 moveToTarget 触发：x=", offset_x_value, " y=", offset_y_value, " autoTurn=", auto_turn, " has_x=", has_x, " has_y=", has_y, " new_pos=", p1.position)
+	clamp_fighter_to_original_map_bounds(fighter)
+	if fighter.has_method("set_air_state_from_position"):
+		fighter.set_air_state_from_position()
+	if auto_turn and fighter.has_method("set_facing"):
+		var new_direct: int = 1 if fighter.position.x < target_pos.x else -1
+		fighter.set_facing(new_direct)
+	var fighter_label: String = str(fighter.name) if fighter is Node else "?"
+	print("原版 moveToTarget 触发 fighter=", fighter_label, " x=", offset_x_value, " y=", offset_y_value, " autoTurn=", auto_turn, " new_pos=", fighter.position)
+
+
+func move_p1_to_current_target(offset_x_value: Variant, offset_y_value: Variant, auto_turn: bool) -> void:
+	move_fighter_to_target(p1, p2, offset_x_value, offset_y_value, auto_turn)
 
 
 func _original_number_is_present(value: Variant) -> bool:
@@ -4593,6 +5741,20 @@ func play_original_dash_effect(action_name: String, relative_frame: int) -> void
 	else:
 		print("原版 dash effect 触发但资源未接入：", effect_id, " action=", action_name, " frame=", relative_frame)
 
+func play_original_dash_effect_for_fighter(fighter: Variant, action_name: String, relative_frame: int) -> void:
+	if fighter == null:
+		return
+	var is_air: bool = bool(fighter.get("in_air")) if fighter != null else false
+	var dash_effect_origin: Vector2 = get_original_dash_dust_origin_for_fighter(fighter, P2_START_POS)
+	var fighter_facing: int = get_node_facing(fighter)
+	if common_effects != null and common_effects.has_method("play_dash_effect"):
+		common_effects.play_dash_effect(dash_effect_origin, fighter_facing, is_air)
+		print("原版 P2 dash effect 触发 action=", action_name, " frame=", relative_frame)
+	elif _common_effect_exists("dash_air" if is_air else "dash"):
+		common_effects.play_effect("dash_air" if is_air else "dash", dash_effect_origin, fighter_facing, 1.0, false)
+		AudioManager.play_effect_sfx("snd_dash_air")
+
+
 func _common_effect_exists(effect_id: String) -> bool:
 	if common_effects == null:
 		return false
@@ -4601,6 +5763,28 @@ func _common_effect_exists(effect_id: String) -> bool:
 		return false
 	var effects: Dictionary = (manifest_value as Dictionary).get("effects", {}) as Dictionary
 	return effects.has(effect_id)
+
+
+func handle_original_movement_event_for_fighter(fighter: Variant, action_name: String, relative_frame: int, semantic: Dictionary) -> void:
+	var method_name: String = str(semantic.get("method", ""))
+	var args: Array = semantic.get("args", []) as Array
+	match method_name:
+		"move":
+			var vx: float = _original_args_number(args, 0, 0.0) * float(get_node_facing(fighter)) * 30.0
+			var vy: float = _original_args_number(args, 1, 0.0) * 30.0
+			_apply_original_velocity_for_fighter(fighter, vx, vy)
+		"movePercent":
+			var vx_percent: float = move_speed * _original_args_number(args, 0, 0.0) * float(get_node_facing(fighter))
+			var vy_percent: float = move_speed * _original_args_number(args, 1, 0.0)
+			_apply_original_velocity_for_fighter(fighter, vx_percent, vy_percent)
+		"damping":
+			var damping_x: float = absf(_original_args_number(args, 0, 0.0)) * 30.0 * 30.0
+			_apply_original_damping_for_fighter(fighter, damping_x)
+		"dampingPercent":
+			var damping_percent_x: float = absf(move_speed * _original_args_number(args, 0, 0.0)) * 30.0
+			_apply_original_damping_for_fighter(fighter, damping_percent_x)
+		_:
+			print("原版 movement 事件暂未接入 actor generic action=", action_name, " frame=", relative_frame, " data=", semantic)
 
 
 func handle_original_movement_event(action_name: String, relative_frame: int, semantic: Dictionary) -> void:
@@ -4632,6 +5816,25 @@ func handle_original_movement_event(action_name: String, relative_frame: int, se
 			print("原版 movement 事件暂未接入 action=", action_name, " frame=", relative_frame, " data=", semantic)
 
 
+func handle_original_dash_or_stop_event_for_fighter(fighter: Variant, action_name: String, relative_frame: int, semantic: Dictionary) -> void:
+	var method_name: String = str(semantic.get("method", ""))
+	var args: Array = semantic.get("args", []) as Array
+	match method_name:
+		"dash":
+			var speed_plus: float = _original_args_number(args, 0, 3.0)
+			if fighter != null and fighter.has_method("apply_original_dash_motion"):
+				fighter.apply_original_dash_motion(speed_plus, move_speed)
+		"dashStop":
+			var lose_percent: float = _original_args_number(args, 0, 0.5)
+			if fighter != null and fighter.has_method("apply_original_dash_stop"):
+				fighter.apply_original_dash_stop(lose_percent)
+		"stopMove":
+			if fighter != null and fighter.has_method("stop_original_motion"):
+				fighter.stop_original_motion()
+		_:
+			print("原版 dash_or_stop 事件暂未接入 actor generic action=", action_name, " frame=", relative_frame, " data=", semantic)
+
+
 func handle_original_dash_or_stop_event(action_name: String, relative_frame: int, semantic: Dictionary) -> void:
 	var method_name: String = str(semantic.get("method", ""))
 	var args: Array = semantic.get("args", []) as Array
@@ -4652,6 +5855,20 @@ func handle_original_dash_or_stop_event(action_name: String, relative_frame: int
 			print("原版 stopMove 触发 action=", action_name, " frame=", relative_frame)
 		_:
 			print("原版 dash_or_stop 事件暂未接入 action=", action_name, " frame=", relative_frame, " data=", semantic)
+
+
+func _apply_original_velocity_for_fighter(fighter: Variant, vx: float, vy: float) -> void:
+	if fighter == null:
+		return
+	if fighter.has_method("set_original_velocity"):
+		fighter.set_original_velocity(vx, vy)
+
+
+func _apply_original_damping_for_fighter(fighter: Variant, damping_x: float) -> void:
+	if fighter == null:
+		return
+	if fighter.has_method("set_original_damping"):
+		fighter.set_original_damping(damping_x)
 
 
 func _apply_original_velocity(vx: float, vy: float) -> void:
@@ -4681,12 +5898,15 @@ func get_p1_original_effect_origin() -> Vector2:
 	return get_original_swf_effect_origin(p1, P1_START_POS)
 
 
-func get_p1_original_dash_dust_origin() -> Vector2:
+func get_original_dash_dust_origin_for_fighter(fighter: Variant, fallback_pos: Vector2) -> Vector2:
 	# 原版 FighterEffectCtrler.dash() 在 fighter.x / fighter.y 播放 XG_rush；
 	# 当前导出的 XG_rush 是 800x600 画布，烟尘 bbox 底部约为纹理中心 +7px。
-	# 因此用 Godot 人物脚底 -7px 作为 EffectPlayer 节点 y，使烟尘底边与脚底持平。
-	var pos: Vector2 = get_node_ground_pos(p1, P1_START_POS)
+	var pos: Vector2 = get_node_ground_pos(fighter, fallback_pos)
 	return Vector2(pos.x, pos.y + ORIGINAL_DASH_EFFECT_Y_FROM_GODOT_ORIGIN)
+
+
+func get_p1_original_dash_dust_origin() -> Vector2:
+	return get_original_dash_dust_origin_for_fighter(p1, P1_START_POS)
 
 
 func get_p2_original_effect_origin() -> Vector2:
@@ -4696,6 +5916,11 @@ func get_p2_original_effect_origin() -> Vector2:
 func get_p1_target_original_effect_origin() -> Vector2:
 	# 当前 Demo 只有 P2 作为 currentTarget。
 	return get_p2_original_effect_origin()
+
+
+func get_p2_target_original_effect_origin() -> Vector2:
+	# 2P 接入后，P2 的 currentTarget 固定为 P1。
+	return get_p1_original_effect_origin()
 
 
 func get_original_swf_effect_hit_rect(hit_rect: Rect2) -> Rect2:
@@ -4789,6 +6014,65 @@ func play_p1_attacker_at_self(effect_name: String, self_offset: Vector2, effect_
 	active_attacker_has_hit = false
 
 	p1_effect.play_effect(effect_name, active_attacker_original_origin + self_offset, active_attacker_facing, effect_scale, true)
+
+
+func get_p2_target_ground_pos() -> Vector2:
+	# P2 currentTarget 固定为 P1。
+	return get_node_ground_pos(p1, P1_START_POS)
+
+
+func _reset_p2_active_attacker_state() -> void:
+	p2_active_attacker_follow_target = false
+	p2_active_attacker_effect_name = ""
+	p2_active_attacker_offset = Vector2.ZERO
+	p2_active_attacker_original_origin = Vector2.ZERO
+	p2_active_attacker_facing = -1
+	p2_test_attack_has_hit = false
+	p2_test_attack_key = ""
+
+
+func _p2_attacker_visual_position_from_origin() -> Vector2:
+	return p2_active_attacker_original_origin
+
+
+func play_p2_attacker_at_target(effect_name: String, target_offset: Vector2, effect_scale: float = 1.0) -> void:
+	if p2 == null or p2_effect == null:
+		return
+	p2_active_attacker_follow_target = true
+	p2_active_attacker_effect_name = effect_name
+	p2_active_attacker_offset = target_offset
+	var target_origin: Vector2 = get_p2_target_original_effect_origin()
+	p2_active_attacker_original_origin = align_original_skill_effect_height(effect_name, target_origin + target_offset, target_origin, target_offset)
+	p2_active_attacker_facing = p2.facing
+	p2_test_attack_has_hit = false
+	p2_effect.play_effect(effect_name, _p2_attacker_visual_position_from_origin(), p2_active_attacker_facing, effect_scale)
+
+
+func play_p2_attacker_at_self(effect_name: String, self_offset: Vector2, effect_scale: float = 1.0) -> void:
+	if p2 == null or p2_effect == null:
+		return
+	p2_active_attacker_follow_target = false
+	p2_active_attacker_effect_name = effect_name
+	p2_active_attacker_offset = self_offset
+	var caster_origin: Vector2 = get_p2_original_effect_origin()
+	p2_active_attacker_original_origin = align_original_skill_effect_height(effect_name, caster_origin + self_offset, caster_origin, self_offset)
+	p2_active_attacker_facing = p2.facing
+	p2_test_attack_has_hit = false
+	p2_effect.play_effect(effect_name, p2_active_attacker_original_origin + self_offset, p2_active_attacker_facing, effect_scale, true)
+
+
+func update_p2_attacker_follow_target() -> void:
+	if not p2_active_attacker_follow_target:
+		return
+	if p2_effect == null:
+		_reset_p2_active_attacker_state()
+		return
+	if not p2_effect.playing or p2_effect.current_effect != p2_active_attacker_effect_name:
+		_reset_p2_active_attacker_state()
+		return
+	var target_origin: Vector2 = get_p2_target_original_effect_origin()
+	p2_active_attacker_original_origin = align_original_skill_effect_height(p2_active_attacker_effect_name, target_origin + p2_active_attacker_offset, target_origin, p2_active_attacker_offset)
+	p2_effect.position = _p2_attacker_visual_position_from_origin()
 
 
 func update_attacker_follow_target() -> void:

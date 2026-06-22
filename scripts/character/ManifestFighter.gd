@@ -21,6 +21,14 @@ var gravity: float = 1350.0
 var jump_speed: float = -620.0
 var in_air: bool = false
 
+# 原版 FighterMain.as: jumpTimes=2, airHitTimes=1。
+# FighterMcCtrler.doJump / doAirJump 每次真正起跳会让 jumpTimes--；
+# doAirAttack / doAirSkill / doAirBisha / doDashAir 会把 jumpTimes 清零。
+var original_jump_times_max: int = 2
+var original_jump_times_left: int = 2
+var original_air_hit_times_max: int = 1
+var original_air_hit_times_left: int = 1
+
 var action_locked: bool = false
 var fired_event_keys: Dictionary = {}
 
@@ -89,6 +97,14 @@ var original_no_world_move_anchor_pos: Vector2 = Vector2.ZERO
 # Step19：原版防御/破防审计状态。
 var original_last_hit_result: String = ""
 var original_last_damage_taken: float = 0.0
+# Step67：原版 KO 后败者进入 DEAD，停在击飞_倒，不再自动起身。
+var original_round_end_dead_lock: bool = false
+var original_round_end_dead_announced: bool = false
+# Step68：记录 KO 最后一击攻击者朝向，用于普通受击死亡后继续按原版 hurtFly / playHurtDown 方向处理。
+var original_round_end_attacker_facing: int = 1
+# Step70：胜利动作是回合结束展示动作，原版 GameEndCtrl 调 winner.win() 后不会再把世界坐标交给移动/碰撞分离。
+var original_round_end_winner_hold_lock: bool = false
+var original_round_end_winner_hold_position: Vector2 = Vector2.ZERO
 var original_guard_break_timer: float = 0.0
 var original_can_hurt_break_timer: float = 0.0
 
@@ -162,9 +178,33 @@ func play_action(action_name: String) -> void:
 		print("Action not found:", action_name)
 		return
 
+	# Step67：胜利/倒地属于回合结束展示状态。原版 FighterMain.resumeColor()/Bitmap 渲染不会把
+	# 前一次 shock_ing ColorTransform 或其他临时材质带进胜利帧；否则透明边缘会被错误显示成黑边。
+	if action_name == "win" or action_name == "knock_down" or action_name == "knock_fall" or action_name == "knock_bounce" or action_name == "lose":
+		resume_original_special_color()
+		if sprite != null:
+			sprite.material = null
+			sprite.modulate = Color.WHITE
+
 	# Step27/Step53：原版 mc_023 的 招1/招2/招3 没有根移动；超必杀也没有 move/moveToTarget 事件。
-	# 这些动作不应被 A/D 或旧 velocity 推动世界坐标。W+I / 空中 I 仍由原版 moveToTarget 事件控制，不在这里锁死。
+	# Step70：win 是 GameEndCtrl 的展示动作，也不应再被玩家移动、剩余 velocity 或碰撞分离改变世界坐标。
+	# W+I / 空中 I 仍由原版 moveToTarget 事件控制，不在这里锁死。
 	original_no_world_move_anchor_active = false
+	if action_name != "win":
+		original_round_end_winner_hold_lock = false
+	if action_name == "win":
+		resume_original_special_color()
+		if sprite != null:
+			sprite.material = null
+			sprite.modulate = Color.WHITE
+			sprite.self_modulate = Color.WHITE
+		velocity_x = 0.0
+		damping_x = 0.0
+		velocity_y = 0.0
+		original_no_world_move_anchor_active = true
+		original_no_world_move_anchor_pos = position
+		original_round_end_winner_hold_lock = true
+		original_round_end_winner_hold_position = position
 	if action_name == "skill1" or action_name == "skill2" or action_name == "skill3" or action_name == "super_special":
 		velocity_x = 0.0
 		damping_x = 0.0
@@ -211,6 +251,19 @@ func can_air_action() -> bool:
 	return in_air and not is_busy()
 
 
+func can_original_air_action() -> bool:
+	# 原版 FighterMcCtrler.doAirAttack/doAirSkill/doAirBisha：
+	# if (_doingAction == null && _action.airHitTimes <= 0) return;
+	# 跳跃/下落本身不应因为 Godot action_locked 而阻止空中 J/U/I。
+	return in_air and not in_hitstun and original_air_hit_times_left > 0
+
+
+func can_original_air_mobility() -> bool:
+	# 原版 renderAirAction：doAirJump/doDashAir/doAirMove 在空中动作流程中处理；
+	# 不能因为 jump/fall 的 PNG 动作 locked 就完全禁止。
+	return in_air and not in_hitstun
+
+
 func set_facing(new_facing: int) -> void:
 	facing = new_facing
 
@@ -219,24 +272,67 @@ func set_facing(new_facing: int) -> void:
 
 
 func start_jump() -> void:
+	# 原版 FighterMcCtrler：地面 doJump 与空中 doAirJump 共用 jumpTimes。
+	# FighterMain.jumpTimes=2，因此 K 后在空中还能再 K 一次。
+	# 注意：空中二段跳不能被 jump/fall 的 action_locked 阻止。
 	if in_air:
+		start_original_air_jump()
 		return
 
 	if is_busy():
 		return
 
 	in_air = true
+	original_jump_times_left = max(0, original_jump_times_max - 1)
 	velocity_y = jump_speed
+	apply_gravity_enabled = true
 	play_action("jump_start")
 
 
-func start_air_attack() -> void:
+func start_original_air_jump() -> void:
 	if not in_air:
 		return
-
-	if is_busy():
+	if original_jump_times_left <= 0:
+		return
+	if in_hitstun:
 		return
 
+	original_jump_times_left -= 1
+	velocity_y = jump_speed
+	apply_gravity_enabled = true
+	play_action("jump")
+
+
+func can_original_air_dash() -> bool:
+	# 原版 doDashAir：if (_action.jumpTimes < 1) return; energy=30; jumpTimes=0。
+	# 不能因为 jump/fall 的 action_locked 阻止空中瞬步。
+	return in_air and original_jump_times_left >= 1 and not in_hitstun
+
+
+func try_start_original_air_dash() -> bool:
+	if not can_original_air_dash():
+		return false
+	original_jump_times_left = 0
+	velocity_x = 0.0
+	damping_x = 0.0
+	velocity_y = 0.0
+	play_action("dash")
+	apply_gravity_enabled = false
+	return true
+
+
+func consume_original_air_action_limits() -> void:
+	# 原版 doAirAttack / doAirSkill / doAirBisha 会消耗空中攻击次数并清空 jumpTimes。
+	original_air_hit_times_left = 0
+	original_jump_times_left = 0
+
+
+func start_air_attack() -> void:
+	if not can_original_air_action():
+		return
+
+	original_air_hit_times_left -= 1
+	original_jump_times_left = 0
 	play_action("jump_attack")
 
 
@@ -302,14 +398,41 @@ func resume_original_special_color() -> void:
 func update_original_special_color(delta: float) -> void:
 	if not original_special_color_active:
 		return
+
 	if original_special_color_time_left > 0.0:
 		original_special_color_time_left -= delta
-		return
-	# 原版 SpecialEffectView 在目标恢复 NORMAL / HURT_DOWN / HURT_DOWN_TAN 时 resumeColor。
-	# 当前状态机中用“没有 hitstun、没有 hurt_fly_state、且回到中立/移动类动作”作为恢复点。
+		if original_special_color_time_left > 0.0:
+			return
+
+	# Step61：一比一修复 P2 Num4 / 招1 命中 P1 后紫色 ColorTransform 永久残留。
+	# 原版依据：SpecialEffectView.as::render()
+	#   switch (_fighter.actionState) {
+	#     HURT_DOWN / HURT_DOWN_TAN / NORMAL:
+	#       gotoAndPlay("finish");
+	#       _fighter.resumeColor();
+	#       break;
+	#     default:
+	#       setPos(_fighter.x, _fighter.y);
+	#   }
+	# 也就是说，原版不是等角色动作名必须回到 idle/walk 才恢复颜色，
+	# 而是目标脱离 HURT_ING / HURT_FLYING 后进入 NORMAL 或倒地态就恢复。
+	# 当前 Godot 旧逻辑只允许 idle/walk/jump/fall 恢复，P2 打 P1 后 P1 可能停在 hurt/defend_recover 等动作名，
+	# 导致 shader ColorTransform 一直不被清理。
+	if is_original_special_effect_finish_state():
+		resume_original_special_color()
+
+
+func is_original_special_effect_finish_state() -> bool:
+	# 原版 NORMAL 在 FighterActionState 中是“非受击流程”的广义状态，不能简单等价为 current_action == idle。
+	# 当前复刻中只要普通受击硬直结束、击飞状态结束，就等价于可恢复 ColorTransform。
 	if not in_hitstun and hurt_fly_state == 0:
-		if current_action == "idle" or current_action == "walk" or current_action == "jump" or current_action == "fall":
-			resume_original_special_color()
+		return true
+
+	# 原版 HURT_DOWN / HURT_DOWN_TAN 也会立即恢复颜色；Godot 侧这些状态对应 knock_down/getup/land 一类动作。
+	if current_action == "knock_down" or current_action == "getup" or current_action == "land":
+		return true
+
+	return false
 
 
 func apply_original_no_world_move_anchor() -> void:
@@ -319,10 +442,13 @@ func apply_original_no_world_move_anchor() -> void:
 		original_no_world_move_anchor_active = false
 		return
 	# 只锁原版无根移动的地面技能/超必杀 FighterMain 世界坐标；动作本身的帧动画仍正常播放。
-	if current_action != "skill1" and current_action != "skill2" and current_action != "skill3" and current_action != "super_special":
+	if current_action != "skill1" and current_action != "skill2" and current_action != "skill3" and current_action != "super_special" and current_action != "win":
 		original_no_world_move_anchor_active = false
 		return
-	position = original_no_world_move_anchor_pos
+	if current_action == "win" and original_round_end_winner_hold_lock:
+		position = original_round_end_winner_hold_position
+	else:
+		position = original_no_world_move_anchor_pos
 	velocity_x = 0.0
 	damping_x = 0.0
 	velocity_y = 0.0
@@ -443,6 +569,25 @@ func handle_action_finished() -> void:
 			play_action("idle")
 		return
 
+	if finished_action == "win":
+		# 原版 GameEndCtrl 调用 winner.win() 后保持胜利动作展示，
+		# 不会在结算菜单弹出前自动回到 idle，也不会继续移动世界坐标。
+		_hold_last_frame()
+		velocity_x = 0.0
+		damping_x = 0.0
+		velocity_y = 0.0
+		original_no_world_move_anchor_active = true
+		original_no_world_move_anchor_pos = original_round_end_winner_hold_position if original_round_end_winner_hold_lock else position
+		original_round_end_winner_hold_lock = true
+		original_round_end_winner_hold_position = original_no_world_move_anchor_pos
+		action_locked = true
+		original_animation_stopped = true
+		if sprite != null:
+			sprite.material = null
+			sprite.modulate = Color.WHITE
+			sprite.self_modulate = Color.WHITE
+		return
+
 	if finished_action == "knock_fly":
 		# 击飞动画由 update_hurt_fly_state() 按原版 playHurtFly/renderHurtFly 状态机驱动。
 		_hold_last_frame()
@@ -498,6 +643,8 @@ func update_physics(delta: float) -> void:
 		position.y = ground_y
 		velocity_y = 0.0
 		in_air = false
+		original_jump_times_left = original_jump_times_max
+		original_air_hit_times_left = original_air_hit_times_max
 
 		if hurt_fly_state == 1:
 			# 原版 renderHurtFly state1：落地后进入“击飞_落”。
@@ -519,7 +666,15 @@ func update_hurt_timer(delta: float) -> void:
 			return
 
 	# hurtType=0 的普通硬直结束后恢复；击飞流程由 update_hurt_fly_state() 处理。
+	# Step68：若这次普通硬直已经把 HP 打到 0，原版 renderHurtAnimate 不会恢复 idle，
+	# 而是：空中 -> hurtFly(vec.x, vec.y)；地面 -> playHurtDown()，最终停在 DEAD/击飞_倒。
 	if current_action == "hurt" and hurt_fly_state == 0:
+		if original_round_end_dead_lock or not is_alive:
+			if in_air:
+				_continue_original_dead_hurt_fly_from_current_velocity()
+			else:
+				_start_original_dead_hurt_down_tan()
+			return
 		_clear_hurt_state()
 		if in_air:
 			play_action("fall")
@@ -577,6 +732,9 @@ func _clear_hurt_state() -> void:
 	be_hit_gap_timer = 0.0
 	velocity_x = 0.0
 	damping_x = 0.0
+	if is_alive:
+		original_round_end_dead_lock = false
+		original_round_end_dead_announced = false
 	if not in_air:
 		velocity_y = 0.0
 
@@ -606,6 +764,51 @@ func _start_original_hurt_fly(hitx: float, hity: float) -> void:
 	play_action("hurt")
 
 
+func _continue_original_dead_hurt_fly_from_current_velocity() -> void:
+	# 原版 FighterMcCtrler.renderHurtAnimate：若非存活且仍在空中，取当前 vec2 调 hurtFly(vec.x, vec.y)。
+	# 这里把 Godot px/s 速度还原成原版近似 hitx/hity，再直接进入 knock_fly，不再重复播放“被打”起手。
+	var hitx: float = velocity_x / HIT_SPEED_SCALE
+	var hity: float = velocity_y / HIT_SPEED_SCALE
+	if absf(hitx) < 0.1:
+		hitx = 7.0 * float(original_round_end_attacker_facing)
+	if absf(hity) < 0.1:
+		hity = -6.0
+	if hitx != 0.0:
+		set_facing(-1 if hitx > 0.0 else 1)
+	hurt_fly_state = 1
+	hurt_fly_delay_timer = 0.0
+	hurt_fall_timer = 0.0
+	hurt_down_timer = 0.0
+	hurt_y_min = position.y
+	hurt_fly_hitx = hitx
+	hurt_fly_hity = hity
+	hurt_is_heavy_down_attack = hity > 5.0
+	velocity_x = hitx * HIT_SPEED_SCALE
+	velocity_y = hity * HIT_SPEED_SCALE
+	damping_x = 0.0
+	in_air = true
+	in_hitstun = true
+	action_locked = true
+	apply_gravity_enabled = true
+	play_action("knock_fly")
+
+
+func _start_original_dead_hurt_down_tan() -> void:
+	# 原版 FighterMC.playHurtDown：先 goFrame(击飞_弹)，2 帧后 playHurtDown2 -> 击飞_倒。
+	# KO 时保持 original_round_end_dead_lock，进入倒地后不会起身，等同 DEAD。
+	hurt_fly_state = 5
+	hurt_fall_timer = 2.0 / ORIGINAL_FPS
+	hurt_down_timer = 0.0
+	in_air = false
+	position.y = ground_y
+	velocity_y = 0.0
+	in_hitstun = true
+	action_locked = true
+	apply_gravity_enabled = true
+	damping_x = 2.0 * HIT_SPEED_SCALE
+	play_action("knock_bounce")
+
+
 func _start_hurt_fall_stage() -> void:
 	# 原版 state2 先 goFrame("击飞_落")，至少渲染 2 帧再弹起/倒地。
 	hurt_fly_state = 2
@@ -628,14 +831,18 @@ func _start_hurt_bounce_stage() -> void:
 
 
 func _start_hurt_down_stage(frames: int) -> void:
-	# 原版 playHurtDown2 / renderHurtFly state4：goFrame("击飞_倒")，等待 _hurtDownFrame 后进入“击飞_起”。
+	# 原版 playHurtDown2 / renderHurtFly state4：goFrame("击飞_倒")。
+	# 若角色已死亡，renderHurtFly state4 会直接进入 DEAD 并停在倒地，不会再“击飞_起”。
 	hurt_fly_state = 4
-	hurt_down_timer = float(frames) / ORIGINAL_FPS
+	hurt_down_timer = 9999.0 if original_round_end_dead_lock or not is_alive else float(frames) / ORIGINAL_FPS
 	in_air = false
 	position.y = ground_y
 	velocity_y = 0.0
 	damping_x = 2.0 * HIT_SPEED_SCALE
 	play_action("knock_down")
+	if original_round_end_dead_lock or not is_alive:
+		action_locked = true
+		is_allow_be_hit = false
 
 
 func update_hurt_fly_state(delta: float) -> void:
@@ -665,7 +872,29 @@ func update_hurt_fly_state(delta: float) -> void:
 		# 落地切换在 update_physics() 里处理。
 		return
 
+	if hurt_fly_state == 5:
+		# 原版 playHurtDown 的 2 帧“击飞_弹”过渡。
+		hurt_fall_timer -= delta
+		if hurt_fall_timer <= 0.0:
+			_start_hurt_down_stage(30)
+		return
+
 	if hurt_fly_state == 4:
+		# 原版 FighterMC.renderHurtFly state4：如果 !_fighter.isAlive，立刻进入 DEAD 并停在倒地帧。
+		if original_round_end_dead_lock or not is_alive:
+			hurt_fly_state = 0
+			hurt_down_timer = 9999.0
+			in_hitstun = false
+			action_locked = true
+			is_allow_be_hit = false
+			be_hit_gap_timer = 9999.0
+			if current_action != "knock_down":
+				play_action("knock_down")
+				action_locked = true
+			if not original_round_end_dead_announced:
+				original_round_end_dead_announced = true
+				print("原版 KO DEAD：败者停在击飞_倒，不进入起身。")
+			return
 		hurt_down_timer -= delta
 		if hurt_down_timer <= 0.0:
 			hurt_fly_state = 0
@@ -674,6 +903,11 @@ func update_hurt_fly_state(delta: float) -> void:
 
 
 func update_horizontal_motion(delta: float) -> void:
+	if original_round_end_winner_hold_lock and current_action == "win":
+		position = original_round_end_winner_hold_position
+		velocity_x = 0.0
+		damping_x = 0.0
+		return
 	if abs(velocity_x) <= 0.1:
 		velocity_x = 0.0
 		return
@@ -800,6 +1034,83 @@ func stop_original_animation() -> void:
 	# MovieClip.stop()：停在当前帧，不继续 advance frame。
 	original_animation_stopped = true
 	action_locked = true
+
+
+func play_original_round_end_loser_down(attacker_facing: int = 1, last_hit_vo: Dictionary = {}) -> void:
+	# 对照原版：FighterMain.die() 只把 isAlive=false；若当前处于受击/击飞流程，
+	# FighterMC.renderHurtFly 会继续让角色飞出、落地、弹起/倒地；到 state4 时因 !isAlive 进入 DEAD 并停在倒地。
+	# 旧 Step64 直接清零速度并 play_action("knock_down")，导致败者血量清零后原地趴下，缺少原版的击飞距离。
+	hp = 0.0
+	is_alive = false
+	original_round_end_dead_lock = true
+	original_round_end_attacker_facing = attacker_facing
+	original_round_end_dead_announced = false
+	is_allow_be_hit = false
+	be_hit_gap_timer = 9999.0
+	defense_hit_timer = 0.0
+	original_guard_break_timer = 0.0
+	original_can_hurt_break_timer = 0.0
+	set_steel_body(false)
+	clear_original_timeline_states()
+	resume_original_special_color()
+	if sprite != null:
+		sprite.material = null
+		sprite.modulate = Color.WHITE
+
+	# 如果 KO 命中已经让角色进入击飞/空中流程，继续保留该速度和状态，
+	# 等落地后自然进入 knock_down/DEAD。不要在这里强制归零。
+	if hurt_fly_state != 0 or in_air or current_action in ["knock_fly", "knock_fall", "knock_bounce"]:
+		in_hitstun = true
+		action_locked = true
+		apply_gravity_enabled = true
+		print("原版 KO：保留当前击飞/空中流程，败者落地后进入 DEAD。 action=", current_action, " vx=", velocity_x, " vy=", velocity_y)
+		return
+
+	# 如果 KO 命中是 hurtType=0 的普通受击，原版 doHurtAnimate 会先停留 hurtHoldFrame，
+	# 等 renderHurtAnimate 发现 !isAlive 后再 playHurtDown，而不是恢复 idle。
+	if in_hitstun and current_action == "hurt":
+		# 原版 hurtType=0：先保留 HURT_ING 的速度/阻尼，hurtHold 结束时若 !isAlive 则 playHurtDown。
+		# 若 Godot 侧因为 KO 检测晚一帧丢了 hity/hitx，则用最后一击 HitVO 补回速度，避免角色原地站死。
+		if not last_hit_vo.is_empty():
+			var last_hitx: float = float(last_hit_vo.get("hitx", 0.0)) * float(attacker_facing)
+			var last_hity: float = float(last_hit_vo.get("hity", 0.0))
+			var last_hurt_type: int = int(last_hit_vo.get("hurtType", 0))
+			if last_hurt_type == 1:
+				if last_hity == 0.0:
+					last_hity = -6.0
+				_start_original_hurt_fly(last_hitx, last_hity)
+				original_round_end_dead_lock = true
+				is_alive = false
+				print("原版 KO：最后一击 hurtType=1，补回 hurtFly。 hitx=", last_hitx, " hity=", last_hity)
+				return
+			if absf(velocity_x) < 0.1 and absf(last_hitx) > 0.0:
+				velocity_x = last_hitx * HIT_SPEED_SCALE
+				damping_x = absf(last_hitx) * HIT_SPEED_SCALE * 3.0 + 180.0
+		action_locked = true
+		apply_gravity_enabled = true
+		print("原版 KO：保留普通受击硬直，hurtHold 结束后 playHurtDown -> DEAD。 vx=", velocity_x, " vy=", velocity_y)
+		return
+
+	# 异常兜底：如果 Godot 侧进入 KO 时已不是受击状态，对齐 FighterMain.die() 的 fallback。
+	# 但若最后一击本身是 hurtType=1，原版 doHurt 已经应当进入 HURT_FLYING，Godot 侧不能丢掉这段飞出过程。
+	if not last_hit_vo.is_empty() and int(last_hit_vo.get("hurtType", 0)) == 1:
+		var fallback_hitx: float = float(last_hit_vo.get("hitx", 7.0)) * float(attacker_facing)
+		var fallback_hity: float = float(last_hit_vo.get("hity", -6.0))
+		if fallback_hity == 0.0:
+			fallback_hity = -6.0
+		_start_original_hurt_fly(fallback_hitx, fallback_hity)
+	else:
+		_start_original_dead_hurt_down_tan()
+	is_alive = false
+	original_round_end_dead_lock = true
+	is_allow_be_hit = false
+	be_hit_gap_timer = 9999.0
+	action_locked = true
+	print("原版 KO fallback：非受击状态按 FighterMain.die() -> playHurtDown。")
+
+
+func is_original_round_end_dead_down() -> bool:
+	return original_round_end_dead_lock and current_action == "knock_down" and not in_air
 
 
 func stop_original_motion() -> void:
@@ -1175,6 +1486,10 @@ func update_frame() -> void:
 		return
 
 	ensure_sprite()
+	if current_action == "win" or current_action == "lose" or current_action.begins_with("knock_"):
+		sprite.material = null
+		sprite.modulate = Color.WHITE
+		sprite.self_modulate = Color.WHITE
 	sprite.texture = tex
 	sprite.flip_h = facing < 0
 	sprite.position = get_original_skill1_visual_offset()

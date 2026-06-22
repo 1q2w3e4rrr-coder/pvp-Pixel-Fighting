@@ -101,7 +101,7 @@ func _process(delta: float) -> void:
 			face_rect.modulate.a = 1.0
 
 
-func play_bisha(is_super: bool, face_id: String, target_pos: Vector2, facing: int, current_target_pos: Variant = null, xg_effect_pos: Variant = null, camera_zoom: float = 1.0) -> void:
+func play_bisha(is_super: bool, face_id: String, target_pos: Vector2, facing: int, current_target_pos: Variant = null, xg_effect_pos: Variant = null, camera_zoom: float = 1.0, face_slot_override: int = 0) -> void:
 	# 原版 EffectCtrl.bisha(isSuper, face)：Aizen_2 只用于超必杀，必须对应 bisha_super / XG_cbs。
 	# 这里加一层兜底，避免 manifest 解析或输入分支误传 is_super=false 时，S+I 又播放普通 XG_bs。
 	var resolved_is_super: bool = is_super or face_id == "Aizen_2"
@@ -135,9 +135,14 @@ func play_bisha(is_super: bool, face_id: String, target_pos: Vector2, facing: in
 		face_rect.texture = face_tex
 
 	# 原版 EffectCtrl.showFace():
-	# faceId 默认 1；若 currentTarget 存在且 target.x > currentTarget.x，则 faceId = 2。
+	#   faceId 默认 1；若 currentTarget 存在且 target.x > display.x，则 faceId = 2。
+	# 同一源码中保留了 TeamID.isTeam2(target) 的分支注释。当前课程版已经进入固定 2P 对战，
+	# 按用户目标使用“施放者队伍固定侧”：P1 -> 左侧 facemc1，P2 -> 右侧 facemc2；
+	# 未传 face_slot_override 时仍保留原版 released source 的相对位置兜底。
 	var original_face_slot: int = 1
-	if typeof(current_target_pos) == TYPE_VECTOR2:
+	if face_slot_override == 1 or face_slot_override == 2:
+		original_face_slot = face_slot_override
+	elif typeof(current_target_pos) == TYPE_VECTOR2:
 		var target_vec: Vector2 = current_target_pos
 		original_face_slot = 2 if target_pos.x > target_vec.x else 1
 	else:
@@ -167,7 +172,7 @@ func play_bisha(is_super: bool, face_id: String, target_pos: Vector2, facing: in
 		xg_effect.modulate.a = BISHA_SUPER_XG_ALPHA if resolved_is_super else BISHA_XG_ALPHA
 	AudioManager.play_effect_sfx("snd_cbs" if resolved_is_super else "snd_bs")
 
-	print("Step54 Bisha start face=", face_id, " is_super=", is_super, " resolved_super=", resolved_is_super, " slot=", original_face_slot, " face_pos=", face_target_pos, " effect=", effect_key, " xg_pos=", effect_pos, " zoom=", camera_zoom)
+	print("Step60 Bisha start face=", face_id, " is_super=", is_super, " resolved_super=", resolved_is_super, " slot=", original_face_slot, " override=", face_slot_override, " face_pos=", face_target_pos, " effect=", effect_key, " xg_pos=", effect_pos, " zoom=", camera_zoom)
 
 
 func end_bisha() -> void:
