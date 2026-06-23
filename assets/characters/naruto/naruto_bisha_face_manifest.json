@@ -1,0 +1,14 @@
+{
+  "character": "naruto",
+  "source": "OpenBleachVsNaruto/swf_source/f_fighter/naruto/DOMDocument.xml",
+  "faces": {
+    "Naruto_1": "res://assets/characters/naruto/face/Naruto_1.png",
+    "Naruto_2": "res://assets/characters/naruto/face/Naruto_2.png",
+    "Naruto_3": "res://assets/characters/naruto/face/Naruto_3.png"
+  },
+  "original_defineBishaFace": [
+    "defineBishaFace(\"Naruto_1\", bsface1)",
+    "defineBishaFace(\"Naruto_2\", bsface2)",
+    "defineBishaFace(\"Naruto_3\", bsface3)"
+  ]
+}

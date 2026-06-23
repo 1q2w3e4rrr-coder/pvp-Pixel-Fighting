@@ -156,14 +156,14 @@ func play_defense_effect(hit_vo: Dictionary, hit_rect: Rect2, facing: int = 1) -
 
 
 func play_steel_hit_effect(hit_vo: Dictionary, hit_rect: Rect2, facing: int = 1) -> void:
-	# 对照 EffectCtrler.doSteelHitEffect + EffectModel.initSteelHitEffect。
+	# 对照 EffectCtrler.doSteelHitEffect + EffectModel.initSteelHitEffect；原版 sound=snd_hit11。
 	# hitType=0 原版直接 return，不播放特效。
 	var hit_type: int = int(hit_vo.get("hitType", 0))
 	if hit_type == 0:
 		return
 	var effect_id: String = str(STEEL_EFFECT_BY_TYPE.get(hit_type, "steel_hit_mfdj"))
 	play_effect(effect_id, hit_rect.get_center(), facing, 1.0, true, true)
-	AudioManager.play_effect_sfx("snd_hit_steel")
+	AudioManager.play_effect_sfx("snd_hit11")
 
 
 func play_dash_effect(pos: Vector2, facing: int = 1, is_air: bool = false) -> void:

@@ -1,0 +1,215 @@
+{
+  "character": "naruto",
+  "source": "OpenBleachVsNaruto/swf_source/f_fighter/naruto/LIBRARY/元件/mc_0004.xml",
+  "attackers": {
+    "sbsmc": {
+      "name": "sbsmc",
+      "owner_action": "super_up",
+      "original_label": "上必杀",
+      "global_frame": 729,
+      "relative_frame": 74,
+      "duration": 73,
+      "add_attacker_source": "addAttacker(\"sbsmc\",{x:{moveToTarget:true,offset:0},y:{moveToTarget:false,offset:0},applyG:true});",
+      "library": "元件/mc_0033",
+      "instance_matrix": {
+        "a": 1.0,
+        "b": 0.0,
+        "c": 0.0,
+        "d": 1.0,
+        "tx": 56.55,
+        "ty": -6.3
+      },
+      "visual_effect": "sbsmc",
+      "child_hits": [
+        {
+          "frame_start": 7,
+          "frame_end": 44,
+          "hit": "sbs",
+          "instance": "sbsatm",
+          "library": "元件/mc_0114",
+          "rect": [
+            -105.0,
+            -175.1,
+            75.18,
+            109.41
+          ],
+          "label": "mc_0033 / sbsatm",
+          "key": "mc_0033:sbsatm:7-44"
+        },
+        {
+          "frame_start": 45,
+          "frame_end": 48,
+          "hit": "sbs2",
+          "instance": "sbs2atm",
+          "library": "元件/mc_0114",
+          "rect": [
+            -48.1,
+            -61.75,
+            35.94,
+            38.74
+          ],
+          "label": "mc_0033 / sbs2atm",
+          "key": "mc_0033:sbs2atm:45-48"
+        }
+      ],
+      "notes": "Parsed from Naruto mc_0004 addAttacker and child MovieClip. Rects are XFL Matrix transformed bbox."
+    },
+    "cbsmc": {
+      "name": "cbsmc",
+      "owner_action": "super_special_tf",
+      "original_label": "超必杀_TF",
+      "global_frame": 917,
+      "relative_frame": 2,
+      "duration": 40,
+      "add_attacker_source": "addAttacker(\"cbsmc\",{applyG:false});",
+      "library": "元件/mc_0009",
+      "instance_matrix": {
+        "a": 1.0,
+        "b": 0.0,
+        "c": 0.0,
+        "d": 1.0,
+        "tx": -125.65,
+        "ty": -150.85
+      },
+      "visual_effect": "cbsmc",
+      "child_hits": [
+        {
+          "frame_start": 0,
+          "frame_end": 30,
+          "hit": "cbs4",
+          "instance": "cbs4atm",
+          "library": "元件/mc_0114",
+          "rect": [
+            26.85,
+            100.59,
+            127.46,
+            75.51
+          ],
+          "label": "mc_0009 / cbs4atm",
+          "key": "mc_0009:cbs4atm:0-30"
+        },
+        {
+          "frame_start": 31,
+          "frame_end": 34,
+          "hit": "cbs",
+          "instance": "cbsatm",
+          "library": "元件/mc_0114",
+          "rect": [
+            26.85,
+            100.59,
+            127.46,
+            75.51
+          ],
+          "label": "mc_0009 / cbsatm",
+          "key": "mc_0009:cbsatm:31-34"
+        }
+      ],
+      "notes": "Parsed from Naruto mc_0004 addAttacker and child MovieClip. Rects are XFL Matrix transformed bbox."
+    },
+    "kj2mc": {
+      "name": "kj2mc",
+      "owner_action": "attack_skill2",
+      "original_label": "砍技2",
+      "global_frame": 300,
+      "relative_frame": 18,
+      "duration": 36,
+      "add_attacker_source": "addAttacker(\"kj2mc\");",
+      "library": "元件/mc_0035",
+      "instance_matrix": {
+        "a": 1.0,
+        "b": 0.0,
+        "c": 0.0,
+        "d": 1.0,
+        "tx": -49.15,
+        "ty": 14.9
+      },
+      "visual_effect": "kj2mc",
+      "child_hits": [
+        {
+          "frame_start": 6,
+          "frame_end": 7,
+          "hit": "kj23",
+          "instance": "kj23atm",
+          "library": "元件/mc_0114",
+          "rect": [
+            1.75,
+            -37.8,
+            11.28,
+            9.48
+          ],
+          "label": "mc_0035 / kj23atm",
+          "key": "mc_0035:kj23atm:6-7"
+        },
+        {
+          "frame_start": 13,
+          "frame_end": 14,
+          "hit": "kj24",
+          "instance": "kj24atm",
+          "library": "元件/mc_0114",
+          "rect": [
+            -15.25,
+            -42.45,
+            17.51,
+            19.03
+          ],
+          "label": "mc_0035 / kj24atm",
+          "key": "mc_0035:kj24atm:13-14"
+        }
+      ],
+      "notes": "Parsed from Naruto mc_0004 addAttacker and child MovieClip. Rects are XFL Matrix transformed bbox."
+    },
+    "kj2mc2": {
+      "name": "kj2mc2",
+      "owner_action": "attack_skill2",
+      "original_label": "砍技2",
+      "global_frame": 305,
+      "relative_frame": 23,
+      "duration": 42,
+      "add_attacker_source": "addAttacker(\"kj2mc2\");",
+      "library": "元件/mc_0034",
+      "instance_matrix": {
+        "a": 1.0,
+        "b": 0.0,
+        "c": 0.0,
+        "d": 1.0,
+        "tx": -98.15,
+        "ty": 9.0
+      },
+      "visual_effect": "kj2mc2",
+      "child_hits": [
+        {
+          "frame_start": 14,
+          "frame_end": 15,
+          "hit": "kj25",
+          "instance": "kj25atm",
+          "library": "元件/mc_0114",
+          "rect": [
+            -23.35,
+            -41.45,
+            17.3,
+            25.05
+          ],
+          "label": "mc_0034 / kj25atm",
+          "key": "mc_0034:kj25atm:14-15"
+        },
+        {
+          "frame_start": 16,
+          "frame_end": 16,
+          "hit": "kj25",
+          "instance": "kj25atm",
+          "library": "元件/mc_0114",
+          "rect": [
+            -3.25,
+            -41.45,
+            7.79,
+            25.05
+          ],
+          "label": "mc_0034 / kj25atm",
+          "key": "mc_0034:kj25atm:16-16"
+        }
+      ],
+      "notes": "Parsed from Naruto mc_0004 addAttacker and child MovieClip. Rects are XFL Matrix transformed bbox."
+    }
+  },
+  "notes": "Step106-110: Naruto addAttacker manifest. Aizen values are not reused."
+}

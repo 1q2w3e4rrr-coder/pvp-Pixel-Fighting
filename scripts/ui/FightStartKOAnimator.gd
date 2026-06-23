@@ -31,6 +31,12 @@ const SEQ_DIR: String = "res://assets/ui/fight/startko_sequences/"
 const TEX_DIR: String = "res://assets/ui/fight/announcer/"
 const FIGHT_SFX_DIR: String = "res://assets/sfx/fight/"
 
+# 原版 FightUI.showStart() 把 startKOmc.y 设为 -50。
+# 当前 FFDec 逐帧导出的 start 序列保留了较大的透明舞台边距，实际 Round/Fight 视觉中心比原版截图略低。
+# Step84：只对 start 序列做显示层微调，不影响 KO / Winner / TimeOver 的原版 y=0。
+const START_SEQUENCE_VISUAL_Y: float = -70.0
+const END_SEQUENCE_VISUAL_Y: float = 0.0
+
 var sprite: TextureRect
 var playing: bool = false
 var mode: String = ""
@@ -135,11 +141,12 @@ func _apply_original_startko_position(seq_name: String) -> void:
 	if sprite == null:
 		return
 	# 原版 FightUI.showStart: ui.startKOmc.y = -50。
-	# 原版 playKO / playTimeOver: ui.startKOmc.y = 0。
+	# 但当前 FFDec 序列外框保留透明边距，视觉上 Round/Fight 偏低；
+	# Step84 按截图反馈把 start 序列再上移 20px。KO/TimeOver/Winner 仍按原版 y=0。
 	if seq_name == "start":
-		sprite.position = Vector2(0.0, -50.0)
+		sprite.position = Vector2(0.0, START_SEQUENCE_VISUAL_Y)
 	else:
-		sprite.position = Vector2(0.0, 0.0)
+		sprite.position = Vector2(0.0, END_SEQUENCE_VISUAL_Y)
 
 
 func _update_original_events(virtual_frame: int) -> void:

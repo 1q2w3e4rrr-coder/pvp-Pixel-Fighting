@@ -1,0 +1,543 @@
+{
+  "character": "naruto",
+  "source": "OpenBleachVsNaruto/swf_source/f_fighter/naruto/LIBRARY/元件/mc_0004.xml",
+  "notes": "Step96-100: direct *atm and *chkm windows parsed from Naruto mc_0004.xml. Aizen values are not reused.",
+  "actions": {
+    "jump_attack": [
+      {
+        "original_label": "跳砍",
+        "frame_start": 4,
+        "frame_end": 5,
+        "global_start": 88,
+        "global_end": 89,
+        "instance": "tkatm",
+        "library": "元件/mc_0114",
+        "rect": [
+          3.2,
+          -31.55,
+          16.74,
+          28.28
+        ],
+        "hit": "tk",
+        "label": "jump_attack / tkatm",
+        "key": "naruto:jump_attack:tkatm:4-5"
+      },
+      {
+        "original_label": "跳砍",
+        "frame_start": 6,
+        "frame_end": 7,
+        "global_start": 90,
+        "global_end": 91,
+        "instance": "tkatm",
+        "library": "元件/mc_0114",
+        "rect": [
+          -4.75,
+          -3.55,
+          18.47,
+          26.39
+        ],
+        "hit": "tk",
+        "label": "jump_attack / tkatm",
+        "key": "naruto:jump_attack:tkatm:6-7"
+      }
+    ],
+    "air_skill": [
+      {
+        "original_label": "跳招",
+        "frame_start": 3,
+        "frame_end": 4,
+        "global_start": 103,
+        "global_end": 112,
+        "instance": "tzatm",
+        "library": "元件/mc_0114",
+        "rect": [
+          -3.8,
+          -0.35,
+          16.38,
+          22.09
+        ],
+        "hit": "tz",
+        "label": "air_skill / tzatm",
+        "key": "naruto:air_skill:tzatm:3-4"
+      }
+    ],
+    "atk1": [
+      {
+        "original_label": "砍1",
+        "frame_start": 4,
+        "frame_end": 5,
+        "global_start": 124,
+        "global_end": 125,
+        "instance": "k1atm",
+        "library": "元件/mc_0114",
+        "rect": [
+          4.65,
+          -20.8,
+          14.83,
+          15.7
+        ],
+        "hit": "k1",
+        "label": "atk1 / k1atm",
+        "key": "naruto:atk1:k1atm:4-5"
+      }
+    ],
+    "atk2": [
+      {
+        "original_label": "砍2",
+        "frame_start": 6,
+        "frame_end": 7,
+        "global_start": 143,
+        "global_end": 144,
+        "instance": "k1atm",
+        "library": "元件/mc_0114",
+        "rect": [
+          6.3,
+          -15.3,
+          16.37,
+          13.0
+        ],
+        "hit": "k1",
+        "label": "atk2 / k1atm",
+        "key": "naruto:atk2:k1atm:6-7"
+      }
+    ],
+    "atk3": [
+      {
+        "original_label": "砍3",
+        "frame_start": 6,
+        "frame_end": 7,
+        "global_start": 163,
+        "global_end": 164,
+        "instance": "k3atm",
+        "library": "元件/mc_0114",
+        "rect": [
+          4.65,
+          -26.2,
+          14.49,
+          28.41
+        ],
+        "hit": "k3",
+        "label": "atk3 / k3atm",
+        "key": "naruto:atk3:k3atm:6-7"
+      }
+    ],
+    "atk4": [
+      {
+        "original_label": "砍4",
+        "frame_start": 8,
+        "frame_end": 10,
+        "global_start": 194,
+        "global_end": 196,
+        "instance": "k4atm",
+        "library": "元件/mc_0114",
+        "rect": [
+          0.5,
+          -36.9,
+          14.75,
+          38.18
+        ],
+        "hit": "k4",
+        "label": "atk4 / k4atm",
+        "key": "naruto:atk4:k4atm:8-10"
+      }
+    ],
+    "attack_skill1_check": [
+      {
+        "original_label": "砍技1_CHK",
+        "frame_start": 0,
+        "frame_end": 1,
+        "global_start": 244,
+        "global_end": 245,
+        "instance": "kj1atm",
+        "library": "元件/mc_0114",
+        "rect": [
+          4.75,
+          -27.7,
+          19.06,
+          32.41
+        ],
+        "hit": "kj1",
+        "label": "attack_skill1_check / kj1atm",
+        "key": "naruto:attack_skill1_check:kj1atm:0-1"
+      },
+      {
+        "original_label": "砍技1_CHK",
+        "frame_start": 2,
+        "frame_end": 3,
+        "global_start": 246,
+        "global_end": 247,
+        "instance": "kj1atm",
+        "library": "元件/mc_0114",
+        "rect": [
+          0.55,
+          -41.65,
+          22.13,
+          47.62
+        ],
+        "hit": "kj1",
+        "label": "attack_skill1_check / kj1atm",
+        "key": "naruto:attack_skill1_check:kj1atm:2-3"
+      }
+    ],
+    "attack_skill2": [
+      {
+        "original_label": "砍技2",
+        "frame_start": 7,
+        "frame_end": 8,
+        "global_start": 289,
+        "global_end": 290,
+        "instance": "kj2atm",
+        "library": "元件/mc_0114",
+        "rect": [
+          -12.25,
+          -14.9,
+          15.95,
+          19.36
+        ],
+        "hit": "kj2",
+        "label": "attack_skill2 / kj2atm",
+        "key": "naruto:attack_skill2:kj2atm:7-8"
+      },
+      {
+        "original_label": "砍技2",
+        "frame_start": 13,
+        "frame_end": 14,
+        "global_start": 295,
+        "global_end": 296,
+        "instance": "kj22atm",
+        "library": "元件/mc_0114",
+        "rect": [
+          -8.75,
+          -11.4,
+          14.02,
+          17.77
+        ],
+        "hit": "kj22",
+        "label": "attack_skill2 / kj22atm",
+        "key": "naruto:attack_skill2:kj22atm:13-14"
+      }
+    ],
+    "skill3": [
+      {
+        "original_label": "招3",
+        "frame_start": 6,
+        "frame_end": 7,
+        "global_start": 435,
+        "global_end": 436,
+        "instance": "zh3atm",
+        "library": "元件/mc_0114",
+        "rect": [
+          -26.85,
+          -46.3,
+          29.21,
+          52.29
+        ],
+        "hit": "zh3",
+        "label": "skill3 / zh3atm",
+        "key": "naruto:skill3:zh3atm:6-7"
+      },
+      {
+        "original_label": "招3",
+        "frame_start": 14,
+        "frame_end": 16,
+        "global_start": 443,
+        "global_end": 445,
+        "instance": "zh32atm",
+        "library": "元件/mc_0114",
+        "rect": [
+          -10.0,
+          -17.8,
+          31.31,
+          36.27
+        ],
+        "hit": "zh32",
+        "label": "skill3 / zh32atm",
+        "key": "naruto:skill3:zh32atm:14-16"
+      }
+    ],
+    "throw1": [
+      {
+        "original_label": "摔1",
+        "frame_start": 1,
+        "frame_end": 3,
+        "global_start": 460,
+        "global_end": 462,
+        "instance": "sh1atm",
+        "library": "元件/mc_0021",
+        "rect": [
+          7.3,
+          -18.35,
+          9.41,
+          26.2
+        ],
+        "hit": "sh1",
+        "label": "throw1 / sh1atm",
+        "key": "naruto:throw1:sh1atm:1-3"
+      },
+      {
+        "original_label": "摔1",
+        "frame_start": 6,
+        "frame_end": 8,
+        "global_start": 465,
+        "global_end": 467,
+        "instance": "sh12atm",
+        "library": "元件/mc_0021",
+        "rect": [
+          7.3,
+          -18.35,
+          9.41,
+          26.2
+        ],
+        "hit": "sh12",
+        "label": "throw1 / sh12atm",
+        "key": "naruto:throw1:sh12atm:6-8"
+      }
+    ],
+    "throw2": [
+      {
+        "original_label": "摔2",
+        "frame_start": 1,
+        "frame_end": 2,
+        "global_start": 490,
+        "global_end": 491,
+        "instance": "sh2atm",
+        "library": "元件/mc_0021",
+        "rect": [
+          7.3,
+          -18.35,
+          9.41,
+          26.2
+        ],
+        "hit": "sh2",
+        "label": "throw2 / sh2atm",
+        "key": "naruto:throw2:sh2atm:1-2"
+      },
+      {
+        "original_label": "摔2",
+        "frame_start": 16,
+        "frame_end": 35,
+        "global_start": 505,
+        "global_end": 524,
+        "instance": "sh21atm",
+        "library": "元件/mc_0021",
+        "rect": [
+          20.85,
+          -19.85,
+          12.08,
+          20.85
+        ],
+        "hit": "sh21",
+        "label": "throw2 / sh21atm",
+        "key": "naruto:throw2:sh21atm:16-35"
+      },
+      {
+        "original_label": "摔2",
+        "frame_start": 36,
+        "frame_end": 38,
+        "global_start": 525,
+        "global_end": 527,
+        "instance": "sh22atm",
+        "library": "元件/mc_0021",
+        "rect": [
+          20.85,
+          -19.85,
+          12.08,
+          20.85
+        ],
+        "hit": "sh22",
+        "label": "throw2 / sh22atm",
+        "key": "naruto:throw2:sh22atm:36-38"
+      }
+    ],
+    "super": [
+      {
+        "original_label": "必杀",
+        "frame_start": 26,
+        "frame_end": 31,
+        "global_start": 577,
+        "global_end": 582,
+        "instance": "bs1atm",
+        "library": "元件/mc_0114",
+        "rect": [
+          -20.5,
+          -19.1,
+          10.0,
+          18.95
+        ],
+        "hit": "bs1",
+        "label": "super / bs1atm",
+        "key": "naruto:super:bs1atm:26-31"
+      },
+      {
+        "original_label": "必杀",
+        "frame_start": 32,
+        "frame_end": 36,
+        "global_start": 583,
+        "global_end": 587,
+        "instance": "bs1atm",
+        "library": "元件/mc_0114",
+        "rect": [
+          -21.75,
+          -19.1,
+          28.02,
+          18.95
+        ],
+        "hit": "bs1",
+        "label": "super / bs1atm",
+        "key": "naruto:super:bs1atm:32-36"
+      },
+      {
+        "original_label": "必杀",
+        "frame_start": 42,
+        "frame_end": 66,
+        "global_start": 593,
+        "global_end": 617,
+        "instance": "bs3atm",
+        "library": "元件/mc_0114",
+        "rect": [
+          24.05,
+          -38.6,
+          25.52,
+          39.95
+        ],
+        "hit": "bs3",
+        "label": "super / bs3atm",
+        "key": "naruto:super:bs3atm:42-66"
+      },
+      {
+        "original_label": "必杀",
+        "frame_start": 67,
+        "frame_end": 70,
+        "global_start": 618,
+        "global_end": 621,
+        "instance": "bsatm",
+        "library": "元件/mc_0114",
+        "rect": [
+          0.5,
+          -81.95,
+          48.66,
+          74.09
+        ],
+        "hit": "bs",
+        "label": "super / bsatm",
+        "key": "naruto:super:bsatm:67-70"
+      }
+    ],
+    "super_special": [
+      {
+        "original_label": "超必杀",
+        "frame_start": 81,
+        "frame_end": 84,
+        "global_start": 860,
+        "global_end": 863,
+        "instance": "cbs1atm",
+        "library": "元件/mc_0114",
+        "rect": [
+          -74.95,
+          25.9,
+          0.0,
+          0.0
+        ],
+        "hit": "cbs1",
+        "label": "super_special / cbs1atm",
+        "key": "naruto:super_special:cbs1atm:81-84"
+      },
+      {
+        "original_label": "超必杀",
+        "frame_start": 97,
+        "frame_end": 101,
+        "global_start": 876,
+        "global_end": 880,
+        "instance": "cbs2atm",
+        "library": "元件/mc_0114",
+        "rect": [
+          -44.75,
+          14.65,
+          0.0,
+          0.0
+        ],
+        "hit": "cbs2",
+        "label": "super_special / cbs2atm",
+        "key": "naruto:super_special:cbs2atm:97-101"
+      },
+      {
+        "original_label": "超必杀",
+        "frame_start": 122,
+        "frame_end": 122,
+        "global_start": 901,
+        "global_end": 914,
+        "instance": "cbs3atm",
+        "library": "元件/mc_0114",
+        "rect": [
+          -22.75,
+          45.95,
+          0.0,
+          0.0
+        ],
+        "hit": "cbs3",
+        "label": "super_special / cbs3atm",
+        "key": "naruto:super_special:cbs3atm:122-122"
+      }
+    ],
+    "skill1": [
+      {
+        "original_label": "招1",
+        "frame_start": 7,
+        "frame_end": 9,
+        "global_start": 347,
+        "global_end": 349,
+        "instance": "zh1atm",
+        "library": "元件/mc_0014",
+        "rect": [
+          3.7,
+          -30.0,
+          65.95,
+          40.5
+        ],
+        "hit": "zh1",
+        "label": "skill1 / zh1atm",
+        "key": "naruto:skill1:zh1atm:7-9"
+      }
+    ],
+    "skill2": [
+      {
+        "original_label": "招2",
+        "frame_start": 15,
+        "frame_end": 17,
+        "global_start": 384,
+        "global_end": 386,
+        "instance": "zh2atm",
+        "library": "元件/mc_0015",
+        "rect": [
+          16.5,
+          -11.8,
+          65.95,
+          40.5
+        ],
+        "hit": "zh2",
+        "label": "skill2 / zh2atm",
+        "key": "naruto:skill2:zh2atm:15-17"
+      }
+    ]
+  },
+  "checkers": {
+    "kj1_chkm": {
+      "original_label": "砍技1",
+      "frame_start": 13,
+      "frame_end": 30,
+      "global_start": 226,
+      "global_end": 243,
+      "instance": "kj1_chkm",
+      "library": "元件/mc_0114",
+      "rect": [
+        -4.3,
+        -21.8,
+        21.76,
+        28.69
+      ],
+      "checker": "kj1_chkm",
+      "owner_action": "attack_skill1",
+      "label": "attack_skill1 / kj1_chkm"
+    }
+  }
+}

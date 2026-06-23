@@ -1,0 +1,276 @@
+{
+  "character": "naruto",
+  "source": "OpenBleachVsNaruto/swf_source/f_fighter/naruto/DOMDocument.xml",
+  "sounds": {
+    "sound_0001": {
+      "name": "声音/sound_0001",
+      "href": "声音/sound_0001.mp3",
+      "expected_path": "res://assets/sfx/naruto/sound_0001.mp3"
+    },
+    "sound_0002": {
+      "name": "声音/sound_0002",
+      "href": "声音/sound_0002.wav",
+      "expected_path": "res://assets/sfx/naruto/sound_0002.wav"
+    },
+    "sound_0003": {
+      "name": "声音/sound_0003",
+      "href": "声音/sound_0003.wav",
+      "expected_path": "res://assets/sfx/naruto/sound_0003.wav"
+    },
+    "sound_0004": {
+      "name": "声音/sound_0004",
+      "href": "声音/sound_0004.wav",
+      "expected_path": "res://assets/sfx/naruto/sound_0004.wav"
+    },
+    "sound_0005": {
+      "name": "声音/sound_0005",
+      "href": "声音/sound_0005.wav",
+      "expected_path": "res://assets/sfx/naruto/sound_0005.wav"
+    },
+    "sound_0006": {
+      "name": "声音/sound_0006",
+      "href": "声音/sound_0006.wav",
+      "expected_path": "res://assets/sfx/naruto/sound_0006.wav"
+    },
+    "sound_0007": {
+      "name": "声音/sound_0007",
+      "href": "声音/sound_0007.wav",
+      "expected_path": "res://assets/sfx/naruto/sound_0007.wav"
+    },
+    "sound_0008": {
+      "name": "声音/sound_0008",
+      "href": "声音/sound_0008.wav",
+      "expected_path": "res://assets/sfx/naruto/sound_0008.wav"
+    },
+    "sound_0009": {
+      "name": "声音/sound_0009",
+      "href": "声音/sound_0009.wav",
+      "expected_path": "res://assets/sfx/naruto/sound_0009.wav"
+    },
+    "sound_0010": {
+      "name": "声音/sound_0010",
+      "href": "声音/sound_0010.mp3",
+      "expected_path": "res://assets/sfx/naruto/sound_0010.mp3"
+    },
+    "sound_0011": {
+      "name": "声音/sound_0011",
+      "href": "声音/sound_0011.wav",
+      "expected_path": "res://assets/sfx/naruto/sound_0011.wav"
+    },
+    "sound_0012": {
+      "name": "声音/sound_0012",
+      "href": "声音/sound_0012.mp3",
+      "expected_path": "res://assets/sfx/naruto/sound_0012.mp3"
+    },
+    "sound_0013": {
+      "name": "声音/sound_0013",
+      "href": "声音/sound_0013.wav",
+      "expected_path": "res://assets/sfx/naruto/sound_0013.wav"
+    },
+    "sound_0014": {
+      "name": "声音/sound_0014",
+      "href": "声音/sound_0014.mp3",
+      "expected_path": "res://assets/sfx/naruto/sound_0014.mp3"
+    },
+    "sound_0015": {
+      "name": "声音/sound_0015",
+      "href": "声音/sound_0015.mp3",
+      "expected_path": "res://assets/sfx/naruto/sound_0015.mp3"
+    },
+    "sound_0016": {
+      "name": "声音/sound_0016",
+      "href": "声音/sound_0016.mp3",
+      "expected_path": "res://assets/sfx/naruto/sound_0016.mp3"
+    },
+    "sound_0017": {
+      "name": "声音/sound_0017",
+      "href": "声音/sound_0017.wav",
+      "expected_path": "res://assets/sfx/naruto/sound_0017.wav"
+    },
+    "sound_0018": {
+      "name": "声音/sound_0018",
+      "href": "声音/sound_0018.mp3",
+      "expected_path": "res://assets/sfx/naruto/sound_0018.mp3"
+    },
+    "sound_0019": {
+      "name": "声音/sound_0019",
+      "href": "声音/sound_0019.wav",
+      "expected_path": "res://assets/sfx/naruto/sound_0019.wav"
+    },
+    "sound_0020": {
+      "name": "声音/sound_0020",
+      "href": "声音/sound_0020.mp3",
+      "expected_path": "res://assets/sfx/naruto/sound_0020.mp3"
+    },
+    "sound_0021": {
+      "name": "声音/sound_0021",
+      "href": "声音/sound_0021.wav",
+      "expected_path": "res://assets/sfx/naruto/sound_0021.wav"
+    },
+    "sound_0022": {
+      "name": "声音/sound_0022",
+      "href": "声音/sound_0022.mp3",
+      "expected_path": "res://assets/sfx/naruto/sound_0022.mp3"
+    },
+    "sound_0023": {
+      "name": "声音/sound_0023",
+      "href": "声音/sound_0023.wav",
+      "expected_path": "res://assets/sfx/naruto/sound_0023.wav"
+    },
+    "sound_0024": {
+      "name": "声音/sound_0024",
+      "href": "声音/sound_0024.mp3",
+      "expected_path": "res://assets/sfx/naruto/sound_0024.mp3"
+    },
+    "sound_0025": {
+      "name": "声音/sound_0025",
+      "href": "声音/sound_0025.wav",
+      "expected_path": "res://assets/sfx/naruto/sound_0025.wav"
+    },
+    "sound_0026": {
+      "name": "声音/sound_0026",
+      "href": "声音/sound_0026.mp3",
+      "expected_path": "res://assets/sfx/naruto/sound_0026.mp3"
+    },
+    "sound_0027": {
+      "name": "声音/sound_0027",
+      "href": "声音/sound_0027.wav",
+      "expected_path": "res://assets/sfx/naruto/sound_0027.wav"
+    },
+    "sound_0028": {
+      "name": "声音/sound_0028",
+      "href": "声音/sound_0028.wav",
+      "expected_path": "res://assets/sfx/naruto/sound_0028.wav"
+    },
+    "sound_0029": {
+      "name": "声音/sound_0029",
+      "href": "声音/sound_0029.wav",
+      "expected_path": "res://assets/sfx/naruto/sound_0029.wav"
+    },
+    "sound_0030": {
+      "name": "声音/sound_0030",
+      "href": "声音/sound_0030.mp3",
+      "expected_path": "res://assets/sfx/naruto/sound_0030.mp3"
+    },
+    "sound_0031": {
+      "name": "声音/sound_0031",
+      "href": "声音/sound_0031.wav",
+      "expected_path": "res://assets/sfx/naruto/sound_0031.wav"
+    },
+    "sound_0032": {
+      "name": "声音/sound_0032",
+      "href": "声音/sound_0032.wav",
+      "expected_path": "res://assets/sfx/naruto/sound_0032.wav"
+    },
+    "sound_0033": {
+      "name": "声音/sound_0033",
+      "href": "声音/sound_0033.wav",
+      "expected_path": "res://assets/sfx/naruto/sound_0033.wav"
+    },
+    "sound_0035": {
+      "name": "声音/sound_0035",
+      "href": "声音/sound_0035.wav",
+      "expected_path": "res://assets/sfx/naruto/sound_0035.wav"
+    },
+    "sound_0036": {
+      "name": "声音/sound_0036",
+      "href": "声音/sound_0036.wav",
+      "expected_path": "res://assets/sfx/naruto/sound_0036.wav"
+    },
+    "sound_0037": {
+      "name": "声音/sound_0037",
+      "href": "声音/sound_0037.wav",
+      "expected_path": "res://assets/sfx/naruto/sound_0037.wav"
+    },
+    "sound_0038": {
+      "name": "声音/sound_0038",
+      "href": "声音/sound_0038.wav",
+      "expected_path": "res://assets/sfx/naruto/sound_0038.wav"
+    },
+    "sound_0039": {
+      "name": "声音/sound_0039",
+      "href": "声音/sound_0039.wav",
+      "expected_path": "res://assets/sfx/naruto/sound_0039.wav"
+    },
+    "sound_0040": {
+      "name": "声音/sound_0040",
+      "href": "声音/sound_0040.mp3",
+      "expected_path": "res://assets/sfx/naruto/sound_0040.mp3"
+    },
+    "sound_0041": {
+      "name": "声音/sound_0041",
+      "href": "声音/sound_0041.wav",
+      "expected_path": "res://assets/sfx/naruto/sound_0041.wav"
+    },
+    "sound_0042": {
+      "name": "声音/sound_0042",
+      "href": "声音/sound_0042.wav",
+      "expected_path": "res://assets/sfx/naruto/sound_0042.wav"
+    },
+    "sound_0043": {
+      "name": "声音/sound_0043",
+      "href": "声音/sound_0043.wav",
+      "expected_path": "res://assets/sfx/naruto/sound_0043.wav"
+    },
+    "sound_0044": {
+      "name": "声音/sound_0044",
+      "href": "声音/sound_0044.wav",
+      "expected_path": "res://assets/sfx/naruto/sound_0044.wav"
+    },
+    "sound_0045": {
+      "name": "声音/sound_0045",
+      "href": "声音/sound_0045.mp3",
+      "expected_path": "res://assets/sfx/naruto/sound_0045.mp3"
+    },
+    "sound_0046": {
+      "name": "声音/sound_0046",
+      "href": "声音/sound_0046.mp3",
+      "expected_path": "res://assets/sfx/naruto/sound_0046.mp3"
+    },
+    "sound_0047": {
+      "name": "声音/sound_0047",
+      "href": "声音/sound_0047.wav",
+      "expected_path": "res://assets/sfx/naruto/sound_0047.wav"
+    },
+    "sound_0048": {
+      "name": "声音/sound_0048",
+      "href": "声音/sound_0048.mp3",
+      "expected_path": "res://assets/sfx/naruto/sound_0048.mp3"
+    },
+    "sound_0049": {
+      "name": "声音/sound_0049",
+      "href": "声音/sound_0049.mp3",
+      "expected_path": "res://assets/sfx/naruto/sound_0049.mp3"
+    },
+    "sound_0050": {
+      "name": "声音/sound_0050",
+      "href": "声音/sound_0050.wav",
+      "expected_path": "res://assets/sfx/naruto/sound_0050.wav"
+    },
+    "sound_0051": {
+      "name": "声音/sound_0051",
+      "href": "声音/sound_0051.mp3",
+      "expected_path": "res://assets/sfx/naruto/sound_0051.mp3"
+    },
+    "sound_0052": {
+      "name": "声音/sound_0052",
+      "href": "声音/sound_0052.wav",
+      "expected_path": "res://assets/sfx/naruto/sound_0052.wav"
+    },
+    "sound_0053": {
+      "name": "声音/sound_0053",
+      "href": "声音/sound_0053.mp3",
+      "expected_path": "res://assets/sfx/naruto/sound_0053.mp3"
+    },
+    "sound_0054": {
+      "name": "声音/sound_0054",
+      "href": "声音/sound_0054.mp3",
+      "expected_path": "res://assets/sfx/naruto/sound_0054.mp3"
+    }
+  },
+  "linkage": {
+    "snd_hurt1": "sound_0026",
+    "snd_hurt3": "sound_0027",
+    "snd_hurt2": "sound_0041"
+  }
+}

@@ -1,0 +1,5436 @@
+{
+  "character": "naruto",
+  "source": "OpenBleachVsNaruto/swf_source/f_fighter/naruto/LIBRARY/元件/mc_0004.xml",
+  "fps": 30,
+  "actions": {
+    "idle": {
+      "label": "站立",
+      "loop": true,
+      "fps": 30,
+      "frames": [
+        "actions_game/idle/0000.png",
+        "actions_game/idle/0001.png",
+        "actions_game/idle/0002.png",
+        "actions_game/idle/0003.png",
+        "actions_game/idle/0004.png",
+        "actions_game/idle/0005.png",
+        "actions_game/idle/0006.png",
+        "actions_game/idle/0007.png",
+        "actions_game/idle/0008.png"
+      ],
+      "events": []
+    },
+    "walk": {
+      "label": "走",
+      "loop": true,
+      "fps": 30,
+      "frames": [
+        "actions_game/walk/0000.png",
+        "actions_game/walk/0001.png",
+        "actions_game/walk/0002.png",
+        "actions_game/walk/0003.png",
+        "actions_game/walk/0004.png",
+        "actions_game/walk/0005.png",
+        "actions_game/walk/0006.png",
+        "actions_game/walk/0007.png",
+        "actions_game/walk/0008.png",
+        "actions_game/walk/0009.png",
+        "actions_game/walk/0010.png",
+        "actions_game/walk/0011.png",
+        "actions_game/walk/0012.png",
+        "actions_game/walk/0013.png",
+        "actions_game/walk/0014.png",
+        "actions_game/walk/0015.png",
+        "actions_game/walk/0016.png",
+        "actions_game/walk/0017.png",
+        "actions_game/walk/0018.png",
+        "actions_game/walk/0019.png",
+        "actions_game/walk/0020.png",
+        "actions_game/walk/0021.png",
+        "actions_game/walk/0022.png",
+        "actions_game/walk/0023.png"
+      ],
+      "events": [
+        {
+          "global_frame": 13,
+          "duration": 8,
+          "scripts": [
+            "parent.$effect_ctrler.walk();"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "walk",
+              "args_raw": "",
+              "source": "parent.$effect_ctrler.walk();",
+              "args": [],
+              "semantic": {
+                "type": "effect",
+                "effect_method": "walk",
+                "args": []
+              }
+            }
+          ],
+          "relative_frame": 4,
+          "source_character": "naruto",
+          "original_label": "走"
+        },
+        {
+          "global_frame": 21,
+          "duration": 13,
+          "scripts": [
+            "parent.$effect_ctrler.walk();"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "walk",
+              "args_raw": "",
+              "source": "parent.$effect_ctrler.walk();",
+              "args": [],
+              "semantic": {
+                "type": "effect",
+                "effect_method": "walk",
+                "args": []
+              }
+            }
+          ],
+          "relative_frame": 12,
+          "source_character": "naruto",
+          "original_label": "走"
+        },
+        {
+          "global_frame": 23,
+          "duration": 11,
+          "scripts": [
+            "parent.$mc_ctrler.loop(\"走\");"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "loop",
+              "args_raw": "\"走\"",
+              "source": "parent.$mc_ctrler.loop(\"走\");",
+              "args": [
+                "走"
+              ],
+              "semantic": {
+                "type": "loop_action",
+                "target_label": "走"
+              }
+            }
+          ],
+          "relative_frame": 14,
+          "source_character": "naruto",
+          "original_label": "走"
+        }
+      ]
+    },
+    "dash": {
+      "label": "瞬步",
+      "loop": false,
+      "fps": 30,
+      "frames": [
+        "actions_game/dash/0000.png",
+        "actions_game/dash/0001.png",
+        "actions_game/dash/0002.png",
+        "actions_game/dash/0003.png",
+        "actions_game/dash/0004.png",
+        "actions_game/dash/0005.png",
+        "actions_game/dash/0006.png",
+        "actions_game/dash/0007.png",
+        "actions_game/dash/0008.png",
+        "actions_game/dash/0009.png",
+        "actions_game/dash/0010.png",
+        "actions_game/dash/0011.png",
+        "actions_game/dash/0012.png",
+        "actions_game/dash/0013.png",
+        "actions_game/dash/0014.png",
+        "actions_game/dash/0015.png",
+        "actions_game/dash/0016.png",
+        "actions_game/dash/0017.png",
+        "actions_game/dash/0018.png",
+        "actions_game/dash/0019.png"
+      ],
+      "events": [
+        {
+          "global_frame": 34,
+          "duration": 67,
+          "scripts": [
+            "parent.$effect_ctrler.dash();\nparent.$effect_ctrler.shadow(255,0,0);"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "dash",
+              "args_raw": "",
+              "source": "parent.$effect_ctrler.dash();",
+              "args": [],
+              "semantic": {
+                "type": "effect",
+                "effect_method": "dash",
+                "args": []
+              }
+            },
+            {
+              "object": "effect_ctrler",
+              "method": "shadow",
+              "args_raw": "255,0,0",
+              "source": "parent.$effect_ctrler.shadow(255,0,0);",
+              "args": [
+                255,
+                0,
+                0
+              ]
+            }
+          ],
+          "relative_frame": 1,
+          "source_character": "naruto",
+          "original_label": "瞬步"
+        },
+        {
+          "global_frame": 34,
+          "duration": 9,
+          "scripts": [
+            "parent.$mc_ctrler.dash(2.5);"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "dash",
+              "args_raw": "2.5",
+              "source": "parent.$mc_ctrler.dash(2.5);",
+              "args": [
+                2.5
+              ],
+              "semantic": {
+                "type": "dash_or_stop",
+                "method": "dash",
+                "args": [
+                  2.5
+                ]
+              }
+            }
+          ],
+          "relative_frame": 1,
+          "source_character": "naruto",
+          "original_label": "瞬步"
+        },
+        {
+          "global_frame": 34,
+          "duration": 14,
+          "scripts": [
+            "parent.$mc_ctrler.setBisha();\nparent.$mc_ctrler.setBishaUP();\nparent.$mc_ctrler.setBishaSUPER();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "setBisha",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.setBisha();",
+              "args": []
+            },
+            {
+              "object": "mc_ctrler",
+              "method": "setBishaUP",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.setBishaUP();",
+              "args": []
+            },
+            {
+              "object": "mc_ctrler",
+              "method": "setBishaSUPER",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.setBishaSUPER();",
+              "args": []
+            }
+          ],
+          "relative_frame": 1,
+          "source_character": "naruto",
+          "original_label": "瞬步"
+        },
+        {
+          "global_frame": 43,
+          "duration": 58,
+          "scripts": [
+            "parent.$mc_ctrler.dashStop();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "dashStop",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.dashStop();",
+              "args": [],
+              "semantic": {
+                "type": "dash_or_stop",
+                "method": "dashStop",
+                "args": []
+              }
+            }
+          ],
+          "relative_frame": 10,
+          "source_character": "naruto",
+          "original_label": "瞬步"
+        },
+        {
+          "global_frame": 48,
+          "duration": 30,
+          "scripts": [
+            "parent.$mc_ctrler.idle();\n"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "idle",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.idle();",
+              "args": [],
+              "semantic": {
+                "type": "return_idle"
+              }
+            }
+          ],
+          "relative_frame": 15,
+          "source_character": "naruto",
+          "original_label": "瞬步"
+        }
+      ]
+    },
+    "jump_start": {
+      "label": "起跳",
+      "loop": false,
+      "fps": 30,
+      "frames": [
+        "actions_game/jump_start/0000.png",
+        "actions_game/jump_start/0001.png",
+        "actions_game/jump_start/0002.png",
+        "actions_game/jump_start/0003.png",
+        "actions_game/jump_start/0004.png"
+      ],
+      "events": []
+    },
+    "jump": {
+      "label": "跳",
+      "loop": true,
+      "fps": 30,
+      "frames": [
+        "actions_game/jump/0000.png",
+        "actions_game/jump/0001.png",
+        "actions_game/jump/0002.png",
+        "actions_game/jump/0003.png",
+        "actions_game/jump/0004.png"
+      ],
+      "events": []
+    },
+    "jump_mid": {
+      "label": "跳中",
+      "loop": true,
+      "fps": 30,
+      "frames": [
+        "actions_game/jump_mid/0000.png",
+        "actions_game/jump_mid/0001.png",
+        "actions_game/jump_mid/0002.png",
+        "actions_game/jump_mid/0003.png",
+        "actions_game/jump_mid/0004.png"
+      ],
+      "events": []
+    },
+    "fall": {
+      "label": "落",
+      "loop": true,
+      "fps": 30,
+      "frames": [
+        "actions_game/fall/0000.png",
+        "actions_game/fall/0001.png",
+        "actions_game/fall/0002.png",
+        "actions_game/fall/0003.png",
+        "actions_game/fall/0004.png"
+      ],
+      "events": []
+    },
+    "land": {
+      "label": "落地",
+      "loop": false,
+      "fps": 30,
+      "frames": [
+        "actions_game/land/0000.png",
+        "actions_game/land/0001.png",
+        "actions_game/land/0002.png",
+        "actions_game/land/0003.png",
+        "actions_game/land/0004.png",
+        "actions_game/land/0005.png",
+        "actions_game/land/0006.png",
+        "actions_game/land/0007.png",
+        "actions_game/land/0008.png",
+        "actions_game/land/0009.png",
+        "actions_game/land/0010.png"
+      ],
+      "events": [
+        {
+          "global_frame": 78,
+          "duration": 6,
+          "scripts": [
+            "parent.$mc_ctrler.idle();\n"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "idle",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.idle();",
+              "args": [],
+              "semantic": {
+                "type": "return_idle"
+              }
+            }
+          ],
+          "relative_frame": 5,
+          "source_character": "naruto",
+          "original_label": "落地"
+        }
+      ]
+    },
+    "jump_attack": {
+      "label": "跳砍",
+      "loop": false,
+      "fps": 30,
+      "frames": [
+        "actions_game/jump_attack/0000.png",
+        "actions_game/jump_attack/0001.png",
+        "actions_game/jump_attack/0002.png",
+        "actions_game/jump_attack/0003.png",
+        "actions_game/jump_attack/0004.png",
+        "actions_game/jump_attack/0005.png",
+        "actions_game/jump_attack/0006.png",
+        "actions_game/jump_attack/0007.png",
+        "actions_game/jump_attack/0008.png",
+        "actions_game/jump_attack/0009.png",
+        "actions_game/jump_attack/0010.png",
+        "actions_game/jump_attack/0011.png",
+        "actions_game/jump_attack/0012.png",
+        "actions_game/jump_attack/0013.png",
+        "actions_game/jump_attack/0014.png",
+        "actions_game/jump_attack/0015.png"
+      ],
+      "events": [
+        {
+          "global_frame": 84,
+          "duration": 7,
+          "scripts": [
+            "parent.$mc_ctrler.setAirMove(true);\n"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "setAirMove",
+              "args_raw": "true",
+              "source": "parent.$mc_ctrler.setAirMove(true);",
+              "args": [
+                true
+              ],
+              "semantic": {
+                "type": "air_move",
+                "enabled": true
+              }
+            }
+          ],
+          "relative_frame": 0,
+          "source_character": "naruto",
+          "original_label": "跳砍"
+        },
+        {
+          "global_frame": 86,
+          "duration": 38,
+          "scripts": [
+            "parent.$effect_ctrler.playSoundHit1();"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "playSoundHit1",
+              "args_raw": "",
+              "source": "parent.$effect_ctrler.playSoundHit1();",
+              "args": []
+            }
+          ],
+          "relative_frame": 2,
+          "source_character": "naruto",
+          "original_label": "跳砍"
+        },
+        {
+          "global_frame": 91,
+          "duration": 4,
+          "scripts": [
+            "parent.$mc_ctrler.setSkillAIR();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "setSkillAIR",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.setSkillAIR();",
+              "args": [],
+              "semantic": {
+                "type": "enable_skill",
+                "method": "setSkillAIR"
+              }
+            }
+          ],
+          "relative_frame": 7,
+          "source_character": "naruto",
+          "original_label": "跳砍"
+        },
+        {
+          "global_frame": 95,
+          "duration": 6,
+          "scripts": [
+            "parent.$mc_ctrler.idle();\n"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "idle",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.idle();",
+              "args": [],
+              "semantic": {
+                "type": "return_idle"
+              }
+            }
+          ],
+          "relative_frame": 11,
+          "source_character": "naruto",
+          "original_label": "跳砍"
+        }
+      ]
+    },
+    "air_skill": {
+      "label": "跳招",
+      "loop": false,
+      "fps": 30,
+      "frames": [
+        "actions_game/air_skill/0000.png",
+        "actions_game/air_skill/0001.png",
+        "actions_game/air_skill/0002.png",
+        "actions_game/air_skill/0003.png",
+        "actions_game/air_skill/0004.png"
+      ],
+      "events": [
+        {
+          "global_frame": 101,
+          "duration": 12,
+          "scripts": [
+            "parent.$effect_ctrler.shadow(255,0,0);\nparent.$effect_ctrler.shine();"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "shadow",
+              "args_raw": "255,0,0",
+              "source": "parent.$effect_ctrler.shadow(255,0,0);",
+              "args": [
+                255,
+                0,
+                0
+              ]
+            },
+            {
+              "object": "effect_ctrler",
+              "method": "shine",
+              "args_raw": "",
+              "source": "parent.$effect_ctrler.shine();",
+              "args": [],
+              "semantic": {
+                "type": "effect",
+                "effect_method": "shine",
+                "args": []
+              }
+            }
+          ],
+          "relative_frame": 1,
+          "source_character": "naruto",
+          "original_label": "跳招"
+        },
+        {
+          "global_frame": 101,
+          "duration": 10,
+          "scripts": [
+            "parent.$mc_ctrler.addQi(5);\nparent.$mc_ctrler.setTouchFloor(\"跳招_TF\",true);\nparent.$mc_ctrler.isApplyG(true);"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "addQi",
+              "args_raw": "5",
+              "source": "parent.$mc_ctrler.addQi(5);",
+              "args": [
+                5
+              ],
+              "semantic": {
+                "type": "add_qi",
+                "value": 5.0
+              }
+            },
+            {
+              "object": "mc_ctrler",
+              "method": "setTouchFloor",
+              "args_raw": "\"跳招_TF\",true",
+              "source": "parent.$mc_ctrler.setTouchFloor(\"跳招_TF\",true);",
+              "args": [
+                "跳招_TF",
+                true
+              ]
+            },
+            {
+              "object": "mc_ctrler",
+              "method": "isApplyG",
+              "args_raw": "true",
+              "source": "parent.$mc_ctrler.isApplyG(true);",
+              "args": [
+                true
+              ],
+              "semantic": {
+                "type": "apply_gravity",
+                "enabled": true
+              }
+            }
+          ],
+          "relative_frame": 1,
+          "source_character": "naruto",
+          "original_label": "跳招"
+        },
+        {
+          "global_frame": 101,
+          "duration": 2,
+          "scripts": [
+            "parent.$mc_ctrler.movePercent(-0.5,-0.5);"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "movePercent",
+              "args_raw": "-0.5,-0.5",
+              "source": "parent.$mc_ctrler.movePercent(-0.5,-0.5);",
+              "args": [
+                -0.5,
+                -0.5
+              ],
+              "semantic": {
+                "type": "movement",
+                "method": "movePercent",
+                "args": [
+                  -0.5,
+                  -0.5
+                ]
+              }
+            }
+          ],
+          "relative_frame": 1,
+          "source_character": "naruto",
+          "original_label": "跳招"
+        },
+        {
+          "global_frame": 101,
+          "relative_frame": 1,
+          "source_character": "naruto",
+          "original_label": "跳招",
+          "calls": [
+            {
+              "object": "timeline",
+              "method": "soundName",
+              "args_raw": "声音/sound_0018",
+              "source": "soundName=\"声音/sound_0018\"",
+              "args": [
+                "sound_0018"
+              ],
+              "semantic": {
+                "type": "timeline_sound",
+                "character_id": "naruto",
+                "sound_id": "sound_0018",
+                "sound_path": "res://assets/sfx/naruto/sound_0018.mp3"
+              }
+            }
+          ]
+        },
+        {
+          "global_frame": 103,
+          "duration": 19,
+          "scripts": [
+            "parent.$mc_ctrler.movePercent(2,1.5);"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "movePercent",
+              "args_raw": "2,1.5",
+              "source": "parent.$mc_ctrler.movePercent(2,1.5);",
+              "args": [
+                2,
+                1.5
+              ],
+              "semantic": {
+                "type": "movement",
+                "method": "movePercent",
+                "args": [
+                  2,
+                  1.5
+                ]
+              }
+            }
+          ],
+          "relative_frame": 3,
+          "source_character": "naruto",
+          "original_label": "跳招"
+        }
+      ]
+    },
+    "air_skill_l": {
+      "label": "跳招_L",
+      "loop": false,
+      "fps": 30,
+      "frames": [
+        "actions_game/air_skill_l/0000.png",
+        "actions_game/air_skill_l/0001.png",
+        "actions_game/air_skill_l/0002.png",
+        "actions_game/air_skill_l/0003.png",
+        "actions_game/air_skill_l/0004.png",
+        "actions_game/air_skill_l/0005.png",
+        "actions_game/air_skill_l/0006.png",
+        "actions_game/air_skill_l/0007.png"
+      ],
+      "events": [
+        {
+          "global_frame": 111,
+          "duration": 2,
+          "scripts": [
+            "parent.$mc_ctrler.loop(\"跳招_L\");"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "loop",
+              "args_raw": "\"跳招_L\"",
+              "source": "parent.$mc_ctrler.loop(\"跳招_L\");",
+              "args": [
+                "跳招_L"
+              ],
+              "semantic": {
+                "type": "loop_action",
+                "target_label": "跳招_L"
+              }
+            }
+          ],
+          "relative_frame": 6,
+          "source_character": "naruto",
+          "original_label": "跳招_L"
+        }
+      ]
+    },
+    "air_skill_tf": {
+      "label": "跳招_TF",
+      "loop": false,
+      "fps": 30,
+      "frames": [
+        "actions_game/air_skill_tf/0000.png",
+        "actions_game/air_skill_tf/0001.png",
+        "actions_game/air_skill_tf/0002.png",
+        "actions_game/air_skill_tf/0003.png",
+        "actions_game/air_skill_tf/0004.png",
+        "actions_game/air_skill_tf/0005.png",
+        "actions_game/air_skill_tf/0006.png"
+      ],
+      "events": [
+        {
+          "global_frame": 113,
+          "duration": 113,
+          "scripts": [
+            "parent.$effect_ctrler.endShadow();"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "endShadow",
+              "args_raw": "",
+              "source": "parent.$effect_ctrler.endShadow();",
+              "args": []
+            }
+          ],
+          "relative_frame": 0,
+          "source_character": "naruto",
+          "original_label": "跳招_TF"
+        },
+        {
+          "global_frame": 113,
+          "duration": 5,
+          "scripts": [
+            "parent.$mc_ctrler.endAct();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "endAct",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.endAct();",
+              "args": [],
+              "semantic": {
+                "type": "end_action"
+              }
+            }
+          ],
+          "relative_frame": 0,
+          "source_character": "naruto",
+          "original_label": "跳招_TF"
+        },
+        {
+          "global_frame": 118,
+          "duration": 8,
+          "scripts": [
+            "parent.$mc_ctrler.idle();\n"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "idle",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.idle();",
+              "args": [],
+              "semantic": {
+                "type": "return_idle"
+              }
+            }
+          ],
+          "relative_frame": 5,
+          "source_character": "naruto",
+          "original_label": "跳招_TF"
+        }
+      ]
+    },
+    "atk1": {
+      "label": "砍1",
+      "loop": false,
+      "fps": 30,
+      "frames": [
+        "actions_game/atk1/0000.png",
+        "actions_game/atk1/0001.png",
+        "actions_game/atk1/0002.png",
+        "actions_game/atk1/0003.png",
+        "actions_game/atk1/0004.png",
+        "actions_game/atk1/0005.png",
+        "actions_game/atk1/0006.png",
+        "actions_game/atk1/0007.png",
+        "actions_game/atk1/0008.png",
+        "actions_game/atk1/0009.png",
+        "actions_game/atk1/0010.png",
+        "actions_game/atk1/0011.png",
+        "actions_game/atk1/0012.png",
+        "actions_game/atk1/0013.png",
+        "actions_game/atk1/0014.png",
+        "actions_game/atk1/0015.png",
+        "actions_game/atk1/0016.png"
+      ],
+      "events": [
+        {
+          "global_frame": 122,
+          "duration": 4,
+          "scripts": [
+            "parent.$mc_ctrler.movePercent(0.25,0);"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "movePercent",
+              "args_raw": "0.25,0",
+              "source": "parent.$mc_ctrler.movePercent(0.25,0);",
+              "args": [
+                0.25,
+                0
+              ],
+              "semantic": {
+                "type": "movement",
+                "method": "movePercent",
+                "args": [
+                  0.25,
+                  0
+                ]
+              }
+            }
+          ],
+          "relative_frame": 2,
+          "source_character": "naruto",
+          "original_label": "砍1"
+        },
+        {
+          "global_frame": 124,
+          "duration": 17,
+          "scripts": [
+            "parent.$effect_ctrler.playSoundHit1();"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "playSoundHit1",
+              "args_raw": "",
+              "source": "parent.$effect_ctrler.playSoundHit1();",
+              "args": []
+            }
+          ],
+          "relative_frame": 4,
+          "source_character": "naruto",
+          "original_label": "砍1"
+        },
+        {
+          "global_frame": 126,
+          "duration": 6,
+          "scripts": [
+            "parent.$mc_ctrler.setAttack(\"砍2\");\nparent.$mc_ctrler.setZhao1();\nparent.$mc_ctrler.setBisha();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "setAttack",
+              "args_raw": "\"砍2\"",
+              "source": "parent.$mc_ctrler.setAttack(\"砍2\");",
+              "args": [
+                "砍2"
+              ],
+              "semantic": {
+                "type": "enable_next_attack",
+                "target_label": "砍2"
+              }
+            },
+            {
+              "object": "mc_ctrler",
+              "method": "setZhao1",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.setZhao1();",
+              "args": [],
+              "semantic": {
+                "type": "enable_zhao"
+              }
+            },
+            {
+              "object": "mc_ctrler",
+              "method": "setBisha",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.setBisha();",
+              "args": []
+            }
+          ],
+          "relative_frame": 6,
+          "source_character": "naruto",
+          "original_label": "砍1"
+        },
+        {
+          "global_frame": 126,
+          "duration": 14,
+          "scripts": [
+            "parent.$mc_ctrler.stopMove();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "stopMove",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.stopMove();",
+              "args": [],
+              "semantic": {
+                "type": "dash_or_stop",
+                "method": "stopMove",
+                "args": []
+              }
+            }
+          ],
+          "relative_frame": 6,
+          "source_character": "naruto",
+          "original_label": "砍1"
+        },
+        {
+          "global_frame": 132,
+          "duration": 6,
+          "scripts": [
+            "parent.$mc_ctrler.idle();\n"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "idle",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.idle();",
+              "args": [],
+              "semantic": {
+                "type": "return_idle"
+              }
+            }
+          ],
+          "relative_frame": 12,
+          "source_character": "naruto",
+          "original_label": "砍1"
+        }
+      ]
+    },
+    "atk2": {
+      "label": "砍2",
+      "loop": false,
+      "fps": 30,
+      "frames": [
+        "actions_game/atk2/0000.png",
+        "actions_game/atk2/0001.png",
+        "actions_game/atk2/0002.png",
+        "actions_game/atk2/0003.png",
+        "actions_game/atk2/0004.png",
+        "actions_game/atk2/0005.png",
+        "actions_game/atk2/0006.png",
+        "actions_game/atk2/0007.png",
+        "actions_game/atk2/0008.png",
+        "actions_game/atk2/0009.png",
+        "actions_game/atk2/0010.png",
+        "actions_game/atk2/0011.png",
+        "actions_game/atk2/0012.png",
+        "actions_game/atk2/0013.png",
+        "actions_game/atk2/0014.png",
+        "actions_game/atk2/0015.png",
+        "actions_game/atk2/0016.png",
+        "actions_game/atk2/0017.png",
+        "actions_game/atk2/0018.png",
+        "actions_game/atk2/0019.png"
+      ],
+      "events": [
+        {
+          "global_frame": 140,
+          "duration": 7,
+          "scripts": [
+            "parent.$mc_ctrler.movePercent(0.5,0);"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "movePercent",
+              "args_raw": "0.5,0",
+              "source": "parent.$mc_ctrler.movePercent(0.5,0);",
+              "args": [
+                0.5,
+                0
+              ],
+              "semantic": {
+                "type": "movement",
+                "method": "movePercent",
+                "args": [
+                  0.5,
+                  0
+                ]
+              }
+            }
+          ],
+          "relative_frame": 3,
+          "source_character": "naruto",
+          "original_label": "砍2"
+        },
+        {
+          "global_frame": 141,
+          "duration": 18,
+          "scripts": [
+            "parent.$effect_ctrler.playSoundHit1();"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "playSoundHit1",
+              "args_raw": "",
+              "source": "parent.$effect_ctrler.playSoundHit1();",
+              "args": []
+            }
+          ],
+          "relative_frame": 4,
+          "source_character": "naruto",
+          "original_label": "砍2"
+        },
+        {
+          "global_frame": 146,
+          "duration": 6,
+          "scripts": [
+            "parent.$mc_ctrler.setBisha();\nparent.$mc_ctrler.setSkill2();\nparent.$mc_ctrler.setAttack(\"砍3\");\nparent.$mc_ctrler.setZhao1();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "setBisha",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.setBisha();",
+              "args": []
+            },
+            {
+              "object": "mc_ctrler",
+              "method": "setSkill2",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.setSkill2();",
+              "args": [],
+              "semantic": {
+                "type": "enable_skill",
+                "method": "setSkill2",
+                "target_label": null
+              }
+            },
+            {
+              "object": "mc_ctrler",
+              "method": "setAttack",
+              "args_raw": "\"砍3\"",
+              "source": "parent.$mc_ctrler.setAttack(\"砍3\");",
+              "args": [
+                "砍3"
+              ],
+              "semantic": {
+                "type": "enable_next_attack",
+                "target_label": "砍3"
+              }
+            },
+            {
+              "object": "mc_ctrler",
+              "method": "setZhao1",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.setZhao1();",
+              "args": [],
+              "semantic": {
+                "type": "enable_zhao"
+              }
+            }
+          ],
+          "relative_frame": 9,
+          "source_character": "naruto",
+          "original_label": "砍2"
+        },
+        {
+          "global_frame": 147,
+          "duration": 14,
+          "scripts": [
+            "parent.$mc_ctrler.stopMove();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "stopMove",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.stopMove();",
+              "args": [],
+              "semantic": {
+                "type": "dash_or_stop",
+                "method": "stopMove",
+                "args": []
+              }
+            }
+          ],
+          "relative_frame": 10,
+          "source_character": "naruto",
+          "original_label": "砍2"
+        },
+        {
+          "global_frame": 152,
+          "duration": 3,
+          "scripts": [
+            "parent.$mc_ctrler.endAct();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "endAct",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.endAct();",
+              "args": [],
+              "semantic": {
+                "type": "end_action"
+              }
+            }
+          ],
+          "relative_frame": 15,
+          "source_character": "naruto",
+          "original_label": "砍2"
+        },
+        {
+          "global_frame": 155,
+          "duration": 15,
+          "scripts": [
+            "parent.$mc_ctrler.idle();\n"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "idle",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.idle();",
+              "args": [],
+              "semantic": {
+                "type": "return_idle"
+              }
+            }
+          ],
+          "relative_frame": 18,
+          "source_character": "naruto",
+          "original_label": "砍2"
+        }
+      ]
+    },
+    "atk3": {
+      "label": "砍3",
+      "loop": false,
+      "fps": 30,
+      "frames": [
+        "actions_game/atk3/0000.png",
+        "actions_game/atk3/0001.png",
+        "actions_game/atk3/0002.png",
+        "actions_game/atk3/0003.png",
+        "actions_game/atk3/0004.png",
+        "actions_game/atk3/0005.png",
+        "actions_game/atk3/0006.png",
+        "actions_game/atk3/0007.png",
+        "actions_game/atk3/0008.png",
+        "actions_game/atk3/0009.png",
+        "actions_game/atk3/0010.png",
+        "actions_game/atk3/0011.png",
+        "actions_game/atk3/0012.png",
+        "actions_game/atk3/0013.png",
+        "actions_game/atk3/0014.png",
+        "actions_game/atk3/0015.png",
+        "actions_game/atk3/0016.png",
+        "actions_game/atk3/0017.png",
+        "actions_game/atk3/0018.png",
+        "actions_game/atk3/0019.png",
+        "actions_game/atk3/0020.png",
+        "actions_game/atk3/0021.png",
+        "actions_game/atk3/0022.png",
+        "actions_game/atk3/0023.png",
+        "actions_game/atk3/0024.png",
+        "actions_game/atk3/0025.png",
+        "actions_game/atk3/0026.png",
+        "actions_game/atk3/0027.png",
+        "actions_game/atk3/0028.png"
+      ],
+      "events": [
+        {
+          "global_frame": 159,
+          "duration": 33,
+          "scripts": [
+            "parent.$effect_ctrler.playSoundHit2();"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "playSoundHit2",
+              "args_raw": "",
+              "source": "parent.$effect_ctrler.playSoundHit2();",
+              "args": []
+            }
+          ],
+          "relative_frame": 2,
+          "source_character": "naruto",
+          "original_label": "砍3"
+        },
+        {
+          "global_frame": 159,
+          "relative_frame": 2,
+          "source_character": "naruto",
+          "original_label": "砍3",
+          "calls": [
+            {
+              "object": "timeline",
+              "method": "soundName",
+              "args_raw": "声音/sound_0018",
+              "source": "soundName=\"声音/sound_0018\"",
+              "args": [
+                "sound_0018"
+              ],
+              "semantic": {
+                "type": "timeline_sound",
+                "character_id": "naruto",
+                "sound_id": "sound_0018",
+                "sound_path": "res://assets/sfx/naruto/sound_0018.mp3"
+              }
+            }
+          ]
+        },
+        {
+          "global_frame": 161,
+          "duration": 27,
+          "scripts": [
+            "parent.$mc_ctrler.movePercent(1.3,0);\nparent.$mc_ctrler.dampingPercent(0.1,0);"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "movePercent",
+              "args_raw": "1.3,0",
+              "source": "parent.$mc_ctrler.movePercent(1.3,0);",
+              "args": [
+                1.3,
+                0
+              ],
+              "semantic": {
+                "type": "movement",
+                "method": "movePercent",
+                "args": [
+                  1.3,
+                  0
+                ]
+              }
+            },
+            {
+              "object": "mc_ctrler",
+              "method": "dampingPercent",
+              "args_raw": "0.1,0",
+              "source": "parent.$mc_ctrler.dampingPercent(0.1,0);",
+              "args": [
+                0.1,
+                0
+              ],
+              "semantic": {
+                "type": "movement",
+                "method": "dampingPercent",
+                "args": [
+                  0.1,
+                  0
+                ]
+              }
+            }
+          ],
+          "relative_frame": 4,
+          "source_character": "naruto",
+          "original_label": "砍3"
+        },
+        {
+          "global_frame": 170,
+          "duration": 7,
+          "scripts": [
+            "parent.$mc_ctrler.setBishaSUPER();\nparent.$mc_ctrler.setSkill1();\nparent.$mc_ctrler.setAttack(\"砍4\");\nparent.$mc_ctrler.setZhao2();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "setBishaSUPER",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.setBishaSUPER();",
+              "args": []
+            },
+            {
+              "object": "mc_ctrler",
+              "method": "setSkill1",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.setSkill1();",
+              "args": [],
+              "semantic": {
+                "type": "enable_zhao"
+              }
+            },
+            {
+              "object": "mc_ctrler",
+              "method": "setAttack",
+              "args_raw": "\"砍4\"",
+              "source": "parent.$mc_ctrler.setAttack(\"砍4\");",
+              "args": [
+                "砍4"
+              ],
+              "semantic": {
+                "type": "enable_next_attack",
+                "target_label": "砍4"
+              }
+            },
+            {
+              "object": "mc_ctrler",
+              "method": "setZhao2",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.setZhao2();",
+              "args": []
+            }
+          ],
+          "relative_frame": 13,
+          "source_character": "naruto",
+          "original_label": "砍3"
+        },
+        {
+          "global_frame": 177,
+          "duration": 7,
+          "scripts": [
+            "parent.$mc_ctrler.endAct();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "endAct",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.endAct();",
+              "args": [],
+              "semantic": {
+                "type": "end_action"
+              }
+            }
+          ],
+          "relative_frame": 20,
+          "source_character": "naruto",
+          "original_label": "砍3"
+        },
+        {
+          "global_frame": 184,
+          "duration": 12,
+          "scripts": [
+            "parent.$mc_ctrler.idle();\n"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "idle",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.idle();",
+              "args": [],
+              "semantic": {
+                "type": "return_idle"
+              }
+            }
+          ],
+          "relative_frame": 27,
+          "source_character": "naruto",
+          "original_label": "砍3"
+        }
+      ]
+    },
+    "atk4": {
+      "label": "砍4",
+      "loop": false,
+      "fps": 30,
+      "frames": [
+        "actions_game/atk4/0000.png",
+        "actions_game/atk4/0001.png",
+        "actions_game/atk4/0002.png",
+        "actions_game/atk4/0003.png",
+        "actions_game/atk4/0004.png",
+        "actions_game/atk4/0005.png",
+        "actions_game/atk4/0006.png",
+        "actions_game/atk4/0007.png",
+        "actions_game/atk4/0008.png",
+        "actions_game/atk4/0009.png",
+        "actions_game/atk4/0010.png",
+        "actions_game/atk4/0011.png",
+        "actions_game/atk4/0012.png",
+        "actions_game/atk4/0013.png",
+        "actions_game/atk4/0014.png",
+        "actions_game/atk4/0015.png",
+        "actions_game/atk4/0016.png",
+        "actions_game/atk4/0017.png",
+        "actions_game/atk4/0018.png",
+        "actions_game/atk4/0019.png",
+        "actions_game/atk4/0020.png",
+        "actions_game/atk4/0021.png",
+        "actions_game/atk4/0022.png",
+        "actions_game/atk4/0023.png",
+        "actions_game/atk4/0024.png",
+        "actions_game/atk4/0025.png",
+        "actions_game/atk4/0026.png"
+      ],
+      "events": [
+        {
+          "global_frame": 188,
+          "duration": 8,
+          "scripts": [
+            "parent.$mc_ctrler.movePercent(1,0);"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "movePercent",
+              "args_raw": "1,0",
+              "source": "parent.$mc_ctrler.movePercent(1,0);",
+              "args": [
+                1,
+                0
+              ],
+              "semantic": {
+                "type": "movement",
+                "method": "movePercent",
+                "args": [
+                  1,
+                  0
+                ]
+              }
+            }
+          ],
+          "relative_frame": 2,
+          "source_character": "naruto",
+          "original_label": "砍4"
+        },
+        {
+          "global_frame": 192,
+          "duration": 31,
+          "scripts": [
+            "parent.$effect_ctrler.playSoundHit2();"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "playSoundHit2",
+              "args_raw": "",
+              "source": "parent.$effect_ctrler.playSoundHit2();",
+              "args": []
+            }
+          ],
+          "relative_frame": 6,
+          "source_character": "naruto",
+          "original_label": "砍4"
+        },
+        {
+          "global_frame": 192,
+          "relative_frame": 6,
+          "source_character": "naruto",
+          "original_label": "砍4",
+          "calls": [
+            {
+              "object": "timeline",
+              "method": "soundName",
+              "args_raw": "声音/sound_0018",
+              "source": "soundName=\"声音/sound_0018\"",
+              "args": [
+                "sound_0018"
+              ],
+              "semantic": {
+                "type": "timeline_sound",
+                "character_id": "naruto",
+                "sound_id": "sound_0018",
+                "sound_path": "res://assets/sfx/naruto/sound_0018.mp3"
+              }
+            }
+          ]
+        },
+        {
+          "global_frame": 196,
+          "duration": 8,
+          "scripts": [
+            "parent.$mc_ctrler.setBishaUP();\nparent.$mc_ctrler.setZhao3();\nparent.$mc_ctrler.setDash();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "setBishaUP",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.setBishaUP();",
+              "args": []
+            },
+            {
+              "object": "mc_ctrler",
+              "method": "setZhao3",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.setZhao3();",
+              "args": []
+            },
+            {
+              "object": "mc_ctrler",
+              "method": "setDash",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.setDash();",
+              "args": []
+            }
+          ],
+          "relative_frame": 10,
+          "source_character": "naruto",
+          "original_label": "砍4"
+        },
+        {
+          "global_frame": 196,
+          "duration": 30,
+          "scripts": [
+            "parent.$mc_ctrler.stopMove();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "stopMove",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.stopMove();",
+              "args": [],
+              "semantic": {
+                "type": "dash_or_stop",
+                "method": "stopMove",
+                "args": []
+              }
+            }
+          ],
+          "relative_frame": 10,
+          "source_character": "naruto",
+          "original_label": "砍4"
+        },
+        {
+          "global_frame": 204,
+          "duration": 5,
+          "scripts": [
+            "parent.$mc_ctrler.endAct();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "endAct",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.endAct();",
+              "args": [],
+              "semantic": {
+                "type": "end_action"
+              }
+            }
+          ],
+          "relative_frame": 18,
+          "source_character": "naruto",
+          "original_label": "砍4"
+        },
+        {
+          "global_frame": 209,
+          "duration": 5,
+          "scripts": [
+            "parent.$mc_ctrler.idle();\n"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "idle",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.idle();",
+              "args": [],
+              "semantic": {
+                "type": "return_idle"
+              }
+            }
+          ],
+          "relative_frame": 23,
+          "source_character": "naruto",
+          "original_label": "砍4"
+        }
+      ]
+    },
+    "attack_skill1": {
+      "label": "砍技1",
+      "loop": false,
+      "fps": 30,
+      "frames": [
+        "actions_game/attack_skill1/0000.png",
+        "actions_game/attack_skill1/0001.png",
+        "actions_game/attack_skill1/0002.png",
+        "actions_game/attack_skill1/0003.png",
+        "actions_game/attack_skill1/0004.png",
+        "actions_game/attack_skill1/0005.png",
+        "actions_game/attack_skill1/0006.png",
+        "actions_game/attack_skill1/0007.png",
+        "actions_game/attack_skill1/0008.png",
+        "actions_game/attack_skill1/0009.png",
+        "actions_game/attack_skill1/0010.png",
+        "actions_game/attack_skill1/0011.png",
+        "actions_game/attack_skill1/0012.png",
+        "actions_game/attack_skill1/0013.png",
+        "actions_game/attack_skill1/0014.png",
+        "actions_game/attack_skill1/0015.png",
+        "actions_game/attack_skill1/0016.png",
+        "actions_game/attack_skill1/0017.png",
+        "actions_game/attack_skill1/0018.png",
+        "actions_game/attack_skill1/0019.png",
+        "actions_game/attack_skill1/0020.png",
+        "actions_game/attack_skill1/0021.png",
+        "actions_game/attack_skill1/0022.png",
+        "actions_game/attack_skill1/0023.png",
+        "actions_game/attack_skill1/0024.png",
+        "actions_game/attack_skill1/0025.png",
+        "actions_game/attack_skill1/0026.png",
+        "actions_game/attack_skill1/0027.png",
+        "actions_game/attack_skill1/0028.png",
+        "actions_game/attack_skill1/0029.png",
+        "actions_game/attack_skill1/0030.png"
+      ],
+      "events": [
+        {
+          "global_frame": 214,
+          "duration": 12,
+          "scripts": [
+            "parent.$mc_ctrler.addQi(10);\n"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "addQi",
+              "args_raw": "10",
+              "source": "parent.$mc_ctrler.addQi(10);",
+              "args": [
+                10
+              ],
+              "semantic": {
+                "type": "add_qi",
+                "value": 10.0
+              }
+            }
+          ],
+          "relative_frame": 1,
+          "source_character": "naruto",
+          "original_label": "砍技1"
+        },
+        {
+          "global_frame": 220,
+          "relative_frame": 7,
+          "source_character": "naruto",
+          "original_label": "砍技1",
+          "calls": [
+            {
+              "object": "timeline",
+              "method": "soundName",
+              "args_raw": "声音/sound_0020",
+              "source": "soundName=\"声音/sound_0020\"",
+              "args": [
+                "sound_0020"
+              ],
+              "semantic": {
+                "type": "timeline_sound",
+                "character_id": "naruto",
+                "sound_id": "sound_0020",
+                "sound_path": "res://assets/sfx/naruto/sound_0020.mp3"
+              }
+            }
+          ]
+        },
+        {
+          "global_frame": 223,
+          "relative_frame": 10,
+          "source_character": "naruto",
+          "original_label": "砍技1",
+          "calls": [
+            {
+              "object": "timeline",
+              "method": "soundName",
+              "args_raw": "声音/sound_0040",
+              "source": "soundName=\"声音/sound_0040\"",
+              "args": [
+                "sound_0040"
+              ],
+              "semantic": {
+                "type": "timeline_sound",
+                "character_id": "naruto",
+                "sound_id": "sound_0040",
+                "sound_path": "res://assets/sfx/naruto/sound_0040.mp3"
+              }
+            }
+          ]
+        },
+        {
+          "global_frame": 226,
+          "duration": 18,
+          "scripts": [
+            "parent.$effect_ctrler.shadow(255,0,0);\nparent.$effect_ctrler.dash();"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "shadow",
+              "args_raw": "255,0,0",
+              "source": "parent.$effect_ctrler.shadow(255,0,0);",
+              "args": [
+                255,
+                0,
+                0
+              ]
+            },
+            {
+              "object": "effect_ctrler",
+              "method": "dash",
+              "args_raw": "",
+              "source": "parent.$effect_ctrler.dash();",
+              "args": [],
+              "semantic": {
+                "type": "effect",
+                "effect_method": "dash",
+                "args": []
+              }
+            }
+          ],
+          "relative_frame": 13,
+          "source_character": "naruto",
+          "original_label": "砍技1"
+        },
+        {
+          "global_frame": 226,
+          "duration": 18,
+          "scripts": [
+            "parent.$mc_ctrler.movePercent(1.5,0);\nparent.$mc_ctrler.setSteelBody(true);"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "movePercent",
+              "args_raw": "1.5,0",
+              "source": "parent.$mc_ctrler.movePercent(1.5,0);",
+              "args": [
+                1.5,
+                0
+              ],
+              "semantic": {
+                "type": "movement",
+                "method": "movePercent",
+                "args": [
+                  1.5,
+                  0
+                ]
+              }
+            },
+            {
+              "object": "mc_ctrler",
+              "method": "setSteelBody",
+              "args_raw": "true",
+              "source": "parent.$mc_ctrler.setSteelBody(true);",
+              "args": [
+                true
+              ],
+              "semantic": {
+                "type": "steel_body",
+                "enabled": true,
+                "is_super": false
+              }
+            }
+          ],
+          "relative_frame": 13,
+          "source_character": "naruto",
+          "original_label": "砍技1"
+        },
+        {
+          "global_frame": 226,
+          "duration": 22,
+          "scripts": [
+            "parent.$mc_ctrler.setHitTarget(\"kj1_chkm\",\"砍技1_CHK\");"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "setHitTarget",
+              "args_raw": "\"kj1_chkm\",\"砍技1_CHK\"",
+              "source": "parent.$mc_ctrler.setHitTarget(\"kj1_chkm\",\"砍技1_CHK\");",
+              "args": [
+                "kj1_chkm",
+                "砍技1_CHK"
+              ],
+              "semantic": {
+                "type": "hit_target_check",
+                "checker": "kj1_chkm",
+                "target_action": "砍技1_CHK"
+              }
+            }
+          ],
+          "relative_frame": 13,
+          "source_character": "naruto",
+          "original_label": "砍技1"
+        },
+        {
+          "global_frame": 236,
+          "relative_frame": 23,
+          "source_character": "naruto",
+          "original_label": "砍技1",
+          "calls": [
+            {
+              "object": "timeline",
+              "method": "soundName",
+              "args_raw": "声音/sound_0014",
+              "source": "soundName=\"声音/sound_0014\"",
+              "args": [
+                "sound_0014"
+              ],
+              "semantic": {
+                "type": "timeline_sound",
+                "character_id": "naruto",
+                "sound_id": "sound_0014",
+                "sound_path": "res://assets/sfx/naruto/sound_0014.mp3"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "attack_skill1_check": {
+      "label": "砍技1_CHK",
+      "loop": false,
+      "fps": 30,
+      "frames": [
+        "actions_game/attack_skill1_check/0000.png",
+        "actions_game/attack_skill1_check/0001.png",
+        "actions_game/attack_skill1_check/0002.png",
+        "actions_game/attack_skill1_check/0003.png",
+        "actions_game/attack_skill1_check/0004.png",
+        "actions_game/attack_skill1_check/0005.png",
+        "actions_game/attack_skill1_check/0006.png",
+        "actions_game/attack_skill1_check/0007.png",
+        "actions_game/attack_skill1_check/0008.png",
+        "actions_game/attack_skill1_check/0009.png",
+        "actions_game/attack_skill1_check/0010.png",
+        "actions_game/attack_skill1_check/0011.png",
+        "actions_game/attack_skill1_check/0012.png",
+        "actions_game/attack_skill1_check/0013.png",
+        "actions_game/attack_skill1_check/0014.png",
+        "actions_game/attack_skill1_check/0015.png",
+        "actions_game/attack_skill1_check/0016.png",
+        "actions_game/attack_skill1_check/0017.png",
+        "actions_game/attack_skill1_check/0018.png",
+        "actions_game/attack_skill1_check/0019.png",
+        "actions_game/attack_skill1_check/0020.png",
+        "actions_game/attack_skill1_check/0021.png",
+        "actions_game/attack_skill1_check/0022.png",
+        "actions_game/attack_skill1_check/0023.png",
+        "actions_game/attack_skill1_check/0024.png",
+        "actions_game/attack_skill1_check/0025.png",
+        "actions_game/attack_skill1_check/0026.png",
+        "actions_game/attack_skill1_check/0027.png",
+        "actions_game/attack_skill1_check/0028.png",
+        "actions_game/attack_skill1_check/0029.png",
+        "actions_game/attack_skill1_check/0030.png",
+        "actions_game/attack_skill1_check/0031.png",
+        "actions_game/attack_skill1_check/0032.png",
+        "actions_game/attack_skill1_check/0033.png",
+        "actions_game/attack_skill1_check/0034.png",
+        "actions_game/attack_skill1_check/0035.png",
+        "actions_game/attack_skill1_check/0036.png",
+        "actions_game/attack_skill1_check/0037.png"
+      ],
+      "events": [
+        {
+          "global_frame": 244,
+          "duration": 103,
+          "scripts": [
+            "parent.$effect_ctrler.endShadow();\nparent.$effect_ctrler.shine();"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "endShadow",
+              "args_raw": "",
+              "source": "parent.$effect_ctrler.endShadow();",
+              "args": []
+            },
+            {
+              "object": "effect_ctrler",
+              "method": "shine",
+              "args_raw": "",
+              "source": "parent.$effect_ctrler.shine();",
+              "args": [],
+              "semantic": {
+                "type": "effect",
+                "effect_method": "shine",
+                "args": []
+              }
+            }
+          ],
+          "relative_frame": 0,
+          "source_character": "naruto",
+          "original_label": "砍技1_CHK"
+        },
+        {
+          "global_frame": 244,
+          "duration": 44,
+          "scripts": [
+            "parent.$effect_ctrler.playSoundHit2();"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "playSoundHit2",
+              "args_raw": "",
+              "source": "parent.$effect_ctrler.playSoundHit2();",
+              "args": []
+            }
+          ],
+          "relative_frame": 0,
+          "source_character": "naruto",
+          "original_label": "砍技1_CHK"
+        },
+        {
+          "global_frame": 244,
+          "duration": 1,
+          "scripts": [
+            "parent.$mc_ctrler.dampingPercent(0.2,0);\n"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "dampingPercent",
+              "args_raw": "0.2,0",
+              "source": "parent.$mc_ctrler.dampingPercent(0.2,0);",
+              "args": [
+                0.2,
+                0
+              ],
+              "semantic": {
+                "type": "movement",
+                "method": "dampingPercent",
+                "args": [
+                  0.2,
+                  0
+                ]
+              }
+            }
+          ],
+          "relative_frame": 0,
+          "source_character": "naruto",
+          "original_label": "砍技1_CHK"
+        },
+        {
+          "global_frame": 244,
+          "relative_frame": 0,
+          "source_character": "naruto",
+          "original_label": "砍技1_CHK",
+          "calls": [
+            {
+              "object": "timeline",
+              "method": "soundName",
+              "args_raw": "声音/sound_0018",
+              "source": "soundName=\"声音/sound_0018\"",
+              "args": [
+                "sound_0018"
+              ],
+              "semantic": {
+                "type": "timeline_sound",
+                "character_id": "naruto",
+                "sound_id": "sound_0018",
+                "sound_path": "res://assets/sfx/naruto/sound_0018.mp3"
+              }
+            }
+          ]
+        },
+        {
+          "global_frame": 245,
+          "duration": 41,
+          "scripts": [
+            "parent.$mc_ctrler.setSteelBody(false);"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "setSteelBody",
+              "args_raw": "false",
+              "source": "parent.$mc_ctrler.setSteelBody(false);",
+              "args": [
+                false
+              ],
+              "semantic": {
+                "type": "steel_body",
+                "enabled": false,
+                "is_super": false
+              }
+            }
+          ],
+          "relative_frame": 1,
+          "source_character": "naruto",
+          "original_label": "砍技1_CHK"
+        },
+        {
+          "global_frame": 248,
+          "duration": 18,
+          "scripts": [
+            "parent.$mc_ctrler.endAct();\n"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "endAct",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.endAct();",
+              "args": [],
+              "semantic": {
+                "type": "end_action"
+              }
+            }
+          ],
+          "relative_frame": 4,
+          "source_character": "naruto",
+          "original_label": "砍技1_CHK"
+        },
+        {
+          "global_frame": 266,
+          "duration": 17,
+          "scripts": [
+            "parent.$mc_ctrler.idle();\n"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "idle",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.idle();",
+              "args": [],
+              "semantic": {
+                "type": "return_idle"
+              }
+            }
+          ],
+          "relative_frame": 22,
+          "source_character": "naruto",
+          "original_label": "砍技1_CHK"
+        }
+      ]
+    },
+    "attack_skill2": {
+      "label": "砍技2",
+      "loop": false,
+      "fps": 30,
+      "frames": [
+        "actions_game/attack_skill2/0000.png",
+        "actions_game/attack_skill2/0001.png",
+        "actions_game/attack_skill2/0002.png",
+        "actions_game/attack_skill2/0003.png",
+        "actions_game/attack_skill2/0004.png",
+        "actions_game/attack_skill2/0005.png",
+        "actions_game/attack_skill2/0006.png",
+        "actions_game/attack_skill2/0007.png",
+        "actions_game/attack_skill2/0008.png",
+        "actions_game/attack_skill2/0009.png",
+        "actions_game/attack_skill2/0010.png",
+        "actions_game/attack_skill2/0011.png",
+        "actions_game/attack_skill2/0012.png",
+        "actions_game/attack_skill2/0013.png",
+        "actions_game/attack_skill2/0014.png",
+        "actions_game/attack_skill2/0015.png",
+        "actions_game/attack_skill2/0016.png",
+        "actions_game/attack_skill2/0017.png",
+        "actions_game/attack_skill2/0018.png",
+        "actions_game/attack_skill2/0019.png",
+        "actions_game/attack_skill2/0020.png",
+        "actions_game/attack_skill2/0021.png",
+        "actions_game/attack_skill2/0022.png",
+        "actions_game/attack_skill2/0023.png",
+        "actions_game/attack_skill2/0024.png",
+        "actions_game/attack_skill2/0025.png",
+        "actions_game/attack_skill2/0026.png",
+        "actions_game/attack_skill2/0027.png",
+        "actions_game/attack_skill2/0028.png",
+        "actions_game/attack_skill2/0029.png",
+        "actions_game/attack_skill2/0030.png",
+        "actions_game/attack_skill2/0031.png",
+        "actions_game/attack_skill2/0032.png",
+        "actions_game/attack_skill2/0033.png",
+        "actions_game/attack_skill2/0034.png",
+        "actions_game/attack_skill2/0035.png",
+        "actions_game/attack_skill2/0036.png",
+        "actions_game/attack_skill2/0037.png",
+        "actions_game/attack_skill2/0038.png",
+        "actions_game/attack_skill2/0039.png",
+        "actions_game/attack_skill2/0040.png",
+        "actions_game/attack_skill2/0041.png",
+        "actions_game/attack_skill2/0042.png",
+        "actions_game/attack_skill2/0043.png",
+        "actions_game/attack_skill2/0044.png",
+        "actions_game/attack_skill2/0045.png",
+        "actions_game/attack_skill2/0046.png",
+        "actions_game/attack_skill2/0047.png",
+        "actions_game/attack_skill2/0048.png",
+        "actions_game/attack_skill2/0049.png",
+        "actions_game/attack_skill2/0050.png",
+        "actions_game/attack_skill2/0051.png",
+        "actions_game/attack_skill2/0052.png",
+        "actions_game/attack_skill2/0053.png",
+        "actions_game/attack_skill2/0054.png",
+        "actions_game/attack_skill2/0055.png",
+        "actions_game/attack_skill2/0056.png",
+        "actions_game/attack_skill2/0057.png"
+      ],
+      "events": [
+        {
+          "global_frame": 283,
+          "duration": 37,
+          "scripts": [
+            "parent.$mc_ctrler.addQi(5);"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "addQi",
+              "args_raw": "5",
+              "source": "parent.$mc_ctrler.addQi(5);",
+              "args": [
+                5
+              ],
+              "semantic": {
+                "type": "add_qi",
+                "value": 5.0
+              }
+            }
+          ],
+          "relative_frame": 1,
+          "source_character": "naruto",
+          "original_label": "砍技2"
+        },
+        {
+          "global_frame": 286,
+          "duration": 9,
+          "scripts": [
+            "parent.$mc_ctrler.movePercent(0.5,0);"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "movePercent",
+              "args_raw": "0.5,0",
+              "source": "parent.$mc_ctrler.movePercent(0.5,0);",
+              "args": [
+                0.5,
+                0
+              ],
+              "semantic": {
+                "type": "movement",
+                "method": "movePercent",
+                "args": [
+                  0.5,
+                  0
+                ]
+              }
+            }
+          ],
+          "relative_frame": 4,
+          "source_character": "naruto",
+          "original_label": "砍技2"
+        },
+        {
+          "global_frame": 288,
+          "duration": 7,
+          "scripts": [
+            "parent.$effect_ctrler.playSoundHit1();"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "playSoundHit1",
+              "args_raw": "",
+              "source": "parent.$effect_ctrler.playSoundHit1();",
+              "args": []
+            }
+          ],
+          "relative_frame": 6,
+          "source_character": "naruto",
+          "original_label": "砍技2"
+        },
+        {
+          "global_frame": 288,
+          "relative_frame": 6,
+          "source_character": "naruto",
+          "original_label": "砍技2",
+          "calls": [
+            {
+              "object": "timeline",
+              "method": "soundName",
+              "args_raw": "声音/sound_0018",
+              "source": "soundName=\"声音/sound_0018\"",
+              "args": [
+                "sound_0018"
+              ],
+              "semantic": {
+                "type": "timeline_sound",
+                "character_id": "naruto",
+                "sound_id": "sound_0018",
+                "sound_path": "res://assets/sfx/naruto/sound_0018.mp3"
+              }
+            }
+          ]
+        },
+        {
+          "global_frame": 295,
+          "duration": 4,
+          "scripts": [
+            "parent.$effect_ctrler.playSoundHit1();"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "playSoundHit1",
+              "args_raw": "",
+              "source": "parent.$effect_ctrler.playSoundHit1();",
+              "args": []
+            }
+          ],
+          "relative_frame": 13,
+          "source_character": "naruto",
+          "original_label": "砍技2"
+        },
+        {
+          "global_frame": 295,
+          "duration": 140,
+          "scripts": [
+            "parent.$mc_ctrler.dampingPercent(0.1,0);"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "dampingPercent",
+              "args_raw": "0.1,0",
+              "source": "parent.$mc_ctrler.dampingPercent(0.1,0);",
+              "args": [
+                0.1,
+                0
+              ],
+              "semantic": {
+                "type": "movement",
+                "method": "dampingPercent",
+                "args": [
+                  0.1,
+                  0
+                ]
+              }
+            }
+          ],
+          "relative_frame": 13,
+          "source_character": "naruto",
+          "original_label": "砍技2"
+        },
+        {
+          "global_frame": 299,
+          "relative_frame": 17,
+          "source_character": "naruto",
+          "original_label": "砍技2",
+          "calls": [
+            {
+              "object": "timeline",
+              "method": "soundName",
+              "args_raw": "声音/sound_0014",
+              "source": "soundName=\"声音/sound_0014\"",
+              "args": [
+                "sound_0014"
+              ],
+              "semantic": {
+                "type": "timeline_sound",
+                "character_id": "naruto",
+                "sound_id": "sound_0014",
+                "sound_path": "res://assets/sfx/naruto/sound_0014.mp3"
+              }
+            }
+          ]
+        },
+        {
+          "global_frame": 300,
+          "duration": 3,
+          "scripts": [
+            "parent.$mc_ctrler.addAttacker(\"kj2mc\");"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "addAttacker",
+              "args_raw": "\"kj2mc\"",
+              "source": "parent.$mc_ctrler.addAttacker(\"kj2mc\");",
+              "args": [
+                "kj2mc"
+              ],
+              "semantic": {
+                "type": "add_attacker",
+                "attacker": "kj2mc",
+                "args_raw": "\"kj2mc\""
+              }
+            }
+          ],
+          "relative_frame": 18,
+          "source_character": "naruto",
+          "original_label": "砍技2"
+        },
+        {
+          "global_frame": 304,
+          "relative_frame": 22,
+          "source_character": "naruto",
+          "original_label": "砍技2",
+          "calls": [
+            {
+              "object": "timeline",
+              "method": "soundName",
+              "args_raw": "声音/sound_0014",
+              "source": "soundName=\"声音/sound_0014\"",
+              "args": [
+                "sound_0014"
+              ],
+              "semantic": {
+                "type": "timeline_sound",
+                "character_id": "naruto",
+                "sound_id": "sound_0014",
+                "sound_path": "res://assets/sfx/naruto/sound_0014.mp3"
+              }
+            }
+          ]
+        },
+        {
+          "global_frame": 305,
+          "duration": 3,
+          "scripts": [
+            "parent.$mc_ctrler.addAttacker(\"kj2mc2\");"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "addAttacker",
+              "args_raw": "\"kj2mc2\"",
+              "source": "parent.$mc_ctrler.addAttacker(\"kj2mc2\");",
+              "args": [
+                "kj2mc2"
+              ],
+              "semantic": {
+                "type": "add_attacker",
+                "attacker": "kj2mc2",
+                "args_raw": "\"kj2mc2\""
+              }
+            }
+          ],
+          "relative_frame": 23,
+          "source_character": "naruto",
+          "original_label": "砍技2"
+        },
+        {
+          "global_frame": 320,
+          "duration": 21,
+          "scripts": [
+            "parent.$mc_ctrler.idle();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "idle",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.idle();",
+              "args": [],
+              "semantic": {
+                "type": "return_idle"
+              }
+            }
+          ],
+          "relative_frame": 38,
+          "source_character": "naruto",
+          "original_label": "砍技2"
+        }
+      ]
+    },
+    "skill1": {
+      "label": "招1",
+      "loop": false,
+      "fps": 30,
+      "frames": [
+        "actions_game/skill1/0000.png",
+        "actions_game/skill1/0001.png",
+        "actions_game/skill1/0002.png",
+        "actions_game/skill1/0003.png",
+        "actions_game/skill1/0004.png",
+        "actions_game/skill1/0005.png",
+        "actions_game/skill1/0006.png",
+        "actions_game/skill1/0007.png",
+        "actions_game/skill1/0008.png",
+        "actions_game/skill1/0009.png",
+        "actions_game/skill1/0010.png",
+        "actions_game/skill1/0011.png",
+        "actions_game/skill1/0012.png",
+        "actions_game/skill1/0013.png",
+        "actions_game/skill1/0014.png",
+        "actions_game/skill1/0015.png",
+        "actions_game/skill1/0016.png",
+        "actions_game/skill1/0017.png",
+        "actions_game/skill1/0018.png",
+        "actions_game/skill1/0019.png",
+        "actions_game/skill1/0020.png",
+        "actions_game/skill1/0021.png",
+        "actions_game/skill1/0022.png",
+        "actions_game/skill1/0023.png",
+        "actions_game/skill1/0024.png",
+        "actions_game/skill1/0025.png",
+        "actions_game/skill1/0026.png",
+        "actions_game/skill1/0027.png",
+        "actions_game/skill1/0028.png"
+      ],
+      "events": [
+        {
+          "global_frame": 341,
+          "duration": 9,
+          "scripts": [
+            "parent.$mc_ctrler.addQi(5);"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "addQi",
+              "args_raw": "5",
+              "source": "parent.$mc_ctrler.addQi(5);",
+              "args": [
+                5
+              ],
+              "semantic": {
+                "type": "add_qi",
+                "value": 5.0
+              }
+            }
+          ],
+          "relative_frame": 1,
+          "source_character": "naruto",
+          "original_label": "招1"
+        },
+        {
+          "global_frame": 345,
+          "relative_frame": 5,
+          "source_character": "naruto",
+          "original_label": "招1",
+          "calls": [
+            {
+              "object": "timeline",
+              "method": "soundName",
+              "args_raw": "声音/sound_0030",
+              "source": "soundName=\"声音/sound_0030\"",
+              "args": [
+                "sound_0030"
+              ],
+              "semantic": {
+                "type": "timeline_sound",
+                "character_id": "naruto",
+                "sound_id": "sound_0030",
+                "sound_path": "res://assets/sfx/naruto/sound_0030.mp3"
+              }
+            }
+          ]
+        },
+        {
+          "global_frame": 347,
+          "duration": 37,
+          "scripts": [
+            "parent.$effect_ctrler.shine();"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "shine",
+              "args_raw": "",
+              "source": "parent.$effect_ctrler.shine();",
+              "args": [],
+              "semantic": {
+                "type": "effect",
+                "effect_method": "shine",
+                "args": []
+              }
+            }
+          ],
+          "relative_frame": 7,
+          "source_character": "naruto",
+          "original_label": "招1"
+        },
+        {
+          "global_frame": 347,
+          "duration": 3,
+          "scripts": [
+            "parent.$mc_ctrler.fire(\"zh1atm\",{x:{start:15,hit:3},hold:1,hits:3});"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "fire",
+              "args_raw": "\"zh1atm\",{x:{start:15,hit:3},hold:1,hits:3}",
+              "source": "parent.$mc_ctrler.fire(\"zh1atm\",{x:{start:15,hit:3},hold:1,hits:3});",
+              "args": [
+                "zh1atm",
+                "{x:{start:15,hit:3},hold:1,hits:3}"
+              ]
+            }
+          ],
+          "relative_frame": 7,
+          "source_character": "naruto",
+          "original_label": "招1"
+        },
+        {
+          "global_frame": 350,
+          "duration": 9,
+          "scripts": [
+            "parent.$mc_ctrler.setBisha();\nparent.$mc_ctrler.setZhao2();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "setBisha",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.setBisha();",
+              "args": []
+            },
+            {
+              "object": "mc_ctrler",
+              "method": "setZhao2",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.setZhao2();",
+              "args": []
+            }
+          ],
+          "relative_frame": 10,
+          "source_character": "naruto",
+          "original_label": "招1"
+        },
+        {
+          "global_frame": 359,
+          "duration": 6,
+          "scripts": [
+            "parent.$mc_ctrler.endAct();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "endAct",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.endAct();",
+              "args": [],
+              "semantic": {
+                "type": "end_action"
+              }
+            }
+          ],
+          "relative_frame": 19,
+          "source_character": "naruto",
+          "original_label": "招1"
+        },
+        {
+          "global_frame": 365,
+          "duration": 5,
+          "scripts": [
+            "parent.$mc_ctrler.idle();\n"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "idle",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.idle();",
+              "args": [],
+              "semantic": {
+                "type": "return_idle"
+              }
+            }
+          ],
+          "relative_frame": 25,
+          "source_character": "naruto",
+          "original_label": "招1"
+        }
+      ]
+    },
+    "skill2": {
+      "label": "招2",
+      "loop": false,
+      "fps": 30,
+      "frames": [
+        "actions_game/skill2/0000.png",
+        "actions_game/skill2/0001.png",
+        "actions_game/skill2/0002.png",
+        "actions_game/skill2/0003.png",
+        "actions_game/skill2/0004.png",
+        "actions_game/skill2/0005.png",
+        "actions_game/skill2/0006.png",
+        "actions_game/skill2/0007.png",
+        "actions_game/skill2/0008.png",
+        "actions_game/skill2/0009.png",
+        "actions_game/skill2/0010.png",
+        "actions_game/skill2/0011.png",
+        "actions_game/skill2/0012.png",
+        "actions_game/skill2/0013.png",
+        "actions_game/skill2/0014.png",
+        "actions_game/skill2/0015.png",
+        "actions_game/skill2/0016.png",
+        "actions_game/skill2/0017.png",
+        "actions_game/skill2/0018.png",
+        "actions_game/skill2/0019.png",
+        "actions_game/skill2/0020.png",
+        "actions_game/skill2/0021.png",
+        "actions_game/skill2/0022.png",
+        "actions_game/skill2/0023.png",
+        "actions_game/skill2/0024.png",
+        "actions_game/skill2/0025.png",
+        "actions_game/skill2/0026.png",
+        "actions_game/skill2/0027.png",
+        "actions_game/skill2/0028.png",
+        "actions_game/skill2/0029.png",
+        "actions_game/skill2/0030.png",
+        "actions_game/skill2/0031.png",
+        "actions_game/skill2/0032.png",
+        "actions_game/skill2/0033.png",
+        "actions_game/skill2/0034.png",
+        "actions_game/skill2/0035.png",
+        "actions_game/skill2/0036.png",
+        "actions_game/skill2/0037.png",
+        "actions_game/skill2/0038.png",
+        "actions_game/skill2/0039.png",
+        "actions_game/skill2/0040.png",
+        "actions_game/skill2/0041.png",
+        "actions_game/skill2/0042.png",
+        "actions_game/skill2/0043.png",
+        "actions_game/skill2/0044.png",
+        "actions_game/skill2/0045.png",
+        "actions_game/skill2/0046.png",
+        "actions_game/skill2/0047.png",
+        "actions_game/skill2/0048.png",
+        "actions_game/skill2/0049.png",
+        "actions_game/skill2/0050.png",
+        "actions_game/skill2/0051.png",
+        "actions_game/skill2/0052.png",
+        "actions_game/skill2/0053.png",
+        "actions_game/skill2/0054.png",
+        "actions_game/skill2/0055.png",
+        "actions_game/skill2/0056.png",
+        "actions_game/skill2/0057.png",
+        "actions_game/skill2/0058.png",
+        "actions_game/skill2/0059.png"
+      ],
+      "events": [
+        {
+          "global_frame": 370,
+          "duration": 30,
+          "scripts": [
+            "parent.$mc_ctrler.addQi(10);"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "addQi",
+              "args_raw": "10",
+              "source": "parent.$mc_ctrler.addQi(10);",
+              "args": [
+                10
+              ],
+              "semantic": {
+                "type": "add_qi",
+                "value": 10.0
+              }
+            }
+          ],
+          "relative_frame": 1,
+          "source_character": "naruto",
+          "original_label": "招2"
+        },
+        {
+          "global_frame": 377,
+          "relative_frame": 8,
+          "source_character": "naruto",
+          "original_label": "招2",
+          "calls": [
+            {
+              "object": "timeline",
+              "method": "soundName",
+              "args_raw": "声音/sound_0018",
+              "source": "soundName=\"声音/sound_0018\"",
+              "args": [
+                "sound_0018"
+              ],
+              "semantic": {
+                "type": "timeline_sound",
+                "character_id": "naruto",
+                "sound_id": "sound_0018",
+                "sound_path": "res://assets/sfx/naruto/sound_0018.mp3"
+              }
+            }
+          ]
+        },
+        {
+          "global_frame": 377,
+          "relative_frame": 8,
+          "source_character": "naruto",
+          "original_label": "招2",
+          "calls": [
+            {
+              "object": "timeline",
+              "method": "soundName",
+              "args_raw": "声音/sound_0030",
+              "source": "soundName=\"声音/sound_0030\"",
+              "args": [
+                "sound_0030"
+              ],
+              "semantic": {
+                "type": "timeline_sound",
+                "character_id": "naruto",
+                "sound_id": "sound_0030",
+                "sound_path": "res://assets/sfx/naruto/sound_0030.mp3"
+              }
+            }
+          ]
+        },
+        {
+          "global_frame": 384,
+          "duration": 51,
+          "scripts": [
+            "parent.$effect_ctrler.shine();"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "shine",
+              "args_raw": "",
+              "source": "parent.$effect_ctrler.shine();",
+              "args": [],
+              "semantic": {
+                "type": "effect",
+                "effect_method": "shine",
+                "args": []
+              }
+            }
+          ],
+          "relative_frame": 15,
+          "source_character": "naruto",
+          "original_label": "招2"
+        },
+        {
+          "global_frame": 384,
+          "duration": 3,
+          "scripts": [
+            "parent.$mc_ctrler.fire(\"zh2atm\",{x:{start:10,hit:5},hold:1.5,hits:5,hp:200});"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "fire",
+              "args_raw": "\"zh2atm\",{x:{start:10,hit:5},hold:1.5,hits:5,hp:200}",
+              "source": "parent.$mc_ctrler.fire(\"zh2atm\",{x:{start:10,hit:5},hold:1.5,hits:5,hp:200});",
+              "args": [
+                "zh2atm",
+                "{x:{start:10,hit:5},hold:1.5,hits:5,hp:200}"
+              ]
+            }
+          ],
+          "relative_frame": 15,
+          "source_character": "naruto",
+          "original_label": "招2"
+        },
+        {
+          "global_frame": 400,
+          "duration": 30,
+          "scripts": [
+            "parent.$mc_ctrler.idle();\n"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "idle",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.idle();",
+              "args": [],
+              "semantic": {
+                "type": "return_idle"
+              }
+            }
+          ],
+          "relative_frame": 31,
+          "source_character": "naruto",
+          "original_label": "招2"
+        }
+      ]
+    },
+    "skill3": {
+      "label": "招3",
+      "loop": false,
+      "fps": 30,
+      "frames": [
+        "actions_game/skill3/0000.png",
+        "actions_game/skill3/0001.png",
+        "actions_game/skill3/0002.png",
+        "actions_game/skill3/0003.png",
+        "actions_game/skill3/0004.png",
+        "actions_game/skill3/0005.png",
+        "actions_game/skill3/0006.png",
+        "actions_game/skill3/0007.png",
+        "actions_game/skill3/0008.png",
+        "actions_game/skill3/0009.png",
+        "actions_game/skill3/0010.png",
+        "actions_game/skill3/0011.png",
+        "actions_game/skill3/0012.png",
+        "actions_game/skill3/0013.png",
+        "actions_game/skill3/0014.png",
+        "actions_game/skill3/0015.png",
+        "actions_game/skill3/0016.png",
+        "actions_game/skill3/0017.png",
+        "actions_game/skill3/0018.png",
+        "actions_game/skill3/0019.png",
+        "actions_game/skill3/0020.png",
+        "actions_game/skill3/0021.png",
+        "actions_game/skill3/0022.png",
+        "actions_game/skill3/0023.png",
+        "actions_game/skill3/0024.png",
+        "actions_game/skill3/0025.png",
+        "actions_game/skill3/0026.png",
+        "actions_game/skill3/0027.png",
+        "actions_game/skill3/0028.png",
+        "actions_game/skill3/0029.png"
+      ],
+      "events": [
+        {
+          "global_frame": 430,
+          "duration": 5,
+          "scripts": [
+            "parent.$mc_ctrler.addQi(5);\n\nparent.$mc_ctrler.setSteelBody(true);"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "addQi",
+              "args_raw": "5",
+              "source": "parent.$mc_ctrler.addQi(5);",
+              "args": [
+                5
+              ],
+              "semantic": {
+                "type": "add_qi",
+                "value": 5.0
+              }
+            },
+            {
+              "object": "mc_ctrler",
+              "method": "setSteelBody",
+              "args_raw": "true",
+              "source": "parent.$mc_ctrler.setSteelBody(true);",
+              "args": [
+                true
+              ],
+              "semantic": {
+                "type": "steel_body",
+                "enabled": true,
+                "is_super": false
+              }
+            }
+          ],
+          "relative_frame": 1,
+          "source_character": "naruto",
+          "original_label": "招3"
+        },
+        {
+          "global_frame": 433,
+          "relative_frame": 4,
+          "source_character": "naruto",
+          "original_label": "招3",
+          "calls": [
+            {
+              "object": "timeline",
+              "method": "soundName",
+              "args_raw": "声音/sound_0018",
+              "source": "soundName=\"声音/sound_0018\"",
+              "args": [
+                "sound_0018"
+              ],
+              "semantic": {
+                "type": "timeline_sound",
+                "character_id": "naruto",
+                "sound_id": "sound_0018",
+                "sound_path": "res://assets/sfx/naruto/sound_0018.mp3"
+              }
+            }
+          ]
+        },
+        {
+          "global_frame": 434,
+          "duration": 9,
+          "scripts": [
+            "parent.$effect_ctrler.playSoundHit1();"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "playSoundHit1",
+              "args_raw": "",
+              "source": "parent.$effect_ctrler.playSoundHit1();",
+              "args": []
+            }
+          ],
+          "relative_frame": 5,
+          "source_character": "naruto",
+          "original_label": "招3"
+        },
+        {
+          "global_frame": 435,
+          "duration": 11,
+          "scripts": [
+            "parent.$effect_ctrler.shadow(255,0,0);"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "shadow",
+              "args_raw": "255,0,0",
+              "source": "parent.$effect_ctrler.shadow(255,0,0);",
+              "args": [
+                255,
+                0,
+                0
+              ]
+            }
+          ],
+          "relative_frame": 6,
+          "source_character": "naruto",
+          "original_label": "招3"
+        },
+        {
+          "global_frame": 435,
+          "duration": 142,
+          "scripts": [
+            "parent.$mc_ctrler.movePercent(2,-2.4);\nparent.$mc_ctrler.dampingPercent(0.05,0.1);"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "movePercent",
+              "args_raw": "2,-2.4",
+              "source": "parent.$mc_ctrler.movePercent(2,-2.4);",
+              "args": [
+                2,
+                -2.4
+              ],
+              "semantic": {
+                "type": "movement",
+                "method": "movePercent",
+                "args": [
+                  2,
+                  -2.4
+                ]
+              }
+            },
+            {
+              "object": "mc_ctrler",
+              "method": "dampingPercent",
+              "args_raw": "0.05,0.1",
+              "source": "parent.$mc_ctrler.dampingPercent(0.05,0.1);",
+              "args": [
+                0.05,
+                0.1
+              ],
+              "semantic": {
+                "type": "movement",
+                "method": "dampingPercent",
+                "args": [
+                  0.05,
+                  0.1
+                ]
+              }
+            }
+          ],
+          "relative_frame": 6,
+          "source_character": "naruto",
+          "original_label": "招3"
+        },
+        {
+          "global_frame": 435,
+          "duration": 11,
+          "scripts": [
+            "parent.$mc_ctrler.setSteelBody(false);"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "setSteelBody",
+              "args_raw": "false",
+              "source": "parent.$mc_ctrler.setSteelBody(false);",
+              "args": [
+                false
+              ],
+              "semantic": {
+                "type": "steel_body",
+                "enabled": false,
+                "is_super": false
+              }
+            }
+          ],
+          "relative_frame": 6,
+          "source_character": "naruto",
+          "original_label": "招3"
+        },
+        {
+          "global_frame": 442,
+          "relative_frame": 13,
+          "source_character": "naruto",
+          "original_label": "招3",
+          "calls": [
+            {
+              "object": "timeline",
+              "method": "soundName",
+              "args_raw": "声音/sound_0018",
+              "source": "soundName=\"声音/sound_0018\"",
+              "args": [
+                "sound_0018"
+              ],
+              "semantic": {
+                "type": "timeline_sound",
+                "character_id": "naruto",
+                "sound_id": "sound_0018",
+                "sound_path": "res://assets/sfx/naruto/sound_0018.mp3"
+              }
+            }
+          ]
+        },
+        {
+          "global_frame": 443,
+          "duration": 21,
+          "scripts": [
+            "parent.$effect_ctrler.playSoundHit2();"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "playSoundHit2",
+              "args_raw": "",
+              "source": "parent.$effect_ctrler.playSoundHit2();",
+              "args": []
+            }
+          ],
+          "relative_frame": 14,
+          "source_character": "naruto",
+          "original_label": "招3"
+        },
+        {
+          "global_frame": 446,
+          "duration": 131,
+          "scripts": [
+            "parent.$effect_ctrler.endShadow();"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "endShadow",
+              "args_raw": "",
+              "source": "parent.$effect_ctrler.endShadow();",
+              "args": []
+            }
+          ],
+          "relative_frame": 17,
+          "source_character": "naruto",
+          "original_label": "招3"
+        },
+        {
+          "global_frame": 446,
+          "duration": 4,
+          "scripts": [
+            "parent.$mc_ctrler.endAct();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "endAct",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.endAct();",
+              "args": [],
+              "semantic": {
+                "type": "end_action"
+              }
+            }
+          ],
+          "relative_frame": 17,
+          "source_character": "naruto",
+          "original_label": "招3"
+        },
+        {
+          "global_frame": 450,
+          "duration": 10,
+          "scripts": [
+            "parent.$mc_ctrler.idle();\n"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "idle",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.idle();",
+              "args": [],
+              "semantic": {
+                "type": "return_idle"
+              }
+            }
+          ],
+          "relative_frame": 21,
+          "source_character": "naruto",
+          "original_label": "招3"
+        }
+      ]
+    },
+    "throw1": {
+      "label": "摔1",
+      "loop": false,
+      "fps": 30,
+      "frames": [
+        "actions_game/throw1/0000.png",
+        "actions_game/throw1/0001.png",
+        "actions_game/throw1/0002.png",
+        "actions_game/throw1/0003.png",
+        "actions_game/throw1/0004.png",
+        "actions_game/throw1/0005.png",
+        "actions_game/throw1/0006.png",
+        "actions_game/throw1/0007.png",
+        "actions_game/throw1/0008.png",
+        "actions_game/throw1/0009.png",
+        "actions_game/throw1/0010.png",
+        "actions_game/throw1/0011.png",
+        "actions_game/throw1/0012.png",
+        "actions_game/throw1/0013.png",
+        "actions_game/throw1/0014.png",
+        "actions_game/throw1/0015.png",
+        "actions_game/throw1/0016.png",
+        "actions_game/throw1/0017.png",
+        "actions_game/throw1/0018.png",
+        "actions_game/throw1/0019.png",
+        "actions_game/throw1/0020.png",
+        "actions_game/throw1/0021.png",
+        "actions_game/throw1/0022.png",
+        "actions_game/throw1/0023.png",
+        "actions_game/throw1/0024.png",
+        "actions_game/throw1/0025.png",
+        "actions_game/throw1/0026.png",
+        "actions_game/throw1/0027.png",
+        "actions_game/throw1/0028.png",
+        "actions_game/throw1/0029.png"
+      ],
+      "events": [
+        {
+          "global_frame": 460,
+          "duration": 19,
+          "scripts": [
+            "parent.$mc_ctrler.addQi(10);"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "addQi",
+              "args_raw": "10",
+              "source": "parent.$mc_ctrler.addQi(10);",
+              "args": [
+                10
+              ],
+              "semantic": {
+                "type": "add_qi",
+                "value": 10.0
+              }
+            }
+          ],
+          "relative_frame": 1,
+          "source_character": "naruto",
+          "original_label": "摔1"
+        },
+        {
+          "global_frame": 464,
+          "duration": 30,
+          "scripts": [
+            "parent.$effect_ctrler.playSoundHit2();"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "playSoundHit2",
+              "args_raw": "",
+              "source": "parent.$effect_ctrler.playSoundHit2();",
+              "args": []
+            }
+          ],
+          "relative_frame": 5,
+          "source_character": "naruto",
+          "original_label": "摔1"
+        },
+        {
+          "global_frame": 464,
+          "relative_frame": 5,
+          "source_character": "naruto",
+          "original_label": "摔1",
+          "calls": [
+            {
+              "object": "timeline",
+              "method": "soundName",
+              "args_raw": "声音/sound_0018",
+              "source": "soundName=\"声音/sound_0018\"",
+              "args": [
+                "sound_0018"
+              ],
+              "semantic": {
+                "type": "timeline_sound",
+                "character_id": "naruto",
+                "sound_id": "sound_0018",
+                "sound_path": "res://assets/sfx/naruto/sound_0018.mp3"
+              }
+            }
+          ]
+        },
+        {
+          "global_frame": 479,
+          "duration": 11,
+          "scripts": [
+            "parent.$mc_ctrler.idle();\n"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "idle",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.idle();",
+              "args": [],
+              "semantic": {
+                "type": "return_idle"
+              }
+            }
+          ],
+          "relative_frame": 20,
+          "source_character": "naruto",
+          "original_label": "摔1"
+        }
+      ]
+    },
+    "throw2": {
+      "label": "摔2",
+      "loop": false,
+      "fps": 30,
+      "frames": [
+        "actions_game/throw2/0000.png",
+        "actions_game/throw2/0001.png",
+        "actions_game/throw2/0002.png",
+        "actions_game/throw2/0003.png",
+        "actions_game/throw2/0004.png",
+        "actions_game/throw2/0005.png",
+        "actions_game/throw2/0006.png",
+        "actions_game/throw2/0007.png",
+        "actions_game/throw2/0008.png",
+        "actions_game/throw2/0009.png",
+        "actions_game/throw2/0010.png",
+        "actions_game/throw2/0011.png",
+        "actions_game/throw2/0012.png",
+        "actions_game/throw2/0013.png",
+        "actions_game/throw2/0014.png",
+        "actions_game/throw2/0015.png",
+        "actions_game/throw2/0016.png",
+        "actions_game/throw2/0017.png",
+        "actions_game/throw2/0018.png",
+        "actions_game/throw2/0019.png",
+        "actions_game/throw2/0020.png",
+        "actions_game/throw2/0021.png",
+        "actions_game/throw2/0022.png",
+        "actions_game/throw2/0023.png",
+        "actions_game/throw2/0024.png",
+        "actions_game/throw2/0025.png",
+        "actions_game/throw2/0026.png",
+        "actions_game/throw2/0027.png",
+        "actions_game/throw2/0028.png",
+        "actions_game/throw2/0029.png",
+        "actions_game/throw2/0030.png",
+        "actions_game/throw2/0031.png",
+        "actions_game/throw2/0032.png",
+        "actions_game/throw2/0033.png",
+        "actions_game/throw2/0034.png",
+        "actions_game/throw2/0035.png",
+        "actions_game/throw2/0036.png",
+        "actions_game/throw2/0037.png",
+        "actions_game/throw2/0038.png",
+        "actions_game/throw2/0039.png",
+        "actions_game/throw2/0040.png",
+        "actions_game/throw2/0041.png",
+        "actions_game/throw2/0042.png",
+        "actions_game/throw2/0043.png",
+        "actions_game/throw2/0044.png",
+        "actions_game/throw2/0045.png",
+        "actions_game/throw2/0046.png",
+        "actions_game/throw2/0047.png",
+        "actions_game/throw2/0048.png",
+        "actions_game/throw2/0049.png",
+        "actions_game/throw2/0050.png",
+        "actions_game/throw2/0051.png",
+        "actions_game/throw2/0052.png",
+        "actions_game/throw2/0053.png",
+        "actions_game/throw2/0054.png",
+        "actions_game/throw2/0055.png",
+        "actions_game/throw2/0056.png",
+        "actions_game/throw2/0057.png",
+        "actions_game/throw2/0058.png",
+        "actions_game/throw2/0059.png",
+        "actions_game/throw2/0060.png",
+        "actions_game/throw2/0061.png"
+      ],
+      "events": [
+        {
+          "global_frame": 490,
+          "duration": 38,
+          "scripts": [
+            "parent.$mc_ctrler.addQi(20);"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "addQi",
+              "args_raw": "20",
+              "source": "parent.$mc_ctrler.addQi(20);",
+              "args": [
+                20
+              ],
+              "semantic": {
+                "type": "add_qi",
+                "value": 20.0
+              }
+            }
+          ],
+          "relative_frame": 1,
+          "source_character": "naruto",
+          "original_label": "摔2"
+        },
+        {
+          "global_frame": 494,
+          "relative_frame": 5,
+          "source_character": "naruto",
+          "original_label": "摔2",
+          "calls": [
+            {
+              "object": "timeline",
+              "method": "soundName",
+              "args_raw": "声音/sound_0014",
+              "source": "soundName=\"声音/sound_0014\"",
+              "args": [
+                "sound_0014"
+              ],
+              "semantic": {
+                "type": "timeline_sound",
+                "character_id": "naruto",
+                "sound_id": "sound_0014",
+                "sound_path": "res://assets/sfx/naruto/sound_0014.mp3"
+              }
+            }
+          ]
+        },
+        {
+          "global_frame": 494,
+          "relative_frame": 5,
+          "source_character": "naruto",
+          "original_label": "摔2",
+          "calls": [
+            {
+              "object": "timeline",
+              "method": "soundName",
+              "args_raw": "声音/sound_0016",
+              "source": "soundName=\"声音/sound_0016\"",
+              "args": [
+                "sound_0016"
+              ],
+              "semantic": {
+                "type": "timeline_sound",
+                "character_id": "naruto",
+                "sound_id": "sound_0016",
+                "sound_path": "res://assets/sfx/naruto/sound_0016.mp3"
+              }
+            }
+          ]
+        },
+        {
+          "global_frame": 505,
+          "duration": 60,
+          "scripts": [
+            "parent.$effect_ctrler.playSoundHit2();"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "playSoundHit2",
+              "args_raw": "",
+              "source": "parent.$effect_ctrler.playSoundHit2();",
+              "args": []
+            }
+          ],
+          "relative_frame": 16,
+          "source_character": "naruto",
+          "original_label": "摔2"
+        },
+        {
+          "global_frame": 528,
+          "duration": 15,
+          "scripts": [
+            "parent.$mc_ctrler.endAct();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "endAct",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.endAct();",
+              "args": [],
+              "semantic": {
+                "type": "end_action"
+              }
+            }
+          ],
+          "relative_frame": 39,
+          "source_character": "naruto",
+          "original_label": "摔2"
+        },
+        {
+          "global_frame": 543,
+          "duration": 11,
+          "scripts": [
+            "parent.$mc_ctrler.idle();\n"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "idle",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.idle();",
+              "args": [],
+              "semantic": {
+                "type": "return_idle"
+              }
+            }
+          ],
+          "relative_frame": 54,
+          "source_character": "naruto",
+          "original_label": "摔2"
+        }
+      ]
+    },
+    "super": {
+      "label": "必杀",
+      "loop": false,
+      "fps": 30,
+      "frames": [
+        "actions_game/super/0000.png",
+        "actions_game/super/0001.png",
+        "actions_game/super/0002.png",
+        "actions_game/super/0003.png",
+        "actions_game/super/0004.png",
+        "actions_game/super/0005.png",
+        "actions_game/super/0006.png",
+        "actions_game/super/0007.png",
+        "actions_game/super/0008.png",
+        "actions_game/super/0009.png",
+        "actions_game/super/0010.png",
+        "actions_game/super/0011.png",
+        "actions_game/super/0012.png",
+        "actions_game/super/0013.png",
+        "actions_game/super/0014.png",
+        "actions_game/super/0015.png",
+        "actions_game/super/0016.png",
+        "actions_game/super/0017.png",
+        "actions_game/super/0018.png",
+        "actions_game/super/0019.png",
+        "actions_game/super/0020.png",
+        "actions_game/super/0021.png",
+        "actions_game/super/0022.png",
+        "actions_game/super/0023.png",
+        "actions_game/super/0024.png",
+        "actions_game/super/0025.png",
+        "actions_game/super/0026.png",
+        "actions_game/super/0027.png",
+        "actions_game/super/0028.png",
+        "actions_game/super/0029.png",
+        "actions_game/super/0030.png",
+        "actions_game/super/0031.png",
+        "actions_game/super/0032.png",
+        "actions_game/super/0033.png",
+        "actions_game/super/0034.png",
+        "actions_game/super/0035.png",
+        "actions_game/super/0036.png",
+        "actions_game/super/0037.png",
+        "actions_game/super/0038.png",
+        "actions_game/super/0039.png",
+        "actions_game/super/0040.png",
+        "actions_game/super/0041.png",
+        "actions_game/super/0042.png",
+        "actions_game/super/0043.png",
+        "actions_game/super/0044.png",
+        "actions_game/super/0045.png",
+        "actions_game/super/0046.png",
+        "actions_game/super/0047.png",
+        "actions_game/super/0048.png",
+        "actions_game/super/0049.png",
+        "actions_game/super/0050.png",
+        "actions_game/super/0051.png",
+        "actions_game/super/0052.png",
+        "actions_game/super/0053.png",
+        "actions_game/super/0054.png",
+        "actions_game/super/0055.png",
+        "actions_game/super/0056.png",
+        "actions_game/super/0057.png",
+        "actions_game/super/0058.png",
+        "actions_game/super/0059.png",
+        "actions_game/super/0060.png",
+        "actions_game/super/0061.png",
+        "actions_game/super/0062.png",
+        "actions_game/super/0063.png",
+        "actions_game/super/0064.png",
+        "actions_game/super/0065.png",
+        "actions_game/super/0066.png",
+        "actions_game/super/0067.png",
+        "actions_game/super/0068.png",
+        "actions_game/super/0069.png",
+        "actions_game/super/0070.png",
+        "actions_game/super/0071.png",
+        "actions_game/super/0072.png",
+        "actions_game/super/0073.png",
+        "actions_game/super/0074.png",
+        "actions_game/super/0075.png",
+        "actions_game/super/0076.png",
+        "actions_game/super/0077.png",
+        "actions_game/super/0078.png",
+        "actions_game/super/0079.png",
+        "actions_game/super/0080.png",
+        "actions_game/super/0081.png"
+      ],
+      "events": [
+        {
+          "global_frame": 554,
+          "duration": 34,
+          "scripts": [
+            "parent.$effect_ctrler.bisha(false,\"Naruto_2\");"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "bisha",
+              "args_raw": "false,\"Naruto_2\"",
+              "source": "parent.$effect_ctrler.bisha(false,\"Naruto_2\");",
+              "args": [
+                false,
+                "Naruto_2"
+              ],
+              "semantic": {
+                "type": "super_effect_start",
+                "is_super": false,
+                "effect_name": "Naruto_2"
+              }
+            }
+          ],
+          "relative_frame": 3,
+          "source_character": "naruto",
+          "original_label": "必杀"
+        },
+        {
+          "global_frame": 561,
+          "relative_frame": 10,
+          "source_character": "naruto",
+          "original_label": "必杀",
+          "calls": [
+            {
+              "object": "timeline",
+              "method": "soundName",
+              "args_raw": "声音/sound_0020",
+              "source": "soundName=\"声音/sound_0020\"",
+              "args": [
+                "sound_0020"
+              ],
+              "semantic": {
+                "type": "timeline_sound",
+                "character_id": "naruto",
+                "sound_id": "sound_0020",
+                "sound_path": "res://assets/sfx/naruto/sound_0020.mp3"
+              }
+            }
+          ]
+        },
+        {
+          "global_frame": 565,
+          "relative_frame": 14,
+          "source_character": "naruto",
+          "original_label": "必杀",
+          "calls": [
+            {
+              "object": "timeline",
+              "method": "soundName",
+              "args_raw": "声音/sound_0040",
+              "source": "soundName=\"声音/sound_0040\"",
+              "args": [
+                "sound_0040"
+              ],
+              "semantic": {
+                "type": "timeline_sound",
+                "character_id": "naruto",
+                "sound_id": "sound_0040",
+                "sound_path": "res://assets/sfx/naruto/sound_0040.mp3"
+              }
+            }
+          ]
+        },
+        {
+          "global_frame": 577,
+          "duration": 14,
+          "scripts": [
+            "parent.$effect_ctrler.endBisha();"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "endBisha",
+              "args_raw": "",
+              "source": "parent.$effect_ctrler.endBisha();",
+              "args": [],
+              "semantic": {
+                "type": "super_effect_end"
+              }
+            }
+          ],
+          "relative_frame": 26,
+          "source_character": "naruto",
+          "original_label": "必杀"
+        },
+        {
+          "global_frame": 577,
+          "duration": 12,
+          "scripts": [
+            "parent.$mc_ctrler.movePercent(1,0);"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "movePercent",
+              "args_raw": "1,0",
+              "source": "parent.$mc_ctrler.movePercent(1,0);",
+              "args": [
+                1,
+                0
+              ],
+              "semantic": {
+                "type": "movement",
+                "method": "movePercent",
+                "args": [
+                  1,
+                  0
+                ]
+              }
+            }
+          ],
+          "relative_frame": 26,
+          "source_character": "naruto",
+          "original_label": "必杀"
+        },
+        {
+          "global_frame": 588,
+          "duration": 34,
+          "scripts": [
+            "if(!parent.$fighter_ctrler.justHit(\"bs1\")){\n\tparent.$mc_ctrler.gotoAndPlay(\"必杀_0\");\n}"
+          ],
+          "calls": [
+            {
+              "object": "fighter_ctrler",
+              "method": "justHit",
+              "args_raw": "\"bs1\")){ \tparent.$mc_ctrler.gotoAndPlay(\"必杀_0\"",
+              "source": "parent.$fighter_ctrler.justHit(\"bs1\")){ \tparent.$mc_ctrler.gotoAndPlay(\"必杀_0\");",
+              "args": [
+                "bs1\")){ \tparent.$mc_ctrler.gotoAndPlay(\"必杀_0"
+              ]
+            }
+          ],
+          "relative_frame": 37,
+          "source_character": "naruto",
+          "original_label": "必杀"
+        },
+        {
+          "global_frame": 589,
+          "duration": 44,
+          "scripts": [
+            "parent.$mc_ctrler.dampingPercent(0.2,0);"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "dampingPercent",
+              "args_raw": "0.2,0",
+              "source": "parent.$mc_ctrler.dampingPercent(0.2,0);",
+              "args": [
+                0.2,
+                0
+              ],
+              "semantic": {
+                "type": "movement",
+                "method": "dampingPercent",
+                "args": [
+                  0.2,
+                  0
+                ]
+              }
+            }
+          ],
+          "relative_frame": 38,
+          "source_character": "naruto",
+          "original_label": "必杀"
+        },
+        {
+          "global_frame": 590,
+          "relative_frame": 39,
+          "source_character": "naruto",
+          "original_label": "必杀",
+          "calls": [
+            {
+              "object": "timeline",
+              "method": "soundName",
+              "args_raw": "声音/sound_0028",
+              "source": "soundName=\"声音/sound_0028\"",
+              "args": [
+                "sound_0028"
+              ],
+              "semantic": {
+                "type": "timeline_sound",
+                "character_id": "naruto",
+                "sound_id": "sound_0028",
+                "sound_path": "res://assets/sfx/naruto/sound_0028.wav"
+              }
+            }
+          ]
+        },
+        {
+          "global_frame": 590,
+          "relative_frame": 39,
+          "source_character": "naruto",
+          "original_label": "必杀",
+          "calls": [
+            {
+              "object": "timeline",
+              "method": "soundName",
+              "args_raw": "声音/sound_0030",
+              "source": "soundName=\"声音/sound_0030\"",
+              "args": [
+                "sound_0030"
+              ],
+              "semantic": {
+                "type": "timeline_sound",
+                "character_id": "naruto",
+                "sound_id": "sound_0030",
+                "sound_path": "res://assets/sfx/naruto/sound_0030.mp3"
+              }
+            }
+          ]
+        },
+        {
+          "global_frame": 591,
+          "duration": 27,
+          "scripts": [
+            "parent.$effect_ctrler.shine(0x049FF7);"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "shine",
+              "args_raw": "0x049FF7",
+              "source": "parent.$effect_ctrler.shine(0x049FF7);",
+              "args": [
+                "0x049FF7"
+              ],
+              "semantic": {
+                "type": "effect",
+                "effect_method": "shine",
+                "args": [
+                  "0x049FF7"
+                ]
+              }
+            }
+          ],
+          "relative_frame": 40,
+          "source_character": "naruto",
+          "original_label": "必杀"
+        },
+        {
+          "global_frame": 618,
+          "duration": 108,
+          "scripts": [
+            "parent.$effect_ctrler.shine();"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "shine",
+              "args_raw": "",
+              "source": "parent.$effect_ctrler.shine();",
+              "args": [],
+              "semantic": {
+                "type": "effect",
+                "effect_method": "shine",
+                "args": []
+              }
+            }
+          ],
+          "relative_frame": 67,
+          "source_character": "naruto",
+          "original_label": "必杀"
+        },
+        {
+          "global_frame": 618,
+          "relative_frame": 67,
+          "source_character": "naruto",
+          "original_label": "必杀",
+          "calls": [
+            {
+              "object": "timeline",
+              "method": "soundName",
+              "args_raw": "声音/sound_0053",
+              "source": "soundName=\"声音/sound_0053\"",
+              "args": [
+                "sound_0053"
+              ],
+              "semantic": {
+                "type": "timeline_sound",
+                "character_id": "naruto",
+                "sound_id": "sound_0053",
+                "sound_path": "res://assets/sfx/naruto/sound_0053.mp3"
+              }
+            }
+          ]
+        },
+        {
+          "global_frame": 622,
+          "duration": 11,
+          "scripts": [
+            "parent.$mc_ctrler.endAct();\n"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "endAct",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.endAct();",
+              "args": [],
+              "semantic": {
+                "type": "end_action"
+              }
+            }
+          ],
+          "relative_frame": 71,
+          "source_character": "naruto",
+          "original_label": "必杀"
+        }
+      ]
+    },
+    "super_0": {
+      "label": "必杀_0",
+      "loop": false,
+      "fps": 30,
+      "frames": [
+        "actions_game/super_0/0000.png",
+        "actions_game/super_0/0001.png",
+        "actions_game/super_0/0002.png",
+        "actions_game/super_0/0003.png",
+        "actions_game/super_0/0004.png",
+        "actions_game/super_0/0005.png",
+        "actions_game/super_0/0006.png",
+        "actions_game/super_0/0007.png",
+        "actions_game/super_0/0008.png",
+        "actions_game/super_0/0009.png",
+        "actions_game/super_0/0010.png",
+        "actions_game/super_0/0011.png",
+        "actions_game/super_0/0012.png",
+        "actions_game/super_0/0013.png",
+        "actions_game/super_0/0014.png",
+        "actions_game/super_0/0015.png",
+        "actions_game/super_0/0016.png",
+        "actions_game/super_0/0017.png",
+        "actions_game/super_0/0018.png",
+        "actions_game/super_0/0019.png",
+        "actions_game/super_0/0020.png",
+        "actions_game/super_0/0021.png"
+      ],
+      "events": [
+        {
+          "global_frame": 633,
+          "duration": 268,
+          "scripts": [
+            "parent.$mc_ctrler.dampingPercent(0.2,0);"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "dampingPercent",
+              "args_raw": "0.2,0",
+              "source": "parent.$mc_ctrler.dampingPercent(0.2,0);",
+              "args": [
+                0.2,
+                0
+              ],
+              "semantic": {
+                "type": "movement",
+                "method": "dampingPercent",
+                "args": [
+                  0.2,
+                  0
+                ]
+              }
+            }
+          ],
+          "relative_frame": 0,
+          "source_character": "naruto",
+          "original_label": "必杀_0"
+        },
+        {
+          "global_frame": 633,
+          "duration": 10,
+          "scripts": [
+            "parent.$mc_ctrler.endAct();\n"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "endAct",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.endAct();",
+              "args": [],
+              "semantic": {
+                "type": "end_action"
+              }
+            }
+          ],
+          "relative_frame": 0,
+          "source_character": "naruto",
+          "original_label": "必杀_0"
+        },
+        {
+          "global_frame": 633,
+          "relative_frame": 0,
+          "source_character": "naruto",
+          "original_label": "必杀_0",
+          "calls": [
+            {
+              "object": "timeline",
+              "method": "soundName",
+              "args_raw": "声音/sound_0014",
+              "source": "soundName=\"声音/sound_0014\"",
+              "args": [
+                "sound_0014"
+              ],
+              "semantic": {
+                "type": "timeline_sound",
+                "character_id": "naruto",
+                "sound_id": "sound_0014",
+                "sound_path": "res://assets/sfx/naruto/sound_0014.mp3"
+              }
+            }
+          ]
+        },
+        {
+          "global_frame": 643,
+          "duration": 14,
+          "scripts": [
+            "parent.$mc_ctrler.idle();\n"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "idle",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.idle();",
+              "args": [],
+              "semantic": {
+                "type": "return_idle"
+              }
+            }
+          ],
+          "relative_frame": 10,
+          "source_character": "naruto",
+          "original_label": "必杀_0"
+        }
+      ]
+    },
+    "super_up": {
+      "label": "上必杀",
+      "loop": false,
+      "fps": 30,
+      "frames": [
+        "actions_game/super_up/0000.png",
+        "actions_game/super_up/0001.png",
+        "actions_game/super_up/0002.png",
+        "actions_game/super_up/0003.png",
+        "actions_game/super_up/0004.png",
+        "actions_game/super_up/0005.png",
+        "actions_game/super_up/0006.png",
+        "actions_game/super_up/0007.png",
+        "actions_game/super_up/0008.png",
+        "actions_game/super_up/0009.png",
+        "actions_game/super_up/0010.png",
+        "actions_game/super_up/0011.png",
+        "actions_game/super_up/0012.png",
+        "actions_game/super_up/0013.png",
+        "actions_game/super_up/0014.png",
+        "actions_game/super_up/0015.png",
+        "actions_game/super_up/0016.png",
+        "actions_game/super_up/0017.png",
+        "actions_game/super_up/0018.png",
+        "actions_game/super_up/0019.png",
+        "actions_game/super_up/0020.png",
+        "actions_game/super_up/0021.png",
+        "actions_game/super_up/0022.png",
+        "actions_game/super_up/0023.png",
+        "actions_game/super_up/0024.png",
+        "actions_game/super_up/0025.png",
+        "actions_game/super_up/0026.png",
+        "actions_game/super_up/0027.png",
+        "actions_game/super_up/0028.png",
+        "actions_game/super_up/0029.png",
+        "actions_game/super_up/0030.png",
+        "actions_game/super_up/0031.png",
+        "actions_game/super_up/0032.png",
+        "actions_game/super_up/0033.png",
+        "actions_game/super_up/0034.png",
+        "actions_game/super_up/0035.png",
+        "actions_game/super_up/0036.png",
+        "actions_game/super_up/0037.png",
+        "actions_game/super_up/0038.png",
+        "actions_game/super_up/0039.png",
+        "actions_game/super_up/0040.png",
+        "actions_game/super_up/0041.png",
+        "actions_game/super_up/0042.png",
+        "actions_game/super_up/0043.png",
+        "actions_game/super_up/0044.png",
+        "actions_game/super_up/0045.png",
+        "actions_game/super_up/0046.png",
+        "actions_game/super_up/0047.png",
+        "actions_game/super_up/0048.png",
+        "actions_game/super_up/0049.png",
+        "actions_game/super_up/0050.png",
+        "actions_game/super_up/0051.png",
+        "actions_game/super_up/0052.png",
+        "actions_game/super_up/0053.png",
+        "actions_game/super_up/0054.png",
+        "actions_game/super_up/0055.png",
+        "actions_game/super_up/0056.png",
+        "actions_game/super_up/0057.png",
+        "actions_game/super_up/0058.png",
+        "actions_game/super_up/0059.png",
+        "actions_game/super_up/0060.png",
+        "actions_game/super_up/0061.png",
+        "actions_game/super_up/0062.png",
+        "actions_game/super_up/0063.png",
+        "actions_game/super_up/0064.png",
+        "actions_game/super_up/0065.png",
+        "actions_game/super_up/0066.png",
+        "actions_game/super_up/0067.png",
+        "actions_game/super_up/0068.png",
+        "actions_game/super_up/0069.png",
+        "actions_game/super_up/0070.png",
+        "actions_game/super_up/0071.png",
+        "actions_game/super_up/0072.png",
+        "actions_game/super_up/0073.png",
+        "actions_game/super_up/0074.png",
+        "actions_game/super_up/0075.png",
+        "actions_game/super_up/0076.png",
+        "actions_game/super_up/0077.png",
+        "actions_game/super_up/0078.png",
+        "actions_game/super_up/0079.png",
+        "actions_game/super_up/0080.png",
+        "actions_game/super_up/0081.png",
+        "actions_game/super_up/0082.png",
+        "actions_game/super_up/0083.png",
+        "actions_game/super_up/0084.png",
+        "actions_game/super_up/0085.png",
+        "actions_game/super_up/0086.png",
+        "actions_game/super_up/0087.png",
+        "actions_game/super_up/0088.png",
+        "actions_game/super_up/0089.png",
+        "actions_game/super_up/0090.png",
+        "actions_game/super_up/0091.png",
+        "actions_game/super_up/0092.png",
+        "actions_game/super_up/0093.png",
+        "actions_game/super_up/0094.png",
+        "actions_game/super_up/0095.png",
+        "actions_game/super_up/0096.png",
+        "actions_game/super_up/0097.png",
+        "actions_game/super_up/0098.png",
+        "actions_game/super_up/0099.png",
+        "actions_game/super_up/0100.png",
+        "actions_game/super_up/0101.png",
+        "actions_game/super_up/0102.png",
+        "actions_game/super_up/0103.png",
+        "actions_game/super_up/0104.png",
+        "actions_game/super_up/0105.png",
+        "actions_game/super_up/0106.png",
+        "actions_game/super_up/0107.png",
+        "actions_game/super_up/0108.png",
+        "actions_game/super_up/0109.png",
+        "actions_game/super_up/0110.png",
+        "actions_game/super_up/0111.png",
+        "actions_game/super_up/0112.png",
+        "actions_game/super_up/0113.png",
+        "actions_game/super_up/0114.png",
+        "actions_game/super_up/0115.png",
+        "actions_game/super_up/0116.png",
+        "actions_game/super_up/0117.png",
+        "actions_game/super_up/0118.png",
+        "actions_game/super_up/0119.png",
+        "actions_game/super_up/0120.png",
+        "actions_game/super_up/0121.png",
+        "actions_game/super_up/0122.png",
+        "actions_game/super_up/0123.png"
+      ],
+      "events": [
+        {
+          "global_frame": 657,
+          "duration": 107,
+          "scripts": [
+            "parent.$effect_ctrler.bisha(false,\"Naruto_1\");"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "bisha",
+              "args_raw": "false,\"Naruto_1\"",
+              "source": "parent.$effect_ctrler.bisha(false,\"Naruto_1\");",
+              "args": [
+                false,
+                "Naruto_1"
+              ],
+              "semantic": {
+                "type": "super_effect_start",
+                "is_super": false,
+                "effect_name": "Naruto_1"
+              }
+            }
+          ],
+          "relative_frame": 2,
+          "source_character": "naruto",
+          "original_label": "上必杀"
+        },
+        {
+          "global_frame": 657,
+          "relative_frame": 2,
+          "source_character": "naruto",
+          "original_label": "上必杀",
+          "calls": [
+            {
+              "object": "timeline",
+              "method": "soundName",
+              "args_raw": "声音/sound_0010",
+              "source": "soundName=\"声音/sound_0010\"",
+              "args": [
+                "sound_0010"
+              ],
+              "semantic": {
+                "type": "timeline_sound",
+                "character_id": "naruto",
+                "sound_id": "sound_0010",
+                "sound_path": "res://assets/sfx/naruto/sound_0010.mp3"
+              }
+            }
+          ]
+        },
+        {
+          "global_frame": 726,
+          "duration": 3,
+          "scripts": [
+            "parent.$effect_ctrler.endBisha();"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "endBisha",
+              "args_raw": "",
+              "source": "parent.$effect_ctrler.endBisha();",
+              "args": [],
+              "semantic": {
+                "type": "super_effect_end"
+              }
+            }
+          ],
+          "relative_frame": 71,
+          "source_character": "naruto",
+          "original_label": "上必杀"
+        },
+        {
+          "global_frame": 729,
+          "duration": 121,
+          "scripts": [
+            "parent.$effect_ctrler.shine();"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "shine",
+              "args_raw": "",
+              "source": "parent.$effect_ctrler.shine();",
+              "args": [],
+              "semantic": {
+                "type": "effect",
+                "effect_method": "shine",
+                "args": []
+              }
+            }
+          ],
+          "relative_frame": 74,
+          "source_character": "naruto",
+          "original_label": "上必杀"
+        },
+        {
+          "global_frame": 729,
+          "duration": 4,
+          "scripts": [
+            "parent.$mc_ctrler.addAttacker(\"sbsmc\",{x:{moveToTarget:true,offset:0},y:{moveToTarget:false,offset:0},applyG:true});"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "addAttacker",
+              "args_raw": "\"sbsmc\",{x:{moveToTarget:true,offset:0},y:{moveToTarget:false,offset:0},applyG:true}",
+              "source": "parent.$mc_ctrler.addAttacker(\"sbsmc\",{x:{moveToTarget:true,offset:0},y:{moveToTarget:false,offset:0},applyG:true});",
+              "args": [
+                "sbsmc",
+                "{x:{moveToTarget:true,offset:0},y:{moveToTarget:false,offset:0},applyG:true}"
+              ],
+              "semantic": {
+                "type": "add_attacker",
+                "attacker": "sbsmc",
+                "args_raw": "\"sbsmc\",{x:{moveToTarget:true,offset:0},y:{moveToTarget:false,offset:0},applyG:true}"
+              }
+            }
+          ],
+          "relative_frame": 74,
+          "source_character": "naruto",
+          "original_label": "上必杀"
+        },
+        {
+          "global_frame": 764,
+          "duration": 17,
+          "scripts": [
+            "parent.$mc_ctrler.idle();\n"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "idle",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.idle();",
+              "args": [],
+              "semantic": {
+                "type": "return_idle"
+              }
+            }
+          ],
+          "relative_frame": 109,
+          "source_character": "naruto",
+          "original_label": "上必杀"
+        }
+      ]
+    },
+    "super_special": {
+      "label": "超必杀",
+      "loop": false,
+      "fps": 30,
+      "frames": [
+        "actions_game/super_special/0000.png",
+        "actions_game/super_special/0001.png",
+        "actions_game/super_special/0002.png",
+        "actions_game/super_special/0003.png",
+        "actions_game/super_special/0004.png",
+        "actions_game/super_special/0005.png",
+        "actions_game/super_special/0006.png",
+        "actions_game/super_special/0007.png",
+        "actions_game/super_special/0008.png",
+        "actions_game/super_special/0009.png",
+        "actions_game/super_special/0010.png",
+        "actions_game/super_special/0011.png",
+        "actions_game/super_special/0012.png",
+        "actions_game/super_special/0013.png",
+        "actions_game/super_special/0014.png",
+        "actions_game/super_special/0015.png",
+        "actions_game/super_special/0016.png",
+        "actions_game/super_special/0017.png",
+        "actions_game/super_special/0018.png",
+        "actions_game/super_special/0019.png",
+        "actions_game/super_special/0020.png",
+        "actions_game/super_special/0021.png",
+        "actions_game/super_special/0022.png",
+        "actions_game/super_special/0023.png",
+        "actions_game/super_special/0024.png",
+        "actions_game/super_special/0025.png",
+        "actions_game/super_special/0026.png",
+        "actions_game/super_special/0027.png",
+        "actions_game/super_special/0028.png",
+        "actions_game/super_special/0029.png",
+        "actions_game/super_special/0030.png",
+        "actions_game/super_special/0031.png",
+        "actions_game/super_special/0032.png",
+        "actions_game/super_special/0033.png",
+        "actions_game/super_special/0034.png",
+        "actions_game/super_special/0035.png",
+        "actions_game/super_special/0036.png",
+        "actions_game/super_special/0037.png",
+        "actions_game/super_special/0038.png",
+        "actions_game/super_special/0039.png",
+        "actions_game/super_special/0040.png",
+        "actions_game/super_special/0041.png",
+        "actions_game/super_special/0042.png",
+        "actions_game/super_special/0043.png",
+        "actions_game/super_special/0044.png",
+        "actions_game/super_special/0045.png",
+        "actions_game/super_special/0046.png",
+        "actions_game/super_special/0047.png",
+        "actions_game/super_special/0048.png",
+        "actions_game/super_special/0049.png",
+        "actions_game/super_special/0050.png",
+        "actions_game/super_special/0051.png",
+        "actions_game/super_special/0052.png",
+        "actions_game/super_special/0053.png",
+        "actions_game/super_special/0054.png",
+        "actions_game/super_special/0055.png",
+        "actions_game/super_special/0056.png",
+        "actions_game/super_special/0057.png",
+        "actions_game/super_special/0058.png",
+        "actions_game/super_special/0059.png",
+        "actions_game/super_special/0060.png",
+        "actions_game/super_special/0061.png",
+        "actions_game/super_special/0062.png",
+        "actions_game/super_special/0063.png",
+        "actions_game/super_special/0064.png",
+        "actions_game/super_special/0065.png",
+        "actions_game/super_special/0066.png",
+        "actions_game/super_special/0067.png",
+        "actions_game/super_special/0068.png",
+        "actions_game/super_special/0069.png",
+        "actions_game/super_special/0070.png",
+        "actions_game/super_special/0071.png",
+        "actions_game/super_special/0072.png",
+        "actions_game/super_special/0073.png",
+        "actions_game/super_special/0074.png",
+        "actions_game/super_special/0075.png",
+        "actions_game/super_special/0076.png",
+        "actions_game/super_special/0077.png",
+        "actions_game/super_special/0078.png",
+        "actions_game/super_special/0079.png",
+        "actions_game/super_special/0080.png",
+        "actions_game/super_special/0081.png",
+        "actions_game/super_special/0082.png",
+        "actions_game/super_special/0083.png",
+        "actions_game/super_special/0084.png",
+        "actions_game/super_special/0085.png",
+        "actions_game/super_special/0086.png",
+        "actions_game/super_special/0087.png",
+        "actions_game/super_special/0088.png",
+        "actions_game/super_special/0089.png",
+        "actions_game/super_special/0090.png",
+        "actions_game/super_special/0091.png",
+        "actions_game/super_special/0092.png",
+        "actions_game/super_special/0093.png",
+        "actions_game/super_special/0094.png",
+        "actions_game/super_special/0095.png",
+        "actions_game/super_special/0096.png",
+        "actions_game/super_special/0097.png",
+        "actions_game/super_special/0098.png",
+        "actions_game/super_special/0099.png",
+        "actions_game/super_special/0100.png",
+        "actions_game/super_special/0101.png",
+        "actions_game/super_special/0102.png",
+        "actions_game/super_special/0103.png",
+        "actions_game/super_special/0104.png",
+        "actions_game/super_special/0105.png",
+        "actions_game/super_special/0106.png",
+        "actions_game/super_special/0107.png",
+        "actions_game/super_special/0108.png",
+        "actions_game/super_special/0109.png",
+        "actions_game/super_special/0110.png",
+        "actions_game/super_special/0111.png",
+        "actions_game/super_special/0112.png",
+        "actions_game/super_special/0113.png",
+        "actions_game/super_special/0114.png",
+        "actions_game/super_special/0115.png",
+        "actions_game/super_special/0116.png",
+        "actions_game/super_special/0117.png",
+        "actions_game/super_special/0118.png",
+        "actions_game/super_special/0119.png",
+        "actions_game/super_special/0120.png",
+        "actions_game/super_special/0121.png",
+        "actions_game/super_special/0122.png"
+      ],
+      "events": [
+        {
+          "global_frame": 781,
+          "duration": 68,
+          "scripts": [
+            "parent.$effect_ctrler.bisha(true,\"Naruto_2\");"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "bisha",
+              "args_raw": "true,\"Naruto_2\"",
+              "source": "parent.$effect_ctrler.bisha(true,\"Naruto_2\");",
+              "args": [
+                true,
+                "Naruto_2"
+              ],
+              "semantic": {
+                "type": "super_effect_start",
+                "is_super": true,
+                "effect_name": "Naruto_2"
+              }
+            }
+          ],
+          "relative_frame": 2,
+          "source_character": "naruto",
+          "original_label": "超必杀"
+        },
+        {
+          "global_frame": 805,
+          "relative_frame": 26,
+          "source_character": "naruto",
+          "original_label": "超必杀",
+          "calls": [
+            {
+              "object": "timeline",
+              "method": "soundName",
+              "args_raw": "声音/sound_0020",
+              "source": "soundName=\"声音/sound_0020\"",
+              "args": [
+                "sound_0020"
+              ],
+              "semantic": {
+                "type": "timeline_sound",
+                "character_id": "naruto",
+                "sound_id": "sound_0020",
+                "sound_path": "res://assets/sfx/naruto/sound_0020.mp3"
+              }
+            }
+          ]
+        },
+        {
+          "global_frame": 845,
+          "relative_frame": 66,
+          "source_character": "naruto",
+          "original_label": "超必杀",
+          "calls": [
+            {
+              "object": "timeline",
+              "method": "soundName",
+              "args_raw": "声音/sound_0014",
+              "source": "soundName=\"声音/sound_0014\"",
+              "args": [
+                "sound_0014"
+              ],
+              "semantic": {
+                "type": "timeline_sound",
+                "character_id": "naruto",
+                "sound_id": "sound_0014",
+                "sound_path": "res://assets/sfx/naruto/sound_0014.mp3"
+              }
+            }
+          ]
+        },
+        {
+          "global_frame": 849,
+          "duration": 7,
+          "scripts": [
+            "parent.$effect_ctrler.endBisha();"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "endBisha",
+              "args_raw": "",
+              "source": "parent.$effect_ctrler.endBisha();",
+              "args": [],
+              "semantic": {
+                "type": "super_effect_end"
+              }
+            }
+          ],
+          "relative_frame": 70,
+          "source_character": "naruto",
+          "original_label": "超必杀"
+        },
+        {
+          "global_frame": 850,
+          "duration": 51,
+          "scripts": [
+            "parent.$effect_ctrler.dash();"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "dash",
+              "args_raw": "",
+              "source": "parent.$effect_ctrler.dash();",
+              "args": [],
+              "semantic": {
+                "type": "effect",
+                "effect_method": "dash",
+                "args": []
+              }
+            }
+          ],
+          "relative_frame": 71,
+          "source_character": "naruto",
+          "original_label": "超必杀"
+        },
+        {
+          "global_frame": 856,
+          "duration": 78,
+          "scripts": [
+            "parent.$fighter_ctrler.moveToTarget(0,null,false);"
+          ],
+          "calls": [
+            {
+              "object": "fighter_ctrler",
+              "method": "moveToTarget",
+              "args_raw": "0,null,false",
+              "source": "parent.$fighter_ctrler.moveToTarget(0,null,false);",
+              "args": [
+                0,
+                null,
+                false
+              ],
+              "semantic": {
+                "type": "teleport_or_move_to_target",
+                "x": 0,
+                "y": null,
+                "auto_turn": false
+              }
+            }
+          ],
+          "relative_frame": 77,
+          "source_character": "naruto",
+          "original_label": "超必杀"
+        },
+        {
+          "global_frame": 859,
+          "duration": 16,
+          "scripts": [
+            "parent.$effect_ctrler.playSoundHit2();"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "playSoundHit2",
+              "args_raw": "",
+              "source": "parent.$effect_ctrler.playSoundHit2();",
+              "args": []
+            }
+          ],
+          "relative_frame": 80,
+          "source_character": "naruto",
+          "original_label": "超必杀"
+        },
+        {
+          "global_frame": 875,
+          "duration": 42,
+          "scripts": [
+            "parent.$effect_ctrler.playSoundHit2();"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "playSoundHit2",
+              "args_raw": "",
+              "source": "parent.$effect_ctrler.playSoundHit2();",
+              "args": []
+            }
+          ],
+          "relative_frame": 96,
+          "source_character": "naruto",
+          "original_label": "超必杀"
+        },
+        {
+          "global_frame": 901,
+          "duration": 263,
+          "scripts": [
+            "parent.$effect_ctrler.shine();\nparent.$effect_ctrler.shine();"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "shine",
+              "args_raw": "",
+              "source": "parent.$effect_ctrler.shine();",
+              "args": [],
+              "semantic": {
+                "type": "effect",
+                "effect_method": "shine",
+                "args": []
+              }
+            },
+            {
+              "object": "effect_ctrler",
+              "method": "shine",
+              "args_raw": "",
+              "source": "parent.$effect_ctrler.shine();",
+              "args": [],
+              "semantic": {
+                "type": "effect",
+                "effect_method": "shine",
+                "args": []
+              }
+            }
+          ],
+          "relative_frame": 122,
+          "source_character": "naruto",
+          "original_label": "超必杀"
+        },
+        {
+          "global_frame": 901,
+          "duration": 12,
+          "scripts": [
+            "parent.$mc_ctrler.movePercent(0,1);\nparent.$mc_ctrler.setTouchFloor(\"超必杀_TF\",true);\nparent.$fighter_ctrler.moveOnce(0,-150);"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "movePercent",
+              "args_raw": "0,1",
+              "source": "parent.$mc_ctrler.movePercent(0,1);",
+              "args": [
+                0,
+                1
+              ],
+              "semantic": {
+                "type": "movement",
+                "method": "movePercent",
+                "args": [
+                  0,
+                  1
+                ]
+              }
+            },
+            {
+              "object": "mc_ctrler",
+              "method": "setTouchFloor",
+              "args_raw": "\"超必杀_TF\",true",
+              "source": "parent.$mc_ctrler.setTouchFloor(\"超必杀_TF\",true);",
+              "args": [
+                "超必杀_TF",
+                true
+              ]
+            },
+            {
+              "object": "fighter_ctrler",
+              "method": "moveOnce",
+              "args_raw": "0,-150",
+              "source": "parent.$fighter_ctrler.moveOnce(0,-150);",
+              "args": [
+                0,
+                -150
+              ],
+              "semantic": {
+                "type": "movement",
+                "method": "move",
+                "args": [
+                  0,
+                  -150
+                ]
+              }
+            }
+          ],
+          "relative_frame": 122,
+          "source_character": "naruto",
+          "original_label": "超必杀"
+        },
+        {
+          "global_frame": 901,
+          "relative_frame": 122,
+          "source_character": "naruto",
+          "original_label": "超必杀",
+          "calls": [
+            {
+              "object": "timeline",
+              "method": "soundName",
+              "args_raw": "声音/sound_0016",
+              "source": "soundName=\"声音/sound_0016\"",
+              "args": [
+                "sound_0016"
+              ],
+              "semantic": {
+                "type": "timeline_sound",
+                "character_id": "naruto",
+                "sound_id": "sound_0016",
+                "sound_path": "res://assets/sfx/naruto/sound_0016.mp3"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "super_special_l": {
+      "label": "超必杀_L",
+      "loop": false,
+      "fps": 30,
+      "frames": [
+        "actions_game/super_special_l/0000.png",
+        "actions_game/super_special_l/0001.png",
+        "actions_game/super_special_l/0002.png",
+        "actions_game/super_special_l/0003.png",
+        "actions_game/super_special_l/0004.png",
+        "actions_game/super_special_l/0005.png",
+        "actions_game/super_special_l/0006.png",
+        "actions_game/super_special_l/0007.png",
+        "actions_game/super_special_l/0008.png",
+        "actions_game/super_special_l/0009.png",
+        "actions_game/super_special_l/0010.png",
+        "actions_game/super_special_l/0011.png",
+        "actions_game/super_special_l/0012.png"
+      ],
+      "events": [
+        {
+          "global_frame": 913,
+          "duration": 4,
+          "scripts": [
+            "parent.$mc_ctrler.loop(\"超必杀_L\");"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "loop",
+              "args_raw": "\"超必杀_L\"",
+              "source": "parent.$mc_ctrler.loop(\"超必杀_L\");",
+              "args": [
+                "超必杀_L"
+              ],
+              "semantic": {
+                "type": "loop_action",
+                "target_label": "超必杀_L"
+              }
+            }
+          ],
+          "relative_frame": 11,
+          "source_character": "naruto",
+          "original_label": "超必杀_L"
+        }
+      ]
+    },
+    "super_special_tf": {
+      "label": "超必杀_TF",
+      "loop": false,
+      "fps": 30,
+      "frames": [
+        "actions_game/super_special_tf/0000.png",
+        "actions_game/super_special_tf/0001.png",
+        "actions_game/super_special_tf/0002.png",
+        "actions_game/super_special_tf/0003.png",
+        "actions_game/super_special_tf/0004.png",
+        "actions_game/super_special_tf/0005.png",
+        "actions_game/super_special_tf/0006.png",
+        "actions_game/super_special_tf/0007.png",
+        "actions_game/super_special_tf/0008.png",
+        "actions_game/super_special_tf/0009.png",
+        "actions_game/super_special_tf/0010.png",
+        "actions_game/super_special_tf/0011.png",
+        "actions_game/super_special_tf/0012.png",
+        "actions_game/super_special_tf/0013.png",
+        "actions_game/super_special_tf/0014.png",
+        "actions_game/super_special_tf/0015.png",
+        "actions_game/super_special_tf/0016.png",
+        "actions_game/super_special_tf/0017.png",
+        "actions_game/super_special_tf/0018.png",
+        "actions_game/super_special_tf/0019.png",
+        "actions_game/super_special_tf/0020.png",
+        "actions_game/super_special_tf/0021.png",
+        "actions_game/super_special_tf/0022.png",
+        "actions_game/super_special_tf/0023.png",
+        "actions_game/super_special_tf/0024.png",
+        "actions_game/super_special_tf/0025.png"
+      ],
+      "events": [
+        {
+          "global_frame": 917,
+          "duration": 90,
+          "scripts": [
+            "parent.$effect_ctrler.shine();\nparent.$effect_ctrler.shake(0,5);"
+          ],
+          "calls": [
+            {
+              "object": "effect_ctrler",
+              "method": "shine",
+              "args_raw": "",
+              "source": "parent.$effect_ctrler.shine();",
+              "args": [],
+              "semantic": {
+                "type": "effect",
+                "effect_method": "shine",
+                "args": []
+              }
+            },
+            {
+              "object": "effect_ctrler",
+              "method": "shake",
+              "args_raw": "0,5",
+              "source": "parent.$effect_ctrler.shake(0,5);",
+              "args": [
+                0,
+                5
+              ],
+              "semantic": {
+                "type": "effect",
+                "effect_method": "shake",
+                "args": [
+                  0,
+                  5
+                ]
+              }
+            }
+          ],
+          "relative_frame": 2,
+          "source_character": "naruto",
+          "original_label": "超必杀_TF"
+        },
+        {
+          "global_frame": 917,
+          "duration": 2,
+          "scripts": [
+            "//发射[参数：MC名称，param]\n/*\nparams 参数 {\n\tx:Number(速度X)|{moveToTarget:Boolean(是否移动到目标),followTarget:Boolean(是否跟随目标),offset:Number(距离目标偏移量)} , \n\ty:Number(速度Y)|{moveToTarget:Boolean(是否移动到目标),followTarget:Boolean(是否跟随目标),offset:Number(距离目标偏移量)} , \n\tapplyG:Boolean(是否受重力影响) ,\n}\n*/\nparent.$mc_ctrler.addAttacker(\"cbsmc\",{applyG:false});"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "addAttacker",
+              "args_raw": "\"cbsmc\",{applyG:false}",
+              "source": "parent.$mc_ctrler.addAttacker(\"cbsmc\",{applyG:false});",
+              "args": [
+                "cbsmc",
+                "{applyG:false}"
+              ],
+              "semantic": {
+                "type": "add_attacker",
+                "attacker": "cbsmc",
+                "args_raw": "\"cbsmc\",{applyG:false}"
+              }
+            }
+          ],
+          "relative_frame": 2,
+          "source_character": "naruto",
+          "original_label": "超必杀_TF"
+        },
+        {
+          "global_frame": 917,
+          "relative_frame": 2,
+          "source_character": "naruto",
+          "original_label": "超必杀_TF",
+          "calls": [
+            {
+              "object": "timeline",
+              "method": "soundName",
+              "args_raw": "声音/sound_0053",
+              "source": "soundName=\"声音/sound_0053\"",
+              "args": [
+                "sound_0053"
+              ],
+              "semantic": {
+                "type": "timeline_sound",
+                "character_id": "naruto",
+                "sound_id": "sound_0053",
+                "sound_path": "res://assets/sfx/naruto/sound_0053.mp3"
+              }
+            }
+          ]
+        },
+        {
+          "global_frame": 934,
+          "duration": 98,
+          "scripts": [
+            "parent.$mc_ctrler.hurtFly(-15,-5);"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "hurtFly",
+              "args_raw": "-15,-5",
+              "source": "parent.$mc_ctrler.hurtFly(-15,-5);",
+              "args": [
+                -15,
+                -5
+              ]
+            }
+          ],
+          "relative_frame": 19,
+          "source_character": "naruto",
+          "original_label": "超必杀_TF"
+        }
+      ]
+    },
+    "defend": {
+      "label": "防御",
+      "loop": false,
+      "fps": 30,
+      "frames": [
+        "actions_game/defend/0000.png",
+        "actions_game/defend/0001.png",
+        "actions_game/defend/0002.png",
+        "actions_game/defend/0003.png",
+        "actions_game/defend/0004.png",
+        "actions_game/defend/0005.png"
+      ],
+      "events": []
+    },
+    "defend_recover": {
+      "label": "防御恢复",
+      "loop": false,
+      "fps": 30,
+      "frames": [
+        "actions_game/defend_recover/0000.png",
+        "actions_game/defend_recover/0001.png",
+        "actions_game/defend_recover/0002.png",
+        "actions_game/defend_recover/0003.png",
+        "actions_game/defend_recover/0004.png",
+        "actions_game/defend_recover/0005.png",
+        "actions_game/defend_recover/0006.png",
+        "actions_game/defend_recover/0007.png",
+        "actions_game/defend_recover/0008.png",
+        "actions_game/defend_recover/0009.png",
+        "actions_game/defend_recover/0010.png",
+        "actions_game/defend_recover/0011.png"
+      ],
+      "events": []
+    },
+    "hurt": {
+      "label": "被打",
+      "loop": false,
+      "fps": 30,
+      "frames": [
+        "actions_game/hurt/0000.png",
+        "actions_game/hurt/0001.png",
+        "actions_game/hurt/0002.png",
+        "actions_game/hurt/0003.png",
+        "actions_game/hurt/0004.png",
+        "actions_game/hurt/0005.png",
+        "actions_game/hurt/0006.png",
+        "actions_game/hurt/0007.png",
+        "actions_game/hurt/0008.png",
+        "actions_game/hurt/0009.png",
+        "actions_game/hurt/0010.png",
+        "actions_game/hurt/0011.png",
+        "actions_game/hurt/0012.png"
+      ],
+      "events": []
+    },
+    "knock_fly": {
+      "label": "击飞",
+      "loop": false,
+      "fps": 30,
+      "frames": [
+        "actions_game/knock_fly/0000.png",
+        "actions_game/knock_fly/0001.png",
+        "actions_game/knock_fly/0002.png",
+        "actions_game/knock_fly/0003.png",
+        "actions_game/knock_fly/0004.png"
+      ],
+      "events": []
+    },
+    "knock_fall": {
+      "label": "击飞_落",
+      "loop": false,
+      "fps": 30,
+      "frames": [
+        "actions_game/knock_fall/0000.png",
+        "actions_game/knock_fall/0001.png",
+        "actions_game/knock_fall/0002.png",
+        "actions_game/knock_fall/0003.png",
+        "actions_game/knock_fall/0004.png",
+        "actions_game/knock_fall/0005.png",
+        "actions_game/knock_fall/0006.png",
+        "actions_game/knock_fall/0007.png",
+        "actions_game/knock_fall/0008.png",
+        "actions_game/knock_fall/0009.png"
+      ],
+      "events": []
+    },
+    "knock_bounce": {
+      "label": "击飞_弹",
+      "loop": false,
+      "fps": 30,
+      "frames": [
+        "actions_game/knock_bounce/0000.png",
+        "actions_game/knock_bounce/0001.png",
+        "actions_game/knock_bounce/0002.png",
+        "actions_game/knock_bounce/0003.png",
+        "actions_game/knock_bounce/0004.png",
+        "actions_game/knock_bounce/0005.png",
+        "actions_game/knock_bounce/0006.png",
+        "actions_game/knock_bounce/0007.png",
+        "actions_game/knock_bounce/0008.png"
+      ],
+      "events": []
+    },
+    "knock_down": {
+      "label": "击飞_倒",
+      "loop": false,
+      "fps": 30,
+      "frames": [
+        "actions_game/knock_down/0000.png",
+        "actions_game/knock_down/0001.png",
+        "actions_game/knock_down/0002.png",
+        "actions_game/knock_down/0003.png",
+        "actions_game/knock_down/0004.png",
+        "actions_game/knock_down/0005.png",
+        "actions_game/knock_down/0006.png",
+        "actions_game/knock_down/0007.png",
+        "actions_game/knock_down/0008.png"
+      ],
+      "events": []
+    },
+    "knock_getup_part": {
+      "label": "击飞_起",
+      "loop": false,
+      "fps": 30,
+      "frames": [
+        "actions_game/knock_getup_part/0000.png",
+        "actions_game/knock_getup_part/0001.png",
+        "actions_game/knock_getup_part/0002.png",
+        "actions_game/knock_getup_part/0003.png",
+        "actions_game/knock_getup_part/0004.png",
+        "actions_game/knock_getup_part/0005.png",
+        "actions_game/knock_getup_part/0006.png",
+        "actions_game/knock_getup_part/0007.png",
+        "actions_game/knock_getup_part/0008.png",
+        "actions_game/knock_getup_part/0009.png",
+        "actions_game/knock_getup_part/0010.png",
+        "actions_game/knock_getup_part/0011.png",
+        "actions_game/knock_getup_part/0012.png",
+        "actions_game/knock_getup_part/0013.png",
+        "actions_game/knock_getup_part/0014.png",
+        "actions_game/knock_getup_part/0015.png"
+      ],
+      "events": [
+        {
+          "global_frame": 1007,
+          "duration": 5,
+          "scripts": [
+            "parent.$mc_ctrler.movePercent(0.5,0);"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "movePercent",
+              "args_raw": "0.5,0",
+              "source": "parent.$mc_ctrler.movePercent(0.5,0);",
+              "args": [
+                0.5,
+                0
+              ],
+              "semantic": {
+                "type": "movement",
+                "method": "movePercent",
+                "args": [
+                  0.5,
+                  0
+                ]
+              }
+            }
+          ],
+          "relative_frame": 2,
+          "source_character": "naruto",
+          "original_label": "击飞_起"
+        },
+        {
+          "global_frame": 1012,
+          "duration": 268,
+          "scripts": [
+            "parent.$mc_ctrler.idle();\n"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "idle",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.idle();",
+              "args": [],
+              "semantic": {
+                "type": "return_idle"
+              }
+            }
+          ],
+          "relative_frame": 7,
+          "source_character": "naruto",
+          "original_label": "击飞_起"
+        }
+      ]
+    },
+    "getup": {
+      "label": "起身",
+      "loop": false,
+      "fps": 30,
+      "frames": [
+        "actions_game/getup/0000.png",
+        "actions_game/getup/0001.png",
+        "actions_game/getup/0002.png",
+        "actions_game/getup/0003.png",
+        "actions_game/getup/0004.png",
+        "actions_game/getup/0005.png",
+        "actions_game/getup/0006.png",
+        "actions_game/getup/0007.png",
+        "actions_game/getup/0008.png",
+        "actions_game/getup/0009.png",
+        "actions_game/getup/0010.png",
+        "actions_game/getup/0011.png",
+        "actions_game/getup/0012.png",
+        "actions_game/getup/0013.png",
+        "actions_game/getup/0014.png",
+        "actions_game/getup/0015.png",
+        "actions_game/getup/0016.png",
+        "actions_game/getup/0017.png",
+        "actions_game/getup/0018.png",
+        "actions_game/getup/0019.png",
+        "actions_game/getup/0020.png",
+        "actions_game/getup/0021.png",
+        "actions_game/getup/0022.png"
+      ],
+      "events": [
+        {
+          "global_frame": 1032,
+          "duration": 73,
+          "scripts": [
+            "parent.$mc_ctrler.idle();\n"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "idle",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.idle();",
+              "args": [],
+              "semantic": {
+                "type": "return_idle"
+              }
+            }
+          ],
+          "relative_frame": 11,
+          "source_character": "naruto",
+          "original_label": "起身"
+        }
+      ]
+    },
+    "intro": {
+      "label": "开场",
+      "loop": false,
+      "fps": 30,
+      "frames": [
+        "actions_game/intro/0000.png",
+        "actions_game/intro/0001.png",
+        "actions_game/intro/0002.png",
+        "actions_game/intro/0003.png",
+        "actions_game/intro/0004.png",
+        "actions_game/intro/0005.png",
+        "actions_game/intro/0006.png",
+        "actions_game/intro/0007.png",
+        "actions_game/intro/0008.png",
+        "actions_game/intro/0009.png",
+        "actions_game/intro/0010.png",
+        "actions_game/intro/0011.png",
+        "actions_game/intro/0012.png",
+        "actions_game/intro/0013.png",
+        "actions_game/intro/0014.png",
+        "actions_game/intro/0015.png",
+        "actions_game/intro/0016.png",
+        "actions_game/intro/0017.png",
+        "actions_game/intro/0018.png",
+        "actions_game/intro/0019.png",
+        "actions_game/intro/0020.png",
+        "actions_game/intro/0021.png",
+        "actions_game/intro/0022.png",
+        "actions_game/intro/0023.png",
+        "actions_game/intro/0024.png",
+        "actions_game/intro/0025.png",
+        "actions_game/intro/0026.png",
+        "actions_game/intro/0027.png",
+        "actions_game/intro/0028.png",
+        "actions_game/intro/0029.png",
+        "actions_game/intro/0030.png",
+        "actions_game/intro/0031.png",
+        "actions_game/intro/0032.png",
+        "actions_game/intro/0033.png",
+        "actions_game/intro/0034.png",
+        "actions_game/intro/0035.png",
+        "actions_game/intro/0036.png",
+        "actions_game/intro/0037.png",
+        "actions_game/intro/0038.png",
+        "actions_game/intro/0039.png",
+        "actions_game/intro/0040.png",
+        "actions_game/intro/0041.png",
+        "actions_game/intro/0042.png",
+        "actions_game/intro/0043.png",
+        "actions_game/intro/0044.png",
+        "actions_game/intro/0045.png",
+        "actions_game/intro/0046.png",
+        "actions_game/intro/0047.png",
+        "actions_game/intro/0048.png",
+        "actions_game/intro/0049.png",
+        "actions_game/intro/0050.png",
+        "actions_game/intro/0051.png",
+        "actions_game/intro/0052.png",
+        "actions_game/intro/0053.png",
+        "actions_game/intro/0054.png",
+        "actions_game/intro/0055.png",
+        "actions_game/intro/0056.png",
+        "actions_game/intro/0057.png",
+        "actions_game/intro/0058.png",
+        "actions_game/intro/0059.png",
+        "actions_game/intro/0060.png",
+        "actions_game/intro/0061.png"
+      ],
+      "events": [
+        {
+          "global_frame": 1047,
+          "relative_frame": 3,
+          "source_character": "naruto",
+          "original_label": "开场",
+          "calls": [
+            {
+              "object": "timeline",
+              "method": "soundName",
+              "args_raw": "声音/sound_0014",
+              "source": "soundName=\"声音/sound_0014\"",
+              "args": [
+                "sound_0014"
+              ],
+              "semantic": {
+                "type": "timeline_sound",
+                "character_id": "naruto",
+                "sound_id": "sound_0014",
+                "sound_path": "res://assets/sfx/naruto/sound_0014.mp3"
+              }
+            }
+          ]
+        },
+        {
+          "global_frame": 1074,
+          "relative_frame": 30,
+          "source_character": "naruto",
+          "original_label": "开场",
+          "calls": [
+            {
+              "object": "timeline",
+              "method": "soundName",
+              "args_raw": "声音/sound_0012",
+              "source": "soundName=\"声音/sound_0012\"",
+              "args": [
+                "sound_0012"
+              ],
+              "semantic": {
+                "type": "timeline_sound",
+                "character_id": "naruto",
+                "sound_id": "sound_0012",
+                "sound_path": "res://assets/sfx/naruto/sound_0012.mp3"
+              }
+            }
+          ]
+        },
+        {
+          "global_frame": 1074,
+          "relative_frame": 30,
+          "source_character": "naruto",
+          "original_label": "开场",
+          "calls": [
+            {
+              "object": "timeline",
+              "method": "soundName",
+              "args_raw": "声音/sound_0014",
+              "source": "soundName=\"声音/sound_0014\"",
+              "args": [
+                "sound_0014"
+              ],
+              "semantic": {
+                "type": "timeline_sound",
+                "character_id": "naruto",
+                "sound_id": "sound_0014",
+                "sound_path": "res://assets/sfx/naruto/sound_0014.mp3"
+              }
+            }
+          ]
+        },
+        {
+          "global_frame": 1105,
+          "duration": 9,
+          "scripts": [
+            "parent.$mc_ctrler.idle();\n"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "idle",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.idle();",
+              "args": [],
+              "semantic": {
+                "type": "return_idle"
+              }
+            }
+          ],
+          "relative_frame": 61,
+          "source_character": "naruto",
+          "original_label": "开场"
+        }
+      ]
+    },
+    "win": {
+      "label": "胜利",
+      "loop": false,
+      "fps": 30,
+      "frames": [
+        "actions_game/win/0000.png",
+        "actions_game/win/0001.png",
+        "actions_game/win/0002.png",
+        "actions_game/win/0003.png",
+        "actions_game/win/0004.png",
+        "actions_game/win/0005.png",
+        "actions_game/win/0006.png",
+        "actions_game/win/0007.png",
+        "actions_game/win/0008.png"
+      ],
+      "events": [
+        {
+          "global_frame": 1111,
+          "relative_frame": 5,
+          "source_character": "naruto",
+          "original_label": "胜利",
+          "calls": [
+            {
+              "object": "timeline",
+              "method": "soundName",
+              "args_raw": "声音/sound_0024",
+              "source": "soundName=\"声音/sound_0024\"",
+              "args": [
+                "sound_0024"
+              ],
+              "semantic": {
+                "type": "timeline_sound",
+                "character_id": "naruto",
+                "sound_id": "sound_0024",
+                "sound_path": "res://assets/sfx/naruto/sound_0024.mp3"
+              }
+            }
+          ]
+        },
+        {
+          "global_frame": 1114,
+          "duration": 21,
+          "scripts": [
+            "parent.$mc_ctrler.stop();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "stop",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.stop();",
+              "args": [],
+              "semantic": {
+                "type": "stop_animation"
+              }
+            }
+          ],
+          "relative_frame": 8,
+          "source_character": "naruto",
+          "original_label": "胜利"
+        }
+      ]
+    },
+    "lose": {
+      "label": "失败",
+      "loop": false,
+      "fps": 30,
+      "frames": [
+        "actions_game/lose/0000.png",
+        "actions_game/lose/0001.png",
+        "actions_game/lose/0002.png",
+        "actions_game/lose/0003.png",
+        "actions_game/lose/0004.png",
+        "actions_game/lose/0005.png",
+        "actions_game/lose/0006.png",
+        "actions_game/lose/0007.png",
+        "actions_game/lose/0008.png",
+        "actions_game/lose/0009.png",
+        "actions_game/lose/0010.png",
+        "actions_game/lose/0011.png",
+        "actions_game/lose/0012.png",
+        "actions_game/lose/0013.png",
+        "actions_game/lose/0014.png",
+        "actions_game/lose/0015.png",
+        "actions_game/lose/0016.png",
+        "actions_game/lose/0017.png",
+        "actions_game/lose/0018.png",
+        "actions_game/lose/0019.png",
+        "actions_game/lose/0020.png"
+      ],
+      "events": [
+        {
+          "global_frame": 1135,
+          "duration": 7,
+          "scripts": [
+            "parent.$mc_ctrler.stop();"
+          ],
+          "calls": [
+            {
+              "object": "mc_ctrler",
+              "method": "stop",
+              "args_raw": "",
+              "source": "parent.$mc_ctrler.stop();",
+              "args": [],
+              "semantic": {
+                "type": "stop_animation"
+              }
+            }
+          ],
+          "relative_frame": 20,
+          "source_character": "naruto",
+          "original_label": "失败"
+        }
+      ]
+    }
+  }
+}

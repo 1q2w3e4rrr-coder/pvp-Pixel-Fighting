@@ -93,6 +93,64 @@ func play_effect_sfx(sound_id: String, volume_db: float = -2.0) -> void:
 	print("Effect SFX missing:", sound_id, "（需要继续从原版 effect.xfl 的 soundDataHRef 导出/转码）")
 
 
+func play_character_sfx(character_id: String, sound_id: String, volume_db: float = -2.0) -> void:
+	# Step118：角色私有音效增强查找。
+	# 原版 XFL 时间轴使用 soundName="声音/sound_0016"；
+	# FFDec/本地导出可能保存成 sound_0016.mp3、0016.mp3、16.mp3，或带 linkage 前缀如 1_snd_hurt1.mp3。
+	# 这里只在角色自己的 assets/sfx/<character_id>/ 下查找，不回退到 Aizen，避免混用角色音效。
+	if character_id == "" or sound_id == "":
+		return
+
+	var id: String = character_id.to_lower()
+	var bases: Array[String] = [sound_id]
+
+	if sound_id.begins_with("sound_"):
+		var suffix: String = sound_id.substr(6)
+		bases.append(suffix)
+		var numeric_value: int = int(suffix)
+		if numeric_value > 0:
+			bases.append(str(numeric_value))
+			bases.append("sound_" + str(numeric_value))
+
+	var exts: Array[String] = [".ogg", ".mp3", ".wav"]
+	for base in bases:
+		for ext in exts:
+			var path: String = "res://assets/sfx/" + id + "/" + base + ext
+			if ResourceLoader.exists(path) or FileAccess.file_exists(path):
+				play_sfx(path, volume_db)
+				return
+
+	# 最后扫描目录：用于兼容 1_snd_hurt1.mp3、xxx_sound_0016.mp3 这类 FFDec 导出名。
+	var dir_path: String = "res://assets/sfx/" + id
+	var dir := DirAccess.open(dir_path)
+	if dir != null:
+		dir.list_dir_begin()
+		while true:
+			var file_name: String = dir.get_next()
+			if file_name == "":
+				break
+			if dir.current_is_dir():
+				continue
+			var lower_name: String = file_name.to_lower()
+			if lower_name.ends_with(".import"):
+				continue
+			var matched: bool = false
+			for base in bases:
+				var b: String = str(base).to_lower()
+				if lower_name.get_basename() == b or lower_name.contains(b):
+					matched = true
+					break
+			if matched:
+				play_sfx(dir_path + "/" + file_name, volume_db)
+				dir.list_dir_end()
+				return
+		dir.list_dir_end()
+
+	print("Character SFX missing:", id, "/", sound_id)
+
+
+
+
 func snd_select() -> void:
 	play_sfx("res://assets/sfx/snd_menu1.mp3")
 

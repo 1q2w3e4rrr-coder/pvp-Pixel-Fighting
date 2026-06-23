@@ -101,10 +101,23 @@ func _process(delta: float) -> void:
 			face_rect.modulate.a = 1.0
 
 
+func resolve_bisha_face_path(face_id: String) -> String:
+	# Step101：按 face_id 前缀选择角色目录。
+	# 原版 defineBishaFace("Naruto_1", bsface1) / ("Aizen_1", bsface1) 均是角色私有 face。
+	var prefix: String = face_id
+	var underscore_idx: int = face_id.find("_")
+	if underscore_idx >= 0:
+		prefix = face_id.substr(0, underscore_idx)
+	prefix = prefix.to_lower()
+	if prefix == "":
+		prefix = "aizen"
+	return "res://assets/characters/" + prefix + "/face/" + face_id + ".png"
+
+
 func play_bisha(is_super: bool, face_id: String, target_pos: Vector2, facing: int, current_target_pos: Variant = null, xg_effect_pos: Variant = null, camera_zoom: float = 1.0, face_slot_override: int = 0) -> void:
 	# 原版 EffectCtrl.bisha(isSuper, face)：Aizen_2 只用于超必杀，必须对应 bisha_super / XG_cbs。
 	# 这里加一层兜底，避免 manifest 解析或输入分支误传 is_super=false 时，S+I 又播放普通 XG_bs。
-	var resolved_is_super: bool = is_super or face_id == "Aizen_2"
+	var resolved_is_super: bool = is_super or face_id == "Aizen_2" or face_id == "Naruto_2" or face_id == "Naruto_3"
 
 	visible = true
 	is_active = true
@@ -125,7 +138,7 @@ func play_bisha(is_super: bool, face_id: String, target_pos: Vector2, facing: in
 		xg_effect.modulate.a = BISHA_SUPER_XG_ALPHA if resolved_is_super else BISHA_XG_ALPHA
 
 	var effect_key: String = "xg_cbs" if resolved_is_super else "xg_bs"
-	var face_path: String = "res://assets/characters/aizen/face/" + face_id + ".png"
+	var face_path: String = resolve_bisha_face_path(face_id)
 	var face_tex: Texture2D = load(face_path)
 
 	if face_tex == null:

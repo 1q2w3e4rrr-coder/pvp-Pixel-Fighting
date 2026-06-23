@@ -1,0 +1,562 @@
+[
+  {
+    "index": 0,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\1786.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\00_1786.png",
+    "width": 327,
+    "height": 259
+  },
+  {
+    "index": 1,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\1792.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\01_1792.png",
+    "width": 327,
+    "height": 259
+  },
+  {
+    "index": 2,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\1803.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\02_1803.png",
+    "width": 327,
+    "height": 259
+  },
+  {
+    "index": 3,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\1807.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\03_1807.png",
+    "width": 327,
+    "height": 259
+  },
+  {
+    "index": 4,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\1381.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\04_1381.png",
+    "width": 250,
+    "height": 180
+  },
+  {
+    "index": 5,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\1763.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\05_1763.png",
+    "width": 222,
+    "height": 173
+  },
+  {
+    "index": 6,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\455.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\06_455.png",
+    "width": 214,
+    "height": 177
+  },
+  {
+    "index": 7,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\460.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\07_460.png",
+    "width": 214,
+    "height": 177
+  },
+  {
+    "index": 8,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\464.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\08_464.png",
+    "width": 214,
+    "height": 177
+  },
+  {
+    "index": 9,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\468.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\09_468.png",
+    "width": 214,
+    "height": 177
+  },
+  {
+    "index": 10,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\472.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\10_472.png",
+    "width": 214,
+    "height": 177
+  },
+  {
+    "index": 11,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\476.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\11_476.png",
+    "width": 214,
+    "height": 177
+  },
+  {
+    "index": 12,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\480.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\12_480.png",
+    "width": 214,
+    "height": 177
+  },
+  {
+    "index": 13,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\2_bsface6.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\13_2_bsface6.png",
+    "width": 170,
+    "height": 121
+  },
+  {
+    "index": 14,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\3_bsface5.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\14_3_bsface5.png",
+    "width": 169,
+    "height": 120
+  },
+  {
+    "index": 15,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\4_bsface4.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\15_4_bsface4.png",
+    "width": 169,
+    "height": 120
+  },
+  {
+    "index": 16,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\5_bsface3.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\16_5_bsface3.png",
+    "width": 169,
+    "height": 120
+  },
+  {
+    "index": 17,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\6_bsface2.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\17_6_bsface2.png",
+    "width": 169,
+    "height": 120
+  },
+  {
+    "index": 18,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\7_bsface1.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\18_7_bsface1.png",
+    "width": 169,
+    "height": 120
+  },
+  {
+    "index": 19,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\631.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\19_631.png",
+    "width": 170,
+    "height": 119
+  },
+  {
+    "index": 20,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\633.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\20_633.png",
+    "width": 170,
+    "height": 119
+  },
+  {
+    "index": 21,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\635.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\21_635.png",
+    "width": 170,
+    "height": 119
+  },
+  {
+    "index": 22,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\637.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\22_637.png",
+    "width": 170,
+    "height": 119
+  },
+  {
+    "index": 23,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\639.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\23_639.png",
+    "width": 170,
+    "height": 119
+  },
+  {
+    "index": 24,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\641.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\24_641.png",
+    "width": 170,
+    "height": 119
+  },
+  {
+    "index": 25,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\643.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\25_643.png",
+    "width": 170,
+    "height": 119
+  },
+  {
+    "index": 26,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\645.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\26_645.png",
+    "width": 170,
+    "height": 119
+  },
+  {
+    "index": 27,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\647.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\27_647.png",
+    "width": 170,
+    "height": 119
+  },
+  {
+    "index": 28,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\649.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\28_649.png",
+    "width": 170,
+    "height": 119
+  },
+  {
+    "index": 29,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\652.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\29_652.png",
+    "width": 170,
+    "height": 119
+  },
+  {
+    "index": 30,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\655.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\30_655.png",
+    "width": 170,
+    "height": 119
+  },
+  {
+    "index": 31,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\657.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\31_657.png",
+    "width": 170,
+    "height": 119
+  },
+  {
+    "index": 32,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\659.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\32_659.png",
+    "width": 170,
+    "height": 119
+  },
+  {
+    "index": 33,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\661.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\33_661.png",
+    "width": 170,
+    "height": 119
+  },
+  {
+    "index": 34,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\663.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\34_663.png",
+    "width": 170,
+    "height": 119
+  },
+  {
+    "index": 35,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\665.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\35_665.png",
+    "width": 170,
+    "height": 119
+  },
+  {
+    "index": 36,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\667.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\36_667.png",
+    "width": 170,
+    "height": 119
+  },
+  {
+    "index": 37,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\669.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\37_669.png",
+    "width": 170,
+    "height": 119
+  },
+  {
+    "index": 38,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\671.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\38_671.png",
+    "width": 170,
+    "height": 119
+  },
+  {
+    "index": 39,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\1186.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\39_1186.png",
+    "width": 150,
+    "height": 91
+  },
+  {
+    "index": 40,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\1188.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\40_1188.png",
+    "width": 150,
+    "height": 91
+  },
+  {
+    "index": 41,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\1190.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\41_1190.png",
+    "width": 150,
+    "height": 91
+  },
+  {
+    "index": 42,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\1192.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\42_1192.png",
+    "width": 150,
+    "height": 91
+  },
+  {
+    "index": 43,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\1195.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\43_1195.png",
+    "width": 150,
+    "height": 91
+  },
+  {
+    "index": 44,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\1197.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\44_1197.png",
+    "width": 150,
+    "height": 91
+  },
+  {
+    "index": 45,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\1199.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\45_1199.png",
+    "width": 150,
+    "height": 91
+  },
+  {
+    "index": 46,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\1201.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\46_1201.png",
+    "width": 150,
+    "height": 91
+  },
+  {
+    "index": 47,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\1203.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\47_1203.png",
+    "width": 150,
+    "height": 91
+  },
+  {
+    "index": 48,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\1205.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\48_1205.png",
+    "width": 150,
+    "height": 91
+  },
+  {
+    "index": 49,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\1489.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\49_1489.png",
+    "width": 137,
+    "height": 91
+  },
+  {
+    "index": 50,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\1582.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\50_1582.png",
+    "width": 124,
+    "height": 99
+  },
+  {
+    "index": 51,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\1578.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\51_1578.png",
+    "width": 122,
+    "height": 84
+  },
+  {
+    "index": 52,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\862.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\52_862.png",
+    "width": 112,
+    "height": 84
+  },
+  {
+    "index": 53,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\290.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\53_290.png",
+    "width": 110,
+    "height": 80
+  },
+  {
+    "index": 54,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\292.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\54_292.png",
+    "width": 110,
+    "height": 80
+  },
+  {
+    "index": 55,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\294.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\55_294.png",
+    "width": 110,
+    "height": 80
+  },
+  {
+    "index": 56,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\297.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\56_297.png",
+    "width": 110,
+    "height": 80
+  },
+  {
+    "index": 57,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\299.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\57_299.png",
+    "width": 110,
+    "height": 80
+  },
+  {
+    "index": 58,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\301.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\58_301.png",
+    "width": 110,
+    "height": 80
+  },
+  {
+    "index": 59,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\303.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\59_303.png",
+    "width": 110,
+    "height": 80
+  },
+  {
+    "index": 60,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\319.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\60_319.png",
+    "width": 110,
+    "height": 80
+  },
+  {
+    "index": 61,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\321.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\61_321.png",
+    "width": 110,
+    "height": 80
+  },
+  {
+    "index": 62,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\323.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\62_323.png",
+    "width": 110,
+    "height": 80
+  },
+  {
+    "index": 63,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\325.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\63_325.png",
+    "width": 110,
+    "height": 80
+  },
+  {
+    "index": 64,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\1481.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\64_1481.png",
+    "width": 110,
+    "height": 76
+  },
+  {
+    "index": 65,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\820.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\65_820.png",
+    "width": 115,
+    "height": 70
+  },
+  {
+    "index": 66,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\822.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\66_822.png",
+    "width": 115,
+    "height": 70
+  },
+  {
+    "index": 67,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\824.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\67_824.png",
+    "width": 115,
+    "height": 70
+  },
+  {
+    "index": 68,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\826.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\68_826.png",
+    "width": 115,
+    "height": 70
+  },
+  {
+    "index": 69,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\828.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\69_828.png",
+    "width": 115,
+    "height": 70
+  },
+  {
+    "index": 70,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\830.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\70_830.png",
+    "width": 115,
+    "height": 70
+  },
+  {
+    "index": 71,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\1477.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\71_1477.png",
+    "width": 103,
+    "height": 77
+  },
+  {
+    "index": 72,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\1654.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\72_1654.png",
+    "width": 104,
+    "height": 72
+  },
+  {
+    "index": 73,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\1650.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\73_1650.png",
+    "width": 101,
+    "height": 72
+  },
+  {
+    "index": 74,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\1652.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\74_1652.png",
+    "width": 101,
+    "height": 72
+  },
+  {
+    "index": 75,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\1703.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\75_1703.png",
+    "width": 101,
+    "height": 72
+  },
+  {
+    "index": 76,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\1705.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\76_1705.png",
+    "width": 101,
+    "height": 72
+  },
+  {
+    "index": 77,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\937.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\77_937.png",
+    "width": 100,
+    "height": 71
+  },
+  {
+    "index": 78,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\939.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\78_939.png",
+    "width": 100,
+    "height": 71
+  },
+  {
+    "index": 79,
+    "source": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\images\\941.png",
+    "copied": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\face\\_candidates\\79_941.png",
+    "width": 100,
+    "height": 71
+  }
+]

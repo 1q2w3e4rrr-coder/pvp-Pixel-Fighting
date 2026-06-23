@@ -1,0 +1,9 @@
+{
+  "ffdec_out": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec",
+  "chosen_main_sprite_dir": "D:\\学习文件\\大三下\\软件工程实践\\导出\\naruto_ffdec\\sprites\\DefineSprite_1304_naruto_fla.鸣人九尾全动作_20",
+  "chosen_frame_count": 1165,
+  "expected_frame_count": 1136,
+  "actions_out": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\actions",
+  "actions_game_out": "D:\\学习文件\\大三下\\软件工程实践\\BVN_Godot\\bvn-godot\\assets\\characters\\naruto\\actions_game",
+  "hitvo_count": 31
+}

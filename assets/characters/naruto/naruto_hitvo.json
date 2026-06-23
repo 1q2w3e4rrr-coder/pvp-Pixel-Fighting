@@ -1,0 +1,314 @@
+{
+  "tk": {
+    "id": "tk",
+    "power": 30,
+    "hitType": 2,
+    "hitx": 3,
+    "hity": 8,
+    "hurtTime": 400,
+    "hurtType": 0,
+    "isBreakDef": false
+  },
+  "tz": {
+    "id": "tz",
+    "power": 80,
+    "hitType": 3,
+    "hitx": 10,
+    "hity": 10,
+    "hurtTime": 400,
+    "hurtType": 1,
+    "isBreakDef": false
+  },
+  "k1": {
+    "id": "k1",
+    "power": 20,
+    "hitType": 2,
+    "hitx": 2,
+    "hity": 0,
+    "hurtTime": 300,
+    "hurtType": 0,
+    "isBreakDef": false
+  },
+  "k2": {
+    "id": "k2",
+    "power": 30,
+    "hitType": 2,
+    "hitx": 3,
+    "hity": 0,
+    "hurtTime": 600,
+    "hurtType": 0,
+    "isBreakDef": false
+  },
+  "k3": {
+    "id": "k3",
+    "power": 40,
+    "hitType": 2,
+    "hitx": 5,
+    "hity": 0,
+    "hurtTime": 650,
+    "hurtType": 0,
+    "isBreakDef": false
+  },
+  "k4": {
+    "id": "k4",
+    "power": 50,
+    "hitType": 3,
+    "hitx": 5,
+    "hity": -7,
+    "hurtTime": 500,
+    "hurtType": 0,
+    "isBreakDef": false
+  },
+  "kj1": {
+    "id": "kj1",
+    "power": 100,
+    "hitType": 5,
+    "hitx": 8,
+    "hity": -1,
+    "hurtTime": 0,
+    "hurtType": 1,
+    "isBreakDef": true
+  },
+  "kj2": {
+    "id": "kj2",
+    "power": 10,
+    "hitType": 2,
+    "hitx": 3,
+    "hity": 0,
+    "hurtTime": 200,
+    "hurtType": 0,
+    "isBreakDef": false
+  },
+  "kj22": {
+    "id": "kj22",
+    "power": 20,
+    "hitType": 2,
+    "hitx": 5,
+    "hity": 0,
+    "hurtTime": 400,
+    "hurtType": 0,
+    "isBreakDef": false
+  },
+  "kj23": {
+    "id": "kj23",
+    "power": 20,
+    "hitType": 2,
+    "hitx": 3,
+    "hity": 0,
+    "hurtTime": 300,
+    "hurtType": 0,
+    "isBreakDef": false
+  },
+  "kj24": {
+    "id": "kj24",
+    "power": 40,
+    "hitType": 3,
+    "hitx": 5,
+    "hity": 0,
+    "hurtTime": 400,
+    "hurtType": 0,
+    "isBreakDef": false
+  },
+  "kj25": {
+    "id": "kj25",
+    "power": 40,
+    "hitType": 3,
+    "hitx": 4,
+    "hity": -7,
+    "hurtTime": 500,
+    "hurtType": 0,
+    "isBreakDef": false
+  },
+  "zh1": {
+    "id": "zh1",
+    "power": 20,
+    "hitType": 1,
+    "hitx": 3,
+    "hity": 0,
+    "hurtTime": 300,
+    "hurtType": 0,
+    "isBreakDef": false
+  },
+  "zh2": {
+    "id": "zh2",
+    "power": 20,
+    "hitType": 1,
+    "hitx": 5,
+    "hity": 0,
+    "hurtTime": 300,
+    "hurtType": 0,
+    "isBreakDef": false
+  },
+  "zh3": {
+    "id": "zh3",
+    "power": 30,
+    "hitType": 1,
+    "hitx": 10,
+    "hity": -7,
+    "hurtTime": 500,
+    "hurtType": 0,
+    "isBreakDef": false
+  },
+  "zh32": {
+    "id": "zh32",
+    "power": 60,
+    "hitType": 3,
+    "hitx": 8,
+    "hity": 0,
+    "hurtTime": 0,
+    "hurtType": 1,
+    "isBreakDef": false
+  },
+  "bs1": {
+    "id": "bs1",
+    "power": 10,
+    "hitType": 4,
+    "hitx": 10,
+    "hity": 0,
+    "hurtTime": 1000,
+    "hurtType": 0,
+    "isBreakDef": false
+  },
+  "bs3": {
+    "id": "bs3",
+    "power": 30,
+    "hitType": 4,
+    "hitx": 0,
+    "hity": 0,
+    "hurtTime": 800,
+    "hurtType": 0,
+    "isBreakDef": false
+  },
+  "bs": {
+    "id": "bs",
+    "power": 100,
+    "hitType": 5,
+    "hitx": 10,
+    "hity": 0,
+    "hurtTime": 0,
+    "hurtType": 1,
+    "isBreakDef": true
+  },
+  "sbs": {
+    "id": "sbs",
+    "power": 30,
+    "hitType": 2,
+    "hitx": 0,
+    "hity": 2,
+    "hurtTime": 800,
+    "hurtType": 0,
+    "isBreakDef": false,
+    "checkDirect": false
+  },
+  "sbs2": {
+    "id": "sbs2",
+    "power": 30,
+    "hitType": 1,
+    "hitx": 10,
+    "hity": 0,
+    "hurtTime": 0,
+    "hurtType": 1,
+    "isBreakDef": false,
+    "checkDirect": false
+  },
+  "cbs1": {
+    "id": "cbs1",
+    "power": 10,
+    "hitType": 1,
+    "hitx": 0,
+    "hity": 0,
+    "hurtTime": 1000,
+    "hurtType": 0,
+    "isBreakDef": false
+  },
+  "cbs2": {
+    "id": "cbs2",
+    "power": 10,
+    "hitType": 6,
+    "hitx": 0,
+    "hity": -6,
+    "hurtTime": 1000,
+    "hurtType": 0,
+    "isBreakDef": false
+  },
+  "cbs3": {
+    "id": "cbs3",
+    "power": 30,
+    "hitType": 4,
+    "hitx": 0,
+    "hity": 10,
+    "hurtTime": 1000,
+    "hurtType": 0,
+    "isBreakDef": true
+  },
+  "cbs4": {
+    "id": "cbs4",
+    "power": 50,
+    "hitType": 4,
+    "hitx": 0,
+    "hity": 0,
+    "hurtTime": 800,
+    "hurtType": 0,
+    "isBreakDef": false
+  },
+  "cbs": {
+    "id": "cbs",
+    "power": 100,
+    "hitType": 5,
+    "hitx": 20,
+    "hity": 0,
+    "hurtTime": 0,
+    "hurtType": 1,
+    "isBreakDef": false
+  },
+  "sh1": {
+    "id": "sh1",
+    "power": 0,
+    "hitType": 11,
+    "hitx": 0,
+    "hity": 0,
+    "hurtTime": 1000,
+    "hurtType": 0,
+    "isBreakDef": true
+  },
+  "sh12": {
+    "id": "sh12",
+    "power": 50,
+    "hitType": 3,
+    "hitx": 5,
+    "hity": 0,
+    "hurtTime": 1000,
+    "hurtType": 0,
+    "isBreakDef": false
+  },
+  "sh2": {
+    "id": "sh2",
+    "power": 0,
+    "hitType": 11,
+    "hitx": 0,
+    "hity": 0,
+    "hurtTime": 1000,
+    "hurtType": 0,
+    "isBreakDef": true
+  },
+  "sh21": {
+    "id": "sh21",
+    "power": 20,
+    "hitType": 4,
+    "hitx": 0,
+    "hity": 0,
+    "hurtTime": 1000,
+    "hurtType": 0,
+    "isBreakDef": false
+  },
+  "sh22": {
+    "id": "sh22",
+    "power": 50,
+    "hitType": 4,
+    "hitx": -10,
+    "hity": 0,
+    "hurtTime": 1000,
+    "hurtType": 1,
+    "isBreakDef": false
+  }
+}

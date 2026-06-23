@@ -3,6 +3,7 @@ extends Node2D
 var sprite: Sprite2D
 
 var manifest_path: String = ""
+var manifest_base_dir: String = "res://assets/characters/aizen/"
 var manifest: Dictionary = {}
 
 var current_effect: String = ""
@@ -19,6 +20,9 @@ var additive_material: Material
 
 func setup(path: String) -> void:
 	manifest_path = path
+	var slash_idx: int = manifest_path.rfind("/")
+	if slash_idx >= 0:
+		manifest_base_dir = manifest_path.substr(0, slash_idx + 1)
 	ensure_sprite()
 	load_manifest()
 	visible = false
@@ -199,7 +203,7 @@ func update_frame() -> void:
 		return
 
 	var rel_path: String = str(frames[frame_index])
-	var full_path: String = "res://assets/characters/aizen/" + rel_path
+	var full_path: String = manifest_base_dir + rel_path
 
 	var tex: Texture2D = load(full_path)
 
