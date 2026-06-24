@@ -12,7 +12,7 @@ var manifest: Dictionary = {}
 
 var current_action: String = "idle"
 var frame_index: int = 0
-const ORIGINAL_WIN_STOP_FRAME: int = 33  # Step75：按用户要求，最终停在 win/0033.png，不进入 0034 之后。
+const ORIGINAL_AIZEN_WIN_STOP_FRAME: int = 33  # Aizen Step75：按用户要求，最终停在 win/0033.png，不进入 0034 之后。Naruto 不套用这个值。
 var frame_timer: float = 0.0
 var fps: float = 30.0
 
@@ -98,6 +98,9 @@ var original_caught_by_throw: bool = false
 # 对地面 skill1/skill2/skill3 做动作期间世界坐标锁定。
 var original_no_world_move_anchor_active: bool = false
 var original_no_world_move_anchor_pos: Vector2 = Vector2.ZERO
+# Step126：原版 setTouchFloor(label, breakAct)；Naruto 空中 U / S+I 落地必须切到对应 TF 动作，不能滑地或卡空中。
+var original_touch_floor_action: String = ""
+var original_touch_floor_break_act: bool = true
 # Step19：原版防御/破防审计状态。
 var original_last_hit_result: String = ""
 var original_last_damage_taken: float = 0.0
@@ -197,6 +200,42 @@ func get_original_character_id() -> String:
 	return character_id
 
 
+func get_action_frame_count(action_name: String) -> int:
+	if not manifest.has("actions"):
+		return 0
+	if not manifest["actions"].has(action_name):
+		return 0
+	var action: Dictionary = manifest["actions"].get(action_name, {})
+	var frames: Array = action.get("frames", [])
+	return frames.size()
+
+
+func get_action_fps(action_name: String) -> float:
+	if not manifest.has("actions"):
+		return 30.0
+	if not manifest["actions"].has(action_name):
+		return 30.0
+	var action: Dictionary = manifest["actions"].get(action_name, {})
+	return maxf(1.0, float(action.get("fps", 30.0)))
+
+
+func get_action_duration_seconds(action_name: String) -> float:
+	var count: int = get_action_frame_count(action_name)
+	if count <= 0:
+		return 0.0
+	return float(count) / get_action_fps(action_name)
+
+
+func get_original_win_stop_frame(frames: Array) -> int:
+	if character_id == "aizen":
+		return min(ORIGINAL_AIZEN_WIN_STOP_FRAME, max(0, frames.size() - 1))
+	if manifest.has("actions") and manifest["actions"].has("win"):
+		var action: Dictionary = manifest["actions"].get("win", {})
+		if action.has("win_stop_frame"):
+			return clampi(int(action.get("win_stop_frame", frames.size() - 1)), 0, max(0, frames.size() - 1))
+	return -1
+
+
 func play_action(action_name: String) -> void:
 	if not manifest.has("actions"):
 		return
@@ -232,21 +271,28 @@ func play_action(action_name: String) -> void:
 		original_no_world_move_anchor_pos = position
 		original_round_end_winner_hold_lock = true
 		original_round_end_winner_hold_position = position
-	if action_name == "skill1" or action_name == "skill2" or action_name == "skill3" or action_name == "super_special" or action_name == "super":
+
+	var should_anchor_world: bool = false
+	if character_id == "aizen":
+		# Aizen 保留已校准的地面无根移动锁定；这是 Aizen 专用逻辑，不能套给 Naruto。
+		should_anchor_world = action_name == "skill1" or action_name == "skill2" or action_name == "skill3" or action_name == "super_special" or action_name == "super"
+	elif character_id == "naruto":
+		# Naruto 原版普通 U/S+U 是 mc_ctrler.fire() 子弹，释放者只清残留速度；S+I/W+I/skill3 有原版根移动或 addAttacker，不能锁世界坐标。
+		should_anchor_world = action_name == "skill1" or action_name == "skill2"
+	else:
+		should_anchor_world = action_name == "skill1" or action_name == "skill2"
+
+	if should_anchor_world:
 		velocity_x = 0.0
 		damping_x = 0.0
 		if not in_air:
 			velocity_y = 0.0
-			# Step76：普通 I / 必杀 原版 mc_023 时间轴没有 moveToTarget / move / isApplyG(false)。
-			# FighterMcCtrler.doAction() 只 setVelocity(0,0)，并保持地面动作；如果 Godot 残留 y 偏移，
-			# 会表现为释放 I 时脚底离地几帧。地面 super 因此在开始时贴回地面并锁定世界坐标。
-			if action_name == "super":
+			if character_id == "aizen" and action_name == "super":
 				position.y = ground_y
 			original_no_world_move_anchor_active = true
 			original_no_world_move_anchor_pos = position
 	elif action_name.begins_with("super"):
-		# W+I / 空中 I 进入必杀时先清掉玩家自由移动残留；
-		# W+I / 空中 I 的位移仍由原版 moveToTarget / 时间轴事件控制，不能像普通 I 一样锁死。
+		# W+I / S+I 进入必杀时只清掉自由移动残留；位移交给原版 moveToTarget / moveOnce / setTouchFloor。
 		velocity_x = 0.0
 		damping_x = 0.0
 
@@ -260,10 +306,32 @@ func play_action(action_name: String) -> void:
 	var action: Dictionary = manifest["actions"][current_action]
 	fps = float(action.get("fps", 30))
 
-	action_locked = not bool(action.get("loop", false))
+	action_locked = not (action.get("loop", false) == true)
 	if action_name != "super_air":
 		apply_gravity_enabled = true
 
+	update_frame()
+	emit_events_for_current_frame()
+
+
+func play_action_from_original_frame(action_name: String, start_frame: int) -> void:
+	# 原版 FighterMcCtrler.doHurt 对普通 hitType 不是从“被打”第 0 帧开始，
+	# 而是 _mc.goFrame("被打", true, 7)。hurtType=1 的 playHurtFly 才从第 0 帧起手，
+	# 延迟 1 帧进入“击飞”。这里只调整 Sprite 时间轴起始帧，不改伤害、硬直、hitx/hity。
+	play_action(action_name)
+	if start_frame <= 0:
+		return
+	if not manifest.has("actions"):
+		return
+	if not manifest["actions"].has(current_action):
+		return
+	var action: Dictionary = manifest["actions"].get(current_action, {})
+	var frames: Array = action.get("frames", [])
+	if frames.is_empty():
+		return
+	frame_index = clampi(start_frame, 0, frames.size() - 1)
+	frame_timer = 0.0
+	fired_event_keys.clear()
 	update_frame()
 	emit_events_for_current_frame()
 
@@ -476,8 +544,15 @@ func apply_original_no_world_move_anchor() -> void:
 		original_no_world_move_anchor_active = false
 		return
 	# 只锁原版无根移动的地面技能/必杀 FighterMain 世界坐标；动作本身的帧动画仍正常播放。
-	# Step76：普通 I / super 没有原版根移动，加入锁定；W+I(super_up) / 空中I(super_air) 仍不在这里锁。
-	if current_action != "skill1" and current_action != "skill2" and current_action != "skill3" and current_action != "super_special" and current_action != "super" and current_action != "win":
+	# Step126：Naruto 的 S+I / W+I / skill3 有原版 moveOnce / addAttacker / setTouchFloor，不能继续吃 Aizen 的锁坐标。
+	var action_allows_anchor: bool = current_action == "win"
+	if character_id == "aizen":
+		action_allows_anchor = action_allows_anchor or current_action == "skill1" or current_action == "skill2" or current_action == "skill3" or current_action == "super_special" or current_action == "super"
+	elif character_id == "naruto":
+		action_allows_anchor = action_allows_anchor or current_action == "skill1" or current_action == "skill2"
+	else:
+		action_allows_anchor = action_allows_anchor or current_action == "skill1" or current_action == "skill2"
+	if not action_allows_anchor:
 		original_no_world_move_anchor_active = false
 		return
 	if current_action == "win" and original_round_end_winner_hold_lock:
@@ -526,13 +601,15 @@ func update_animation(delta: float) -> void:
 		frame_timer -= frame_duration
 		frame_index += 1
 
-		# Step75：按用户要求，胜利动作播放到 win/0033.png 就停住，
-		# 不再进入 0034 之后。这里直接在动画推进阶段截停，避免素材末两帧造成视觉跳动。
-		if current_action == "win" and frame_index >= ORIGINAL_WIN_STOP_FRAME:
-			frame_index = min(ORIGINAL_WIN_STOP_FRAME, max(0, frames.size() - 1))
-			update_frame()
-			stop_original_animation()
-			return
+		# Step75/Step131：Aizen 仍按用户确认停在 win/0033；Naruto 不套 Aizen 截停，
+		# 而是读取 naruto_game_manifest.json 的 win_stop_frame，播放完整 mc_0046 + mc_0047。
+		if current_action == "win":
+			var original_stop_frame: int = get_original_win_stop_frame(frames)
+			if original_stop_frame >= 0 and frame_index >= original_stop_frame:
+				frame_index = original_stop_frame
+				update_frame()
+				stop_original_animation()
+				return
 
 		if frame_index >= frames.size():
 			handle_action_finished()
@@ -576,7 +653,10 @@ func return_to_neutral_from_timeline() -> void:
 	# can_ground_action() 仍被 in_hitstun 阻塞，P2 表现为所有按键失灵。
 	# 原版在倒地 _hurtDownFrame 结束后 goFrame("击飞_起", true)，随后 idle()/HURT_RESUME，控制恢复；
 	# 因此 getup 的 idle 事件必须同时清理 hurt/knockdown 状态。
-	var was_getup_recovery: bool = current_action == "getup"
+	# Step127：原版 FighterMC.renderHurtFly state4 在 _hurtDownFrame 结束后执行
+	# goFrame("击飞_起", true)，不是直接播放“起身”。
+	# 因此 knock_getup_part 与 getup 都属于恢复控制状态，idle() 事件必须清理 hitstun。
+	var was_getup_recovery: bool = current_action == "getup" or current_action == "knock_getup_part"
 
 	if was_getup_recovery and is_alive:
 		_clear_hurt_state()
@@ -666,7 +746,7 @@ func handle_action_finished() -> void:
 		_hold_last_frame()
 		return
 
-	if finished_action == "getup":
+	if finished_action == "knock_getup_part" or finished_action == "getup":
 		_clear_hurt_state()
 		play_action("idle")
 		return
@@ -713,6 +793,12 @@ func update_physics(delta: float) -> void:
 		elif hurt_fly_state == 3:
 			# 原版 state3：弹起后再次落地进入“击飞_倒”。
 			_start_hurt_down_stage(15, 1)
+		elif original_touch_floor_action != "" and not in_hitstun:
+			var target_action: String = original_touch_floor_action
+			clear_original_touch_floor_action()
+			if has_original_action(target_action):
+				play_action(target_action)
+				return
 		elif current_action != "land" and not in_hitstun:
 			play_action("land")
 
@@ -1084,8 +1170,13 @@ func update_hurt_fly_state(delta: float) -> void:
 			return
 		hurt_down_timer -= delta
 		if hurt_down_timer <= 0.0:
+			# 原版 FighterMC.as: renderHurtFly state4 -> goFrame("击飞_起", true)。
+			# “起身”只用于 doHurtDownJump() 的耗能倒地受身，不是普通击飞倒地后的恢复。
 			hurt_fly_state = 0
-			play_action("getup")
+			if has_original_action("knock_getup_part"):
+				play_action("knock_getup_part")
+			else:
+				play_action("getup")
 		return
 
 
@@ -1222,8 +1313,8 @@ func stop_original_animation() -> void:
 	original_animation_stopped = true
 	action_locked = true
 	if current_action == "win":
-		# Step75：当前项目按用户要求，胜利动作在 win/0033.png 提前停住，
-		# 不再进入 0034 之后；停住后不切 idle，也不再由物理/碰撞推动。
+		# Step75/Step131：Aizen 停在 win/0033；Naruto 停在展开后的 win_stop_frame。
+		# 停住后不切 idle，也不再由物理/碰撞推动。
 		_hold_current_frame()
 		velocity_x = 0.0
 		damping_x = 0.0
@@ -1335,6 +1426,16 @@ func set_original_damping(damping_value: float) -> void:
 	damping_x = maxf(0.0, damping_value)
 
 
+func set_original_touch_floor_action(action_name: String, break_act: bool = true) -> void:
+	original_touch_floor_action = action_name
+	original_touch_floor_break_act = break_act
+
+
+func clear_original_touch_floor_action() -> void:
+	original_touch_floor_action = ""
+	original_touch_floor_break_act = true
+
+
 func apply_original_dash_motion(speed_plus: float = 3.0, _base_speed: float = 220.0) -> void:
 	# FighterMcCtrler.dash(speedPlus)：
 	#   _fighter.setVelocity(_fighter.speed * speedPlus * direct, 0)
@@ -1363,8 +1464,9 @@ func apply_original_dash_stop(lose_spd_percent: float = 0.5) -> void:
 
 
 func set_air_state_from_position() -> void:
-	in_air = position.y < ground_y - 0.5
-	if in_air:
+	var now_air: bool = position.y < ground_y - 0.5
+	in_air = now_air
+	if not in_air:
 		velocity_y = 0.0
 
 
@@ -1599,7 +1701,8 @@ func apply_original_hit(hit_vo: Dictionary, attacker_facing: int) -> Dictionary:
 		if hp <= 0.0:
 			is_alive = false
 		set_steel_body(false)
-		play_action("hurt")
+		# 原版 doBreakDefense: _mc.goFrame("被打", true, 7)，不是从 0000 开始。
+		play_action_from_original_frame("hurt", 7)
 		original_guard_break_timer = maxf(original_guard_break_timer, 18.0 / ORIGINAL_FPS)
 		mark_original_hit_result("break_defense", break_damage)
 		return {"result":"break_defense", "damage":break_damage}
@@ -1651,7 +1754,9 @@ func apply_original_hit(hit_vo: Dictionary, attacker_facing: int) -> Dictionary:
 			velocity_y = hity * HIT_SPEED_SCALE
 
 		_set_be_hit_gap(4)
-		play_action("hurt")
+		# 原版 doHurt(hurtType=0 且非 CATCH): _mc.goFrame("被打", true, 7)。
+		# 第 0 帧只给 playHurtFly / CATCH 使用；普通受击应从相对第 7 帧开始。
+		play_action_from_original_frame("hurt", 7)
 		mark_original_hit_result("hurt", damage)
 		return {"result":"hurt", "damage":damage}
 

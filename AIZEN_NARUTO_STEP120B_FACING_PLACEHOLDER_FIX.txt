@@ -1,0 +1,22 @@
+Step120b：get_node_facing placeholder Label 报错修复
+
+问题：
+回退到 Step120 后，某个角色如果没能加载 ManifestFighter，会退回 placeholder Label。
+旧代码在 get_node_facing() 的兜底分支直接访问 p1.facing：
+
+    return -p1.facing if p1 != null else -1
+
+但 p1 如果是 Label，就没有 facing 属性，所以 Godot 报：
+
+    Invalid access to property or key 'facing' on a base object of type 'Label'.
+
+修复：
+1. get_node_facing() 先判断 node 是否为 Node2D 且有数值型 facing。
+2. 如果是 placeholder：
+   - node == p1 -> 默认 facing = 1
+   - node == p2 -> 默认 facing = -1
+3. 兜底时只在 p1 是 Node2D 时读取 p1.get("facing")，不再直接访问 p1.facing。
+
+说明：
+这个修复不改变 Aizen/Naruto 的原版技能逻辑，只是防止 placeholder Label 导致战斗场景崩溃。
+如果你看到某一方变成文字 Label，说明对应角色 manifest 仍未加载成功，需要继续检查角色资源路径。

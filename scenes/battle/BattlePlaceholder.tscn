@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://blflyagc2pdxu" path="res://scripts/battle/BattlePlaceholder.gd" id="1_7r43y"]
 
-[node name="BattlePlaceholder" type="Control" unique_id=1924875572]
+[node name="BattlePlaceholder" type="Control" unique_id=108604831]
 layout_mode = 3
 anchors_preset = 0
 script = ExtResource("1_7r43y")

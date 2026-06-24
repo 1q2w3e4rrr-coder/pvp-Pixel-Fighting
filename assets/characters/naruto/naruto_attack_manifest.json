@@ -1,7 +1,7 @@
 {
   "character": "naruto",
   "source": "OpenBleachVsNaruto/swf_source/f_fighter/naruto/LIBRARY/元件/mc_0004.xml",
-  "notes": "Step96-100: direct *atm and *chkm windows parsed from Naruto mc_0004.xml. Aizen values are not reused.",
+  "notes": "Step96-100: direct *atm and *chkm windows parsed from Naruto mc_0004.xml. Aizen values are not reused.\nStep130: Recomputed Naruto mc_0004 mc_0114-based hitboxes with full affine Matrix including b/c rotation. Fixed zero-width cbs1/cbs2/cbs3 and too-narrow tzatm/bs/sbs/cbs hit ranges.",
   "actions": {
     "jump_attack": [
       {
@@ -15,12 +15,21 @@
         "rect": [
           3.2,
           -31.55,
-          16.74,
-          28.28
+          43.3864,
+          44.9989
         ],
         "hit": "tk",
         "label": "jump_attack / tkatm",
-        "key": "naruto:jump_attack:tkatm:4-5"
+        "key": "naruto:jump_attack:tkatm:4-5",
+        "xfl_matrix": {
+          "a": 0.657867,
+          "b": 0.0,
+          "c": 0.0,
+          "d": 1.111084,
+          "tx": 3.2,
+          "ty": -31.55
+        },
+        "rect_source": "Step130: mc_0004 original Matrix + mc_0114 shape 1319x810 twips, full affine bbox"
       },
       {
         "original_label": "跳砍",
@@ -33,19 +42,28 @@
         "rect": [
           -4.75,
           -3.55,
-          18.47,
-          26.39
+          47.8564,
+          41.998
         ],
         "hit": "tk",
         "label": "jump_attack / tkatm",
-        "key": "naruto:jump_attack:tkatm:6-7"
+        "key": "naruto:jump_attack:tkatm:6-7",
+        "xfl_matrix": {
+          "a": 0.725647,
+          "b": 0.0,
+          "c": 0.0,
+          "d": 1.036987,
+          "tx": -4.75,
+          "ty": -3.55
+        },
+        "rect_source": "Step130: mc_0004 original Matrix + mc_0114 shape 1319x810 twips, full affine bbox"
       }
     ],
     "air_skill": [
       {
         "original_label": "跳招",
         "frame_start": 3,
-        "frame_end": 4,
+        "frame_end": 12,
         "global_start": 103,
         "global_end": 112,
         "instance": "tzatm",
@@ -53,12 +71,21 @@
         "rect": [
           -3.8,
           -0.35,
-          16.38,
-          22.09
+          42.4424,
+          35.1526
         ],
         "hit": "tz",
         "label": "air_skill / tzatm",
-        "key": "naruto:air_skill:tzatm:3-4"
+        "key": "naruto:air_skill:tzatm:3-4",
+        "xfl_matrix": {
+          "a": 0.643555,
+          "b": 0.0,
+          "c": 0.0,
+          "d": 0.867966,
+          "tx": -3.8,
+          "ty": -0.35
+        },
+        "rect_source": "Step130: mc_0004 original Matrix + mc_0114 shape 1319x810 twips, full affine bbox"
       }
     ],
     "atk1": [
@@ -73,12 +100,21 @@
         "rect": [
           4.65,
           -20.8,
-          14.83,
-          15.7
+          38.4333,
+          24.9825
         ],
         "hit": "k1",
         "label": "atk1 / k1atm",
-        "key": "naruto:atk1:k1atm:4-5"
+        "key": "naruto:atk1:k1atm:4-5",
+        "xfl_matrix": {
+          "a": 0.582764,
+          "b": 0.0,
+          "c": 0.0,
+          "d": 0.616852,
+          "tx": 4.65,
+          "ty": -20.8
+        },
+        "rect_source": "Step130: mc_0004 original Matrix + mc_0114 shape 1319x810 twips, full affine bbox"
       }
     ],
     "atk2": [
@@ -93,12 +129,21 @@
         "rect": [
           6.3,
           -15.3,
-          16.37,
-          13.0
+          42.4183,
+          20.6844
         ],
         "hit": "k1",
         "label": "atk2 / k1atm",
-        "key": "naruto:atk2:k1atm:6-7"
+        "key": "naruto:atk2:k1atm:6-7",
+        "xfl_matrix": {
+          "a": 0.643188,
+          "b": 0.0,
+          "c": 0.0,
+          "d": 0.510727,
+          "tx": 6.3,
+          "ty": -15.3
+        },
+        "rect_source": "Step130: mc_0004 original Matrix + mc_0114 shape 1319x810 twips, full affine bbox"
       }
     ],
     "atk3": [
@@ -113,12 +158,21 @@
         "rect": [
           4.65,
           -26.2,
-          14.49,
-          28.41
+          37.5376,
+          45.209
         ],
         "hit": "k3",
         "label": "atk3 / k3atm",
-        "key": "naruto:atk3:k3atm:6-7"
+        "key": "naruto:atk3:k3atm:6-7",
+        "xfl_matrix": {
+          "a": 0.569183,
+          "b": 0.0,
+          "c": 0.0,
+          "d": 1.116272,
+          "tx": 4.65,
+          "ty": -26.2
+        },
+        "rect_source": "Step130: mc_0004 original Matrix + mc_0114 shape 1319x810 twips, full affine bbox"
       }
     ],
     "atk4": [
@@ -133,12 +187,21 @@
         "rect": [
           0.5,
           -36.9,
-          14.75,
-          38.18
+          38.2199,
+          60.7648
         ],
         "hit": "k4",
         "label": "atk4 / k4atm",
-        "key": "naruto:atk4:k4atm:8-10"
+        "key": "naruto:atk4:k4atm:8-10",
+        "xfl_matrix": {
+          "a": 0.579529,
+          "b": 0.0,
+          "c": 0.0,
+          "d": 1.500366,
+          "tx": 0.5,
+          "ty": -36.9
+        },
+        "rect_source": "Step130: mc_0004 original Matrix + mc_0114 shape 1319x810 twips, full affine bbox"
       }
     ],
     "attack_skill1_check": [
@@ -153,12 +216,21 @@
         "rect": [
           4.75,
           -27.7,
-          19.06,
-          32.41
+          49.4021,
+          51.5742
         ],
         "hit": "kj1",
         "label": "attack_skill1_check / kj1atm",
-        "key": "naruto:attack_skill1_check:kj1atm:0-1"
+        "key": "naruto:attack_skill1_check:kj1atm:0-1",
+        "xfl_matrix": {
+          "a": 0.749084,
+          "b": 0.0,
+          "c": 0.0,
+          "d": 1.273438,
+          "tx": 4.75,
+          "ty": -27.7
+        },
+        "rect_source": "Step130: mc_0004 original Matrix + mc_0114 shape 1319x810 twips, full affine bbox"
       },
       {
         "original_label": "砍技1_CHK",
@@ -171,12 +243,21 @@
         "rect": [
           0.55,
           -41.65,
-          22.13,
-          47.62
+          57.344,
+          75.7867
         ],
         "hit": "kj1",
         "label": "attack_skill1_check / kj1atm",
-        "key": "naruto:attack_skill1_check:kj1atm:2-3"
+        "key": "naruto:attack_skill1_check:kj1atm:2-3",
+        "xfl_matrix": {
+          "a": 0.869507,
+          "b": 0.0,
+          "c": 0.0,
+          "d": 1.871277,
+          "tx": 0.55,
+          "ty": -41.65
+        },
+        "rect_source": "Step130: mc_0004 original Matrix + mc_0114 shape 1319x810 twips, full affine bbox"
       }
     ],
     "attack_skill2": [
@@ -191,12 +272,21 @@
         "rect": [
           -12.25,
           -14.9,
-          15.95,
-          19.36
+          41.3435,
+          30.8026
         ],
         "hit": "kj2",
         "label": "attack_skill2 / kj2atm",
-        "key": "naruto:attack_skill2:kj2atm:7-8"
+        "key": "naruto:attack_skill2:kj2atm:7-8",
+        "xfl_matrix": {
+          "a": 0.626892,
+          "b": 0.0,
+          "c": 0.0,
+          "d": 0.760559,
+          "tx": -12.25,
+          "ty": -14.9
+        },
+        "rect_source": "Step130: mc_0004 original Matrix + mc_0114 shape 1319x810 twips, full affine bbox"
       },
       {
         "original_label": "砍技2",
@@ -209,12 +299,21 @@
         "rect": [
           -8.75,
           -11.4,
-          14.02,
-          17.77
+          36.327,
+          28.2708
         ],
         "hit": "kj22",
         "label": "attack_skill2 / kj22atm",
-        "key": "naruto:attack_skill2:kj22atm:13-14"
+        "key": "naruto:attack_skill2:kj22atm:13-14",
+        "xfl_matrix": {
+          "a": 0.550827,
+          "b": 0.0,
+          "c": 0.0,
+          "d": 0.698044,
+          "tx": -8.75,
+          "ty": -11.4
+        },
+        "rect_source": "Step130: mc_0004 original Matrix + mc_0114 shape 1319x810 twips, full affine bbox"
       }
     ],
     "skill3": [
@@ -229,12 +328,21 @@
         "rect": [
           -26.85,
           -46.3,
-          29.21,
-          52.29
+          75.6871,
+          83.2167
         ],
         "hit": "zh3",
         "label": "skill3 / zh3atm",
-        "key": "naruto:skill3:zh3atm:6-7"
+        "key": "naruto:skill3:zh3atm:6-7",
+        "xfl_matrix": {
+          "a": 1.147644,
+          "b": 0.0,
+          "c": 0.0,
+          "d": 2.054733,
+          "tx": -26.85,
+          "ty": -46.3
+        },
+        "rect_source": "Step130: mc_0004 original Matrix + mc_0114 shape 1319x810 twips, full affine bbox"
       },
       {
         "original_label": "招3",
@@ -247,12 +355,21 @@
         "rect": [
           -10.0,
           -17.8,
-          31.31,
-          36.27
+          81.1454,
+          57.7145
         ],
         "hit": "zh32",
         "label": "skill3 / zh32atm",
-        "key": "naruto:skill3:zh32atm:14-16"
+        "key": "naruto:skill3:zh32atm:14-16",
+        "xfl_matrix": {
+          "a": 1.230408,
+          "b": 0.0,
+          "c": 0.0,
+          "d": 1.425049,
+          "tx": -10.0,
+          "ty": -17.8
+        },
+        "rect_source": "Step130: mc_0004 original Matrix + mc_0114 shape 1319x810 twips, full affine bbox"
       }
     ],
     "throw1": [
@@ -361,12 +478,21 @@
         "rect": [
           -20.5,
           -19.1,
-          10.0,
-          18.95
+          25.9127,
+          30.1544
         ],
         "hit": "bs1",
         "label": "super / bs1atm",
-        "key": "naruto:super:bs1atm:26-31"
+        "key": "naruto:super:bs1atm:26-31",
+        "xfl_matrix": {
+          "a": 0.392914,
+          "b": 0.0,
+          "c": 0.0,
+          "d": 0.744553,
+          "tx": -20.5,
+          "ty": -19.1
+        },
+        "rect_source": "Step130: mc_0004 original Matrix + mc_0114 shape 1319x810 twips, full affine bbox"
       },
       {
         "original_label": "必杀",
@@ -379,12 +505,21 @@
         "rect": [
           -21.75,
           -19.1,
-          28.02,
-          18.95
+          72.6038,
+          30.1544
         ],
         "hit": "bs1",
         "label": "super / bs1atm",
-        "key": "naruto:super:bs1atm:32-36"
+        "key": "naruto:super:bs1atm:32-36",
+        "xfl_matrix": {
+          "a": 1.100891,
+          "b": 0.0,
+          "c": 0.0,
+          "d": 0.744553,
+          "tx": -21.75,
+          "ty": -19.1
+        },
+        "rect_source": "Step130: mc_0004 original Matrix + mc_0114 shape 1319x810 twips, full affine bbox"
       },
       {
         "original_label": "必杀",
@@ -397,12 +532,21 @@
         "rect": [
           24.05,
           -38.6,
-          25.52,
-          39.95
+          66.1271,
+          63.5705
         ],
         "hit": "bs3",
         "label": "super / bs3atm",
-        "key": "naruto:super:bs3atm:42-66"
+        "key": "naruto:super:bs3atm:42-66",
+        "xfl_matrix": {
+          "a": 1.002686,
+          "b": 0.0,
+          "c": 0.0,
+          "d": 1.569641,
+          "tx": 24.05,
+          "ty": -38.6
+        },
+        "rect_source": "Step130: mc_0004 original Matrix + mc_0114 shape 1319x810 twips, full affine bbox"
       },
       {
         "original_label": "必杀",
@@ -415,12 +559,21 @@
         "rect": [
           0.5,
           -81.95,
-          48.66,
-          74.09
+          126.0875,
+          117.9108
         ],
         "hit": "bs",
         "label": "super / bsatm",
-        "key": "naruto:super:bsatm:67-70"
+        "key": "naruto:super:bsatm:67-70",
+        "xfl_matrix": {
+          "a": 1.911865,
+          "b": 0.0,
+          "c": 0.0,
+          "d": 2.911377,
+          "tx": 0.5,
+          "ty": -81.95
+        },
+        "rect_source": "Step130: mc_0004 original Matrix + mc_0114 shape 1319x810 twips, full affine bbox"
       }
     ],
     "super_special": [
@@ -434,13 +587,22 @@
         "library": "元件/mc_0114",
         "rect": [
           -74.95,
-          25.9,
-          0.0,
-          0.0
+          -29.3056,
+          156.7861,
+          55.2056
         ],
         "hit": "cbs1",
         "label": "super_special / cbs1atm",
-        "key": "naruto:super_special:cbs1atm:81-84"
+        "key": "naruto:super_special:cbs1atm:81-84",
+        "xfl_matrix": {
+          "a": 0.0,
+          "b": -0.837082,
+          "c": 3.871262,
+          "d": 0.0,
+          "tx": -74.95,
+          "ty": 25.9
+        },
+        "rect_source": "Step130: mc_0004 original Matrix + mc_0114 shape 1319x810 twips, full affine bbox"
       },
       {
         "original_label": "超必杀",
@@ -452,31 +614,49 @@
         "library": "元件/mc_0114",
         "rect": [
           -44.75,
-          14.65,
-          0.0,
-          0.0
+          -57.2252,
+          91.4451,
+          71.8752
         ],
         "hit": "cbs2",
         "label": "super_special / cbs2atm",
-        "key": "naruto:super_special:cbs2atm:97-101"
+        "key": "naruto:super_special:cbs2atm:97-101",
+        "xfl_matrix": {
+          "a": 0.0,
+          "b": -1.089844,
+          "c": 2.257904,
+          "d": 0.0,
+          "tx": -44.75,
+          "ty": 14.65
+        },
+        "rect_source": "Step130: mc_0004 original Matrix + mc_0114 shape 1319x810 twips, full affine bbox"
       },
       {
         "original_label": "超必杀",
         "frame_start": 122,
-        "frame_end": 122,
+        "frame_end": 135,
         "global_start": 901,
         "global_end": 914,
         "instance": "cbs3atm",
         "library": "元件/mc_0114",
         "rect": [
           -22.75,
-          45.95,
-          0.0,
-          0.0
+          -13.9903,
+          53.0129,
+          59.9403
         ],
         "hit": "cbs3",
         "label": "super_special / cbs3atm",
-        "key": "naruto:super_special:cbs3atm:122-122"
+        "key": "naruto:super_special:cbs3atm:122-122",
+        "xfl_matrix": {
+          "a": 0.0,
+          "b": -0.908875,
+          "c": 1.30896,
+          "d": 0.0,
+          "tx": -22.75,
+          "ty": 45.95
+        },
+        "rect_source": "Step130: mc_0004 original Matrix + mc_0114 shape 1319x810 twips, full affine bbox"
       }
     ],
     "skill1": [
@@ -517,6 +697,35 @@
         "hit": "zh2",
         "label": "skill2 / zh2atm",
         "key": "naruto:skill2:zh2atm:15-17"
+      }
+    ],
+    "super_special_l": [
+      {
+        "original_label": "超必杀_L",
+        "frame_start": 0,
+        "frame_end": 11,
+        "global_start": 902,
+        "global_end": 913,
+        "instance": "cbs3atm",
+        "library": "元件/mc_0114",
+        "rect": [
+          -22.75,
+          -13.9903,
+          53.0129,
+          59.9403
+        ],
+        "hit": "cbs3",
+        "label": "super_special_l / cbs3atm",
+        "key": "naruto:super_special_l:cbs3atm:0-11",
+        "xfl_matrix": {
+          "a": 0.0,
+          "b": -0.908875,
+          "c": 1.30896,
+          "d": 0.0,
+          "tx": -22.75,
+          "ty": 45.95
+        },
+        "rect_source": "Step130: cbs3atm DOMFrame global 901 duration 14 persists into 超必杀_L; full affine bbox"
       }
     ]
   },

@@ -5330,7 +5330,34 @@
         "actions_game/win/0005.png",
         "actions_game/win/0006.png",
         "actions_game/win/0007.png",
-        "actions_game/win/0008.png"
+        "actions_game/win/0008.png",
+        "actions_game/win/0009.png",
+        "actions_game/win/0010.png",
+        "actions_game/win/0011.png",
+        "actions_game/win/0012.png",
+        "actions_game/win/0013.png",
+        "actions_game/win/0014.png",
+        "actions_game/win/0015.png",
+        "actions_game/win/0016.png",
+        "actions_game/win/0017.png",
+        "actions_game/win/0018.png",
+        "actions_game/win/0019.png",
+        "actions_game/win/0020.png",
+        "actions_game/win/0021.png",
+        "actions_game/win/0022.png",
+        "actions_game/win/0023.png",
+        "actions_game/win/0024.png",
+        "actions_game/win/0025.png",
+        "actions_game/win/0026.png",
+        "actions_game/win/0027.png",
+        "actions_game/win/0028.png",
+        "actions_game/win/0029.png",
+        "actions_game/win/0030.png",
+        "actions_game/win/0031.png",
+        "actions_game/win/0032.png",
+        "actions_game/win/0033.png",
+        "actions_game/win/0034.png",
+        "actions_game/win/0035.png"
       ],
       "events": [
         {
@@ -5357,8 +5384,10 @@
           ]
         },
         {
-          "global_frame": 1114,
-          "duration": 21,
+          "global_frame": 1141,
+          "relative_frame": 35,
+          "source_character": "naruto",
+          "original_label": "胜利",
           "scripts": [
             "parent.$mc_ctrler.stop();"
           ],
@@ -5367,18 +5396,28 @@
               "object": "mc_ctrler",
               "method": "stop",
               "args_raw": "",
-              "source": "parent.$mc_ctrler.stop();",
+              "source": "parent.$mc_ctrler.stop(); // Step131: moved after expanded mc_0046/mc_0047 win sequence",
               "args": [],
               "semantic": {
                 "type": "stop_animation"
               }
             }
-          ],
-          "relative_frame": 8,
-          "source_character": "naruto",
-          "original_label": "胜利"
+          ]
         }
-      ]
+      ],
+      "expanded_from_nested_symbols": {
+        "main_label": "胜利",
+        "main_global_frame": 1106,
+        "main_label_duration": 9,
+        "startup_symbol": "元件/mc_0046",
+        "startup_symbol_source": "角色-火影/鸣人/鸣人-胜利",
+        "startup_symbol_frames": 32,
+        "hold_symbol": "元件/mc_0047",
+        "hold_symbol_source": "角色-火影/鸣人/鸣人-胜利循环",
+        "hold_symbol_frames": 4,
+        "note": "Godot 展开嵌套胜利元件，避免只截取 mc_0004 标签 9 帧造成动作不全。"
+      },
+      "win_stop_frame": 35
     },
     "lose": {
       "label": "失败",
